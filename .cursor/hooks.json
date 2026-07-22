@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "hooks": {
+    "preToolUse": [
+      {
+        "command": "node \"C:\\\\Users\\\\Sarthak\\\\.cursor\\\\skills\\\\impeccable\\\\scripts\\\\hook-before-edit.mjs\"",
+        "timeout": 5
+      }
+    ]
+  }
+}
