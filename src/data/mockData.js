@@ -99,24 +99,38 @@ export const INITIAL_DEFAULTERS = [
 export const INITIAL_TRANSACTIONS = [
   {
     id: 'TXN-8901',
-    dateTime: '2026-07-22 14:32',
+    dateTime: '2026-07-24 10:42',
     studentId: 'STU-102',
     studentName: 'Ananya Patel',
     classGrade: 'Grade 8-B',
+    parentName: 'Suresh Patel',
+    phone: '+91 98123 45678',
+    email: 'suresh.patel@example.com',
     feeType: 'Tuition Fee (Q2)',
     amount: 36000,
     paymentMethod: 'UPI',
     status: 'Paid',
-    processedBy: 'Online Portal Rail',
+    processedBy: 'System (Online Webhook)',
     receiptNo: 'RCP-2026-0891',
     reconciled: true,
+    utrNo: 'UTR9821039401',
+    payerVPA: 'suresh.patel@upi',
+    gateway: 'Razorpay UPI QR',
+    items: [{ name: 'Q2 Tuition Fee (Grade 8)', amount: 36000 }],
+    history: [
+      { timestamp: '2026-07-24 10:41', status: 'Pending', note: 'UPI Intent Initiated via QR' },
+      { timestamp: '2026-07-24 10:42', status: 'Paid', note: 'Webhook Confirmation Received (UTR9821039401)' }
+    ]
   },
   {
     id: 'TXN-8902',
-    dateTime: '2026-07-22 12:15',
+    dateTime: '2026-07-23 14:15',
     studentId: 'STU-106',
     studentName: 'Isha Reddy',
     classGrade: 'Grade 11-A',
+    parentName: 'Venkat Reddy',
+    phone: '+91 97112 33445',
+    email: 'venkat.reddy@example.com',
     feeType: 'Tuition Fee (Q2)',
     amount: 45000,
     paymentMethod: 'Cash',
@@ -124,6 +138,11 @@ export const INITIAL_TRANSACTIONS = [
     processedBy: 'Priya Mehta (Counter Staff)',
     receiptNo: 'RCP-2026-0892',
     reconciled: false,
+    counterLocation: 'Main Admin Desk (Counter 2)',
+    items: [{ name: 'Q2 Tuition Fee (Grade 11)', amount: 45000 }],
+    history: [
+      { timestamp: '2026-07-23 14:15', status: 'Paid', note: 'Counter cash payment received by Priya Mehta' }
+    ]
   },
   {
     id: 'TXN-8903',
@@ -131,6 +150,9 @@ export const INITIAL_TRANSACTIONS = [
     studentId: 'STU-108',
     studentName: 'Meera Nair',
     classGrade: 'Grade 10-B',
+    parentName: 'Ramesh Nair',
+    phone: '+91 96554 88776',
+    email: 'ramesh.nair@example.com',
     feeType: 'Transport Fee (Q2)',
     amount: 15000,
     paymentMethod: 'Cheque',
@@ -140,6 +162,11 @@ export const INITIAL_TRANSACTIONS = [
     reconciled: false,
     chequeNo: 'CHQ-449012',
     bankName: 'HDFC Bank',
+    depositDate: '2026-07-22',
+    items: [{ name: 'Transport Fee Q2 (Route B)', amount: 15000 }],
+    history: [
+      { timestamp: '2026-07-22 10:05', status: 'Pending', note: 'Cheque CHQ-449012 accepted & sent for clearance' }
+    ]
   },
   {
     id: 'TXN-8904',
@@ -147,6 +174,9 @@ export const INITIAL_TRANSACTIONS = [
     studentId: 'STU-103',
     studentName: 'Rohan Verma',
     classGrade: 'Grade 12-C',
+    parentName: 'Vikram Verma',
+    phone: '+91 97654 32109',
+    email: 'vikram.verma@example.com',
     feeType: 'Tuition Fee (Q2)',
     amount: 45000,
     paymentMethod: 'Cheque',
@@ -156,7 +186,13 @@ export const INITIAL_TRANSACTIONS = [
     reconciled: false,
     chequeNo: 'CHQ-981023',
     bankName: 'ICICI Bank',
+    depositDate: '2026-07-21',
     bounceReason: 'Insufficient Funds',
+    items: [{ name: 'Q2 Tuition Fee (Grade 12)', amount: 45000 }],
+    history: [
+      { timestamp: '2026-07-20 11:00', status: 'Pending', note: 'Cheque deposited at SBI Main Branch' },
+      { timestamp: '2026-07-21 16:40', status: 'Bounced', note: 'Bank dishonour memo received: Insufficient Funds' }
+    ]
   },
   {
     id: 'TXN-8905',
@@ -164,13 +200,23 @@ export const INITIAL_TRANSACTIONS = [
     studentId: 'STU-101',
     studentName: 'Aarav Sharma',
     classGrade: 'Grade 10-A',
-    feeType: 'Annual Sports & Activity',
+    parentName: 'Rajesh Sharma',
+    phone: '+91 98765 43210',
+    email: 'rajesh.sharma@example.com',
+    feeType: 'Lab & Custom',
     amount: 20000,
     paymentMethod: 'UPI',
     status: 'Paid',
-    processedBy: 'Online Portal Rail',
+    processedBy: 'System (Online Webhook)',
     receiptNo: 'RCP-2026-0887',
     reconciled: true,
+    utrNo: 'UTR9988112233',
+    payerVPA: 'rajesh.sharma@okaxis',
+    gateway: 'PhonePe Business QR',
+    items: [{ name: 'Annual Computer & Science Lab Fee', amount: 20000 }],
+    history: [
+      { timestamp: '2026-07-21 11:20', status: 'Paid', note: 'UPI Payment Confirmed' }
+    ]
   },
   {
     id: 'TXN-8906',
@@ -178,6 +224,9 @@ export const INITIAL_TRANSACTIONS = [
     studentId: 'STU-104',
     studentName: 'Diya Gupta',
     classGrade: 'Grade 6-A',
+    parentName: 'Anil Gupta',
+    phone: '+91 99887 76655',
+    email: 'anil.gupta@example.com',
     feeType: 'Tuition Fee (Q2)',
     amount: 32000,
     paymentMethod: 'Cash',
@@ -185,6 +234,11 @@ export const INITIAL_TRANSACTIONS = [
     processedBy: 'Priya Mehta (Counter Staff)',
     receiptNo: 'RCP-2026-0882',
     reconciled: false,
+    counterLocation: 'Counter 1',
+    items: [{ name: 'Q2 Tuition Fee (Grade 6)', amount: 32000 }],
+    history: [
+      { timestamp: '2026-07-20 15:10', status: 'Paid', note: 'Cash payment recorded' }
+    ]
   },
   {
     id: 'TXN-8907',
@@ -192,36 +246,76 @@ export const INITIAL_TRANSACTIONS = [
     studentId: 'STU-105',
     studentName: 'Kabir Singh',
     classGrade: 'Grade 9-B',
+    parentName: 'Harpreet Singh',
+    phone: '+91 98450 11223',
+    email: 'harpreet.singh@example.com',
     feeType: 'Transport Fee (Q2)',
     amount: 14000,
     paymentMethod: 'UPI',
     status: 'Failed',
-    processedBy: 'Online Gateway Rail',
+    processedBy: 'System (Online Webhook)',
     receiptNo: 'N/A',
     reconciled: true,
+    utrNo: 'N/A',
+    payerVPA: 'harpreet@upi',
+    gateway: 'Paytm Payment Gateway',
+    items: [{ name: 'Transport Fee Q2', amount: 14000 }],
+    history: [
+      { timestamp: '2026-07-20 09:30', status: 'Failed', note: 'Transaction timed out at issuer bank' }
+    ]
   },
+  {
+    id: 'TXN-8908',
+    dateTime: '2026-07-19 16:00',
+    studentId: 'STU-107',
+    studentName: 'Vihaan Joshi',
+    classGrade: 'Grade 7-C',
+    parentName: 'Amit Joshi',
+    phone: '+91 98990 44556',
+    email: 'amit.joshi@example.com',
+    feeType: 'Late Fee Penalties',
+    amount: 500,
+    paymentMethod: 'Cash',
+    status: 'Refunded',
+    processedBy: 'Administrator Mrs. Sunita Roy',
+    receiptNo: 'RCP-2026-0870',
+    reconciled: true,
+    refundDetails: {
+      refundedAt: '2026-07-20 10:15',
+      reason: 'Overcharge Correction (Late fee waived by Principal)',
+      refundedBy: 'Administrator Mrs. Sunita Roy'
+    },
+    items: [{ name: 'Late Fee Penalty Waiver Correction', amount: 500 }],
+    history: [
+      { timestamp: '2026-07-19 16:00', status: 'Paid', note: 'Late fee collected' },
+      { timestamp: '2026-07-20 10:15', status: 'Refunded', note: 'Refund issued following principal approval' }
+    ]
+  }
 ];
 
 export const INITIAL_RECONCILIATION_QUEUE = [
   {
     id: 'REC-501',
     txnId: 'TXN-8902',
-    dateTime: '2026-07-22 12:15',
+    dateTime: '2026-07-23 14:15',
     studentName: 'Isha Reddy',
+    classGrade: 'Grade 11-A',
     amount: 45000,
     paymentMethod: 'Cash',
     recordedBy: 'Priya Mehta (Counter Staff)',
     chequeNo: null,
     bankName: null,
-    depositDate: '2026-07-22',
+    depositDate: '2026-07-23',
     clearingStatus: 'Counter Cash Verified',
     status: 'pending', // 'pending' | 'reconciled' | 'flagged'
+    daysPending: 1,
   },
   {
     id: 'REC-502',
     txnId: 'TXN-8903',
     dateTime: '2026-07-22 10:05',
     studentName: 'Meera Nair',
+    classGrade: 'Grade 10-B',
     amount: 15000,
     paymentMethod: 'Cheque',
     recordedBy: 'Priya Mehta (Counter Staff)',
@@ -230,12 +324,14 @@ export const INITIAL_RECONCILIATION_QUEUE = [
     depositDate: '2026-07-22',
     clearingStatus: 'Deposited - Pending Clearing',
     status: 'pending',
+    daysPending: 2,
   },
   {
     id: 'REC-503',
     txnId: 'TXN-8904',
     dateTime: '2026-07-21 16:40',
     studentName: 'Rohan Verma',
+    classGrade: 'Grade 12-C',
     amount: 45000,
     paymentMethod: 'Cheque',
     recordedBy: 'Sanjay Kumar (Accounts)',
@@ -244,12 +340,22 @@ export const INITIAL_RECONCILIATION_QUEUE = [
     depositDate: '2026-07-21',
     clearingStatus: 'Bounced - Discrepancy Flagged',
     status: 'flagged',
+    daysPending: 3,
+    flagDetails: {
+      reason: 'Cheque Bounced',
+      recordedAmount: 45000,
+      bankAmount: 0,
+      note: 'Bank dishonour memo #ICICI-99210: Insufficient Funds in drawer account.',
+      flaggedBy: 'Sanjay Kumar (Accounts)',
+      flaggedDate: '2026-07-21 16:40'
+    }
   },
   {
     id: 'REC-504',
     txnId: 'TXN-8906',
     dateTime: '2026-07-20 15:10',
     studentName: 'Diya Gupta',
+    classGrade: 'Grade 6-A',
     amount: 32000,
     paymentMethod: 'Cash',
     recordedBy: 'Priya Mehta (Counter Staff)',
@@ -258,7 +364,29 @@ export const INITIAL_RECONCILIATION_QUEUE = [
     depositDate: '2026-07-20',
     clearingStatus: 'Bank Slip #SL-9921',
     status: 'pending',
+    daysPending: 4,
   },
+  {
+    id: 'REC-505',
+    txnId: 'TXN-8908',
+    dateTime: '2026-07-19 16:00',
+    studentName: 'Vihaan Joshi',
+    classGrade: 'Grade 7-C',
+    amount: 500,
+    paymentMethod: 'Cash',
+    recordedBy: 'Administrator Mrs. Sunita Roy',
+    chequeNo: null,
+    bankName: null,
+    depositDate: '2026-07-19',
+    clearingStatus: 'Bank Reconciled & Cleared',
+    status: 'reconciled',
+    daysPending: 0,
+    reconciledDetails: {
+      reconciledAt: '2026-07-20 10:15',
+      reconciledBy: 'Administrator Mrs. Sunita Roy',
+      bankRef: 'STMT-2026-JUL-039'
+    }
+  }
 ];
 
 export const INITIAL_FEE_STRUCTURES = [

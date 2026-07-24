@@ -1,20 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Building2, 
-  LayoutDashboard, 
-  ShieldAlert, 
-  Receipt, 
-  BarChart3, 
-  Coins, 
-  UserCheck, 
-  Bell, 
-  FileText, 
-  PlusCircle, 
-  LogOut, 
-  Check,
-  Sun,
-  Moon
-} from 'lucide-react';
+import { Routes, Route, Navigate } from 'react-router-dom';
 
 import { 
   INITIAL_OVERVIEW, 
@@ -28,14 +13,16 @@ import {
 } from './data/mockData';
 
 import LoginPage from './components/LoginPage';
-import OverviewCards from './components/OverviewCards';
-import RevenueCharts from './components/RevenueCharts';
-import DefaulterTracking from './components/DefaulterTracking';
-import TransactionsLog from './components/TransactionsLog';
-import ReconciliationWorkspace from './components/ReconciliationWorkspace';
-import FeeStructureManager from './components/FeeStructureManager';
-import StudentLedgerView from './components/StudentLedgerView';
-import ActivityFeed from './components/ActivityFeed';
+import AppLayout from './components/AppLayout';
+
+import OverviewPage from './pages/OverviewPage';
+import DefaultersPage from './pages/DefaultersPage';
+import TransactionsPage from './pages/TransactionsPage';
+import ReconciliationPage from './pages/ReconciliationPage';
+import FeeStructuresPage from './pages/FeeStructuresPage';
+import StudentLedgerPage from './pages/StudentLedgerPage';
+import AuditActivityPage from './pages/AuditActivityPage';
+
 import ReportGeneratorModal from './components/ReportGeneratorModal';
 import QuickActionsModal from './components/QuickActionsModal';
 
@@ -43,7 +30,6 @@ export default function App() {
   // Navigation & View State
   const [currentView, setCurrentView] = useState('login'); // 'login' | 'dashboard'
   const [authUser, setAuthUser] = useState(null);
-  const [activeNav, setActiveNav] = useState('overview');
 
   // Theme State (Dark / Light Mode)
   const [theme, setTheme] = useState(() => localStorage.getItem('paperbuddy_theme') || 'light');
@@ -59,12 +45,12 @@ export default function App() {
 
   // Dynamic State Layer
   const [overview, setOverview] = useState(INITIAL_OVERVIEW);
-  const [students, setStudents] = useState(INITIAL_STUDENTS);
-  const [defaulters, setDefaulters] = useState(INITIAL_DEFAULTERS);
+  const [students] = useState(INITIAL_STUDENTS);
+  const [defaulters] = useState(INITIAL_DEFAULTERS);
   const [transactions, setTransactions] = useState(INITIAL_TRANSACTIONS);
   const [reconciliationQueue, setReconciliationQueue] = useState(INITIAL_RECONCILIATION_QUEUE);
   const [feeTypes, setFeeTypes] = useState(INITIAL_FEE_STRUCTURES);
-  const [waivers, setWaivers] = useState(INITIAL_WAIVERS);
+  const [waivers] = useState(INITIAL_WAIVERS);
   const [activities, setActivities] = useState(INITIAL_ACTIVITY_LOG);
 
   // Filter state for cross-component drill down
@@ -91,14 +77,6 @@ export default function App() {
     setAuthUser(null);
     setCurrentView('login');
     showToast('Signed out of PaperBuddy portal.');
-  };
-
-  const handleJumpToSection = (sectionId) => {
-    setActiveNav(sectionId);
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
   };
 
   const handleRecordPaymentSubmit = (paymentData) => {
@@ -161,16 +139,42 @@ export default function App() {
     showToast(`Payment recorded successfully! Receipt #${newReceiptNo}`);
   };
 
-  const handleReconcileEntries = (ids) => {
+  const handleReconcileEntries = (ids, bankRef) => {
+    const now = new Date().toISOString().replace('T', ' ').slice(0, 16);
     setReconciliationQueue((prev) => 
-      prev.map((q) => ids.includes(q.id) ? { ...q, status: 'reconciled', clearingStatus: 'Bank Reconciled & Cleared' } : q)
+      prev.map((q) => ids.includes(q.id) ? { 
+        ...q, 
+        status: 'reconciled', 
+        clearingStatus: 'Bank Reconciled & Cleared',
+        reconciledDetails: {
+          reconciledAt: now,
+          reconciledBy: authUser?.email || 'Admin Staff',
+          bankRef: bankRef || 'STMT-2026-AUTO'
+        }
+      } : q)
     );
+
+    const targetTxnIds = reconciliationQueue.filter((q) => ids.includes(q.id)).map((q) => q.txnId);
+    setTransactions((prev) =>
+      prev.map((t) => targetTxnIds.includes(t.id) ? { ...t, reconciled: true } : t)
+    );
+
     showToast(`Marked ${ids.length} entry(s) as Bank Reconciled.`);
   };
 
   const handleFlagBounce = (recEntry) => {
     setReconciliationQueue((prev) => 
-      prev.map((q) => q.id === recEntry.id ? { ...q, status: 'flagged', clearingStatus: 'Bounced - Discrepancy Flagged' } : q)
+      prev.map((q) => q.id === recEntry.id ? { 
+        ...q, 
+        status: 'flagged', 
+        clearingStatus: 'Bounced - Discrepancy Flagged',
+        flagDetails: recEntry.flagDetails || {
+          reason: 'Cheque Bounced',
+          note: 'Bounced cheque dishonour memo received',
+          flaggedBy: authUser?.email || 'Admin Staff',
+          flaggedDate: new Date().toISOString().replace('T', ' ').slice(0, 16)
+        }
+      } : q)
     );
 
     setTransactions((prev) =>
@@ -195,6 +199,79 @@ export default function App() {
     ]);
 
     showToast(`Cheque marked as Bounced. Re-opened balance for ${recEntry.studentName}.`);
+  };
+
+  const handleResolveFlag = (recId, resolutionType, note) => {
+    const entry = reconciliationQueue.find((q) => q.id === recId);
+    if (!entry) return;
+
+    if (resolutionType === 'bounced') {
+      handleFlagBounce(entry);
+    } else {
+      setReconciliationQueue((prev) =>
+        prev.map((q) => q.id === recId ? { 
+          ...q, 
+          status: 'reconciled', 
+          clearingStatus: 'Resolved & Bank Reconciled',
+          reconciledDetails: {
+            reconciledAt: new Date().toISOString().replace('T', ' ').slice(0, 16),
+            reconciledBy: authUser?.email || 'Admin Staff',
+            bankRef: 'RESOLVED-ADJUSTMENT'
+          }
+        } : q)
+      );
+
+      setActivities([
+        {
+          id: `ACT-${Date.now()}`,
+          actor: authUser?.email || 'Admin Staff',
+          actionType: 'Discrepancy Resolved',
+          timestamp: new Date().toISOString().replace('T', ' ').slice(0, 16),
+          description: `Resolved discrepancy for ${entry.studentName} (₹${entry.amount.toLocaleString('en-IN')}). Note: ${note}`,
+          isAnomaly: false,
+        },
+        ...activities,
+      ]);
+
+      showToast(`Discrepancy resolved for ${entry.studentName}.`);
+    }
+  };
+
+  const handleRefundTransaction = (txnId, reason, note) => {
+    const txn = transactions.find((t) => t.id === txnId);
+    if (!txn) return;
+
+    setTransactions((prev) => 
+      prev.map((t) => t.id === txnId ? { 
+        ...t, 
+        status: 'Refunded', 
+        refundDetails: {
+          refundedAt: new Date().toISOString().replace('T', ' ').slice(0, 16),
+          reason,
+          note,
+          refundedBy: authUser?.email || 'Admin Staff'
+        }
+      } : t)
+    );
+
+    setOverview((prev) => ({
+      ...prev,
+      outstandingDues: prev.outstandingDues + txn.amount
+    }));
+
+    setActivities([
+      {
+        id: `ACT-${Date.now()}`,
+        actor: authUser?.email || 'Admin Staff',
+        actionType: 'Refund Issued',
+        timestamp: new Date().toISOString().replace('T', ' ').slice(0, 16),
+        description: `Issued refund of ₹${txn.amount.toLocaleString('en-IN')} for receipt #${txn.receiptNo} (${txn.studentName}). Reason: ${reason}. Note: ${note}`,
+        isAnomaly: false
+      },
+      ...activities
+    ]);
+
+    showToast(`Refund processed for receipt #${txn.receiptNo}. Reopened ₹${txn.amount.toLocaleString('en-IN')} balance.`);
   };
 
   const handleCreateFeeType = (newFee) => {
@@ -226,204 +303,106 @@ export default function App() {
     );
   }
 
-  // 2. DASHBOARD VIEW (AFTER SUCCESSFUL LOGIN)
+  // 2. MULTI-PAGE APPLICATION ROUTES WRAPPED IN APPLAYOUT
   return (
-    <div className="dashboard-layout">
-      {/* Sidebar Navigation */}
-      <aside className="sidebar">
-        <div className="sidebar-header">
-          <div className="brand-icon">
-            <Building2 size={20} />
-          </div>
-          <span className="brand-title">
-            PaperBuddy <span>Admin</span>
-          </span>
-        </div>
-
-        <nav className="sidebar-nav">
-          <button 
-            className={`nav-item-btn ${activeNav === 'overview' ? 'active' : ''}`}
-            onClick={() => setActiveNav('overview')}
-          >
-            <LayoutDashboard size={18} />
-            <span>Overview</span>
-          </button>
-
-          <button 
-            className={`nav-item-btn ${activeNav === 'defaulters' ? 'active' : ''}`}
-            onClick={() => setActiveNav('defaulters')}
-          >
-            <ShieldAlert size={18} />
-            <span>Defaulter Tracking</span>
-            <span className="nav-item-badge">{defaulters.length}</span>
-          </button>
-
-          <button 
-            className={`nav-item-btn ${activeNav === 'transactions' ? 'active' : ''}`}
-            onClick={() => setActiveNav('transactions')}
-          >
-            <Receipt size={18} />
-            <span>Transactions Log</span>
-          </button>
-
-          <button 
-            className={`nav-item-btn ${activeNav === 'reconciliation' ? 'active' : ''}`}
-            onClick={() => setActiveNav('reconciliation')}
-          >
-            <BarChart3 size={18} />
-            <span>Reconciliation</span>
-          </button>
-
-          <button 
-            className={`nav-item-btn ${activeNav === 'fee-structures' ? 'active' : ''}`}
-            onClick={() => setActiveNav('fee-structures')}
-          >
-            <Coins size={18} />
-            <span>Fee Structures</span>
-          </button>
-
-          <button 
-            className={`nav-item-btn ${activeNav === 'student-ledger' ? 'active' : ''}`}
-            onClick={() => setActiveNav('student-ledger')}
-          >
-            <UserCheck size={18} />
-            <span>Student Ledger</span>
-          </button>
-
-          <button 
-            className={`nav-item-btn ${activeNav === 'activity' ? 'active' : ''}`}
-            onClick={() => setActiveNav('activity')}
-          >
-            <Bell size={18} />
-            <span>Audit & Activity</span>
-          </button>
-        </nav>
-
-        <div className="sidebar-footer">
-          <div>User: <strong>{authUser?.email || 'admin@paperbuddy.edu'}</strong></div>
-          <div style={{ color: 'var(--accent-blue-text)', fontWeight: 600 }}>Role: {authUser?.roleLabel || 'School Admin'}</div>
-
-          {/* Theme Toggle Switch */}
-          <div className="theme-toggle-container">
-            <div className="theme-toggle-label">
-              {theme === 'dark' ? <Moon size={15} style={{ color: 'var(--odoo-purple)' }} /> : <Sun size={15} style={{ color: '#F59E0B' }} />}
-              <span>{theme === 'dark' ? 'Dark Mode' : 'Light Mode'}</span>
-            </div>
-            <button 
-              type="button"
-              className={`theme-switch-btn ${theme === 'dark' ? 'dark' : ''}`}
-              onClick={toggleTheme}
-              title="Toggle Odoo Dark/Light Theme"
-            >
-              <div className="theme-switch-thumb" />
-            </button>
-          </div>
-        </div>
-      </aside>
-
-      {/* Main Page Area */}
-      <main className="main-content">
-        {/* Top Header */}
-        <header className="top-header">
-          <div className="header-title-group">
-            <h1>School Fee Operations Dashboard</h1>
-            <p>Welcome back, <strong>{authUser?.roleLabel || 'School Admin'}</strong> ({authUser?.email})</p>
-          </div>
-
-          <div className="header-controls">
-            <button 
-              className="action-btn-secondary"
-              onClick={() => setShowReportModal(true)}
-            >
-              <FileText size={15} />
-              <span>Reports & Export</span>
-            </button>
-
-            <button 
-              className="action-btn-primary"
-              onClick={() => setQuickActionModal({ mode: 'recordPayment' })}
-            >
-              <PlusCircle size={16} />
-              <span>Record Payment</span>
-            </button>
-
-            <button 
-              className="action-btn-secondary"
-              style={{ color: '#9F1239', borderColor: '#FFE4E6', background: '#FFF1F2' }}
-              onClick={handleSignOut}
-              title="Sign Out to Login Page"
-            >
-              <LogOut size={15} />
-              <span>Sign Out</span>
-            </button>
-          </div>
-        </header>
-
-        {/* Page Content */}
-        <div className="page-body">
-          {/* Section 1: Overview Stat Cards */}
-          <OverviewCards 
-            data={overview} 
-            onJumpToSection={handleJumpToSection} 
+    <>
+      <Routes>
+        <Route 
+          element={
+            <AppLayout 
+              defaultersCount={defaulters.length}
+              authUser={authUser}
+              theme={theme}
+              toggleTheme={toggleTheme}
+              onSignOut={handleSignOut}
+              onShowReportModal={() => setShowReportModal(true)}
+              onRecordPaymentClick={() => setQuickActionModal({ mode: 'recordPayment' })}
+              toastMessage={toastMessage}
+            />
+          }
+        >
+          <Route path="/" element={<Navigate to="/overview" replace />} />
+          <Route 
+            path="/overview" 
+            element={
+              <OverviewPage 
+                overview={overview}
+                defaulters={defaulters}
+                onFilterByFeeType={(feeName) => setActiveFeeFilter(feeName)}
+                onSelectStudentForLedger={(stuId) => setSelectedStudentForLedger(stuId)}
+                onSendReminder={handleSendReminder}
+              />
+            } 
           />
-
-          {/* Section 3: Defaulter Tracking */}
-          <DefaulterTracking 
-            defaulters={defaulters}
-            onSendReminder={handleSendReminder}
-            onApplyPenalty={(def) => setQuickActionModal({ mode: 'bulkPenalty', student: def })}
-            onViewLedger={(stuId) => {
-              setSelectedStudentForLedger(stuId);
-              setActiveNav('student-ledger');
-            }}
-            onBulkAction={handleBulkDefaulterAction}
+          <Route 
+            path="/defaulters" 
+            element={
+              <DefaultersPage 
+                defaulters={defaulters}
+                onSendReminder={handleSendReminder}
+                onApplyPenalty={(def) => setQuickActionModal({ mode: 'bulkPenalty', student: def })}
+                onSelectStudentForLedger={(stuId) => setSelectedStudentForLedger(stuId)}
+                onBulkAction={handleBulkDefaulterAction}
+              />
+            } 
           />
-
-          {/* Section 2: Revenue Breakdown & Charts */}
-          <RevenueCharts 
-            onFilterByFeeType={(feeName) => {
-              setActiveFeeFilter(feeName);
-              setActiveNav('transactions');
-            }} 
+          <Route 
+            path="/transactions" 
+            element={
+              <TransactionsPage 
+                transactions={transactions}
+                activeFeeFilter={activeFeeFilter}
+                onRecordPaymentClick={() => setQuickActionModal({ mode: 'recordPayment' })}
+                onSelectStudentForLedger={(stuId) => setSelectedStudentForLedger(stuId)}
+                onRefundTransaction={handleRefundTransaction}
+                onBulkReconcile={handleReconcileEntries}
+              />
+            } 
           />
-
-          {/* Section 5: Reconciliation Workspace */}
-          <ReconciliationWorkspace 
-            queue={reconciliationQueue}
-            onReconcileEntry={handleReconcileEntries}
-            onFlagBounce={handleFlagBounce}
+          <Route 
+            path="/reconciliation" 
+            element={
+              <ReconciliationPage 
+                queue={reconciliationQueue}
+                onReconcileEntry={handleReconcileEntries}
+                onFlagBounce={handleFlagBounce}
+                onResolveFlag={handleResolveFlag}
+                onSelectStudentForLedger={(stuId) => setSelectedStudentForLedger(stuId)}
+              />
+            } 
           />
-
-          {/* Section 4: Transactions Log */}
-          <TransactionsLog 
-            transactions={transactions}
-            activeFeeFilter={activeFeeFilter}
-            onSelectTransaction={(txn) => {
-              showToast(`Receipt #${txn.receiptNo} — Status: ${txn.status} (${txn.paymentMethod})`);
-            }}
+          <Route 
+            path="/fee-structures" 
+            element={
+              <FeeStructuresPage 
+                feeTypes={feeTypes}
+                waivers={waivers}
+                onCreateFeeType={handleCreateFeeType}
+                onDeactivateFeeType={handleDeactivateFeeType}
+              />
+            } 
           />
-
-          {/* Section 6: Fee Structure Management */}
-          <FeeStructureManager 
-            feeTypes={feeTypes}
-            waivers={waivers}
-            onCreateFeeType={handleCreateFeeType}
-            onDeactivateFeeType={handleDeactivateFeeType}
+          <Route 
+            path="/student-ledger" 
+            element={
+              <StudentLedgerPage 
+                students={students}
+                selectedStudentId={selectedStudentForLedger}
+                onRecordPaymentClick={(stu) => setQuickActionModal({ mode: 'recordPayment', student: stu })}
+              />
+            } 
           />
-
-          {/* Section 7: Student Ledger View */}
-          <StudentLedgerView 
-            students={students}
-            selectedStudentId={selectedStudentForLedger}
-            onRecordPaymentClick={(stu) => setQuickActionModal({ mode: 'recordPayment', student: stu })}
+          <Route 
+            path="/audit-activity" 
+            element={
+              <AuditActivityPage activities={activities} />
+            } 
           />
+          <Route path="*" element={<Navigate to="/overview" replace />} />
+        </Route>
+      </Routes>
 
-          {/* Section 9: Notifications / Activity Feed */}
-          <ActivityFeed activities={activities} />
-        </div>
-      </main>
-
-      {/* Report Generator Modal */}
+      {/* Global Report Generator Modal */}
       {showReportModal && (
         <ReportGeneratorModal 
           onClose={() => setShowReportModal(false)}
@@ -431,7 +410,7 @@ export default function App() {
         />
       )}
 
-      {/* Quick Action Modal */}
+      {/* Global Quick Action Modal */}
       {quickActionModal && (
         <QuickActionsModal 
           mode={quickActionModal.mode}
@@ -442,14 +421,6 @@ export default function App() {
           onBulkPenalty={(amt) => showToast(`Applied ₹${amt} late fee penalty policy.`)}
         />
       )}
-
-      {/* Floating Toast Notification */}
-      {toastMessage && (
-        <div className="notification-toast success">
-          <Check size={18} style={{ color: 'var(--accent-blue-text)' }} />
-          <span>{toastMessage}</span>
-        </div>
-      )}
-    </div>
+    </>
   );
 }
