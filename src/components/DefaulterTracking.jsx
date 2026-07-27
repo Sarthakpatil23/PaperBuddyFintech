@@ -12,7 +12,10 @@ import {
   Filter,
   ArrowUpDown,
   GraduationCap,
-  AlertTriangle
+  AlertTriangle,
+  Link,
+  CheckCircle2,
+  X
 } from 'lucide-react';
 import CustomSelect from './CustomSelect';
 
@@ -21,13 +24,24 @@ export default function DefaulterTracking({
   onSendReminder, 
   onApplyPenalty, 
   onViewLedger, 
-  onBulkAction 
+  onBulkAction,
+  onStudentUpdated
 }) {
   const [selectedIds, setSelectedIds] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [severityFilter, setSeverityFilter] = useState('all');
   const [classFilter, setClassFilter] = useState('all');
   const [sortBy, setSortBy] = useState('amountDesc');
+
+  // Modal states
+  const [reminderModalDef, setReminderModalDef] = useState(null);
+  const [reminderMessage, setReminderMessage] = useState('');
+  const [isSendingReminder, setIsSendingReminder] = useState(false);
+
+  const [penaltyModalDef, setPenaltyModalDef] = useState(null);
+  const [penaltyAmountInput, setPenaltyAmountInput] = useState('500');
+  const [penaltyReasonInput, setPenaltyReasonInput] = useState('Overdue Fee Fine');
+  const [isApplyingPenalty, setIsApplyingPenalty] = useState(false);
 
   const severityOptions = [
     { value: 'all', label: 'All Severities' },
@@ -51,15 +65,16 @@ export default function DefaulterTracking({
   ];
 
   // Filter & Sort Logic
-  const filteredDefaulters = defaulters
+  const safeDefaulters = Array.isArray(defaulters) ? defaulters : [];
+  const filteredDefaulters = safeDefaulters
     .filter((def) => {
       const matchesSearch = 
-        def.studentName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        def.classGrade.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        def.parentName.toLowerCase().includes(searchQuery.toLowerCase());
+        (def.studentName || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (def.classGrade || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (def.parentName || '').toLowerCase().includes(searchQuery.toLowerCase());
       
       const matchesSeverity = severityFilter === 'all' || def.severity === severityFilter;
-      const matchesClass = classFilter === 'all' || def.classGrade.includes(classFilter);
+      const matchesClass = classFilter === 'all' || (def.classGrade || '').includes(classFilter);
 
       return matchesSearch && matchesSeverity && matchesClass;
     })
@@ -82,6 +97,80 @@ export default function DefaulterTracking({
       setSelectedIds(selectedIds.filter((i) => i !== id));
     } else {
       setSelectedIds([...selectedIds, id]);
+    }
+  };
+
+  const openReminderModal = (def) => {
+    setReminderModalDef(def);
+    setReminderMessage(`Dear ${def.parentName || 'Parent'}, this is an urgent reminder to clear the overdue fee amount of ₹${def.amountOwed.toLocaleString('en-IN')} for ${def.studentName} (${def.classGrade}). Please pay via the PaperBuddy Parent Portal.`);
+  };
+
+  const handleSendReminderSubmit = async (e) => {
+    e.preventDefault();
+    if (!reminderModalDef) return;
+    setIsSendingReminder(true);
+
+    try {
+      const res = await fetch('/api/reminders/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          studentIds: [reminderModalDef.studentId],
+          messageTemplate: reminderMessage,
+          senderAdmin: 'Finance Admin',
+        }),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        alert(`Reminder notification sent successfully to ${reminderModalDef.parentName}!`);
+        setReminderModalDef(null);
+        if (onStudentUpdated) onStudentUpdated();
+      } else {
+        alert(data.error || 'Failed to send reminder');
+      }
+    } catch (err) {
+      alert('Server error sending reminder');
+    } finally {
+      setIsSendingReminder(false);
+    }
+  };
+
+  const openPenaltyModal = (def) => {
+    setPenaltyModalDef(def);
+    setPenaltyAmountInput('500');
+    setPenaltyReasonInput(`Late Fee Fine for ${def.daysOverdue} days overdue`);
+  };
+
+  const handleApplyPenaltySubmit = async (e) => {
+    e.preventDefault();
+    if (!penaltyModalDef) return;
+    setIsApplyingPenalty(true);
+
+    try {
+      const res = await fetch('/api/penalties/manual', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          studentId: penaltyModalDef.studentId,
+          penaltyAmount: Number(penaltyAmountInput),
+          reason: penaltyReasonInput,
+          appliedBy: 'Finance Admin',
+        }),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        alert(`Manual late fee penalty of ₹${penaltyAmountInput} applied to ${penaltyModalDef.studentName}!`);
+        setPenaltyModalDef(null);
+        if (onStudentUpdated) onStudentUpdated();
+      } else {
+        alert(data.error || 'Failed to apply penalty');
+      }
+    } catch (err) {
+      alert('Server error applying penalty');
+    } finally {
+      setIsApplyingPenalty(false);
     }
   };
 
@@ -168,9 +257,9 @@ export default function DefaulterTracking({
               </th>
               <th>Student & Class</th>
               <th>Fee Types Overdue</th>
-              <th>Amount Owed</th>
+              <th>Amount Owed (Post-Waiver)</th>
               <th>Days Overdue</th>
-              <th>Severity</th>
+              <th>Penalty Status</th>
               <th>Parent Contact</th>
               <th style={{ textAlign: 'right' }}>Actions</th>
             </tr>
@@ -199,7 +288,14 @@ export default function DefaulterTracking({
                   </td>
 
                   <td>
-                    <div style={{ fontWeight: 600 }}>{def.studentName}</div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <div style={{ fontWeight: 600 }}>{def.studentName}</div>
+                      {def.hasNoParentLinked || !def.hasParent ? (
+                        <span style={{ background: '#FEF3C7', color: '#92400E', padding: '2px 6px', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 700 }}>
+                          ⚠️ No Parent Linked
+                        </span>
+                      ) : null}
+                    </div>
                     <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>{def.classGrade} ({def.studentId})</div>
                   </td>
 
@@ -232,10 +328,15 @@ export default function DefaulterTracking({
                   </td>
 
                   <td>
-                    <span className={`badge-status ${def.severity}`}>
-                      {def.severity === 'severe' && <AlertCircle size={12} />}
-                      {def.severity.toUpperCase()}
-                    </span>
+                    {def.hasPenaltyApplied ? (
+                      <span className="badge-status paid" style={{ fontSize: '0.74rem' }}>
+                        <CheckCircle2 size={12} /> Penalty Applied
+                      </span>
+                    ) : (
+                      <span style={{ background: '#F3F4F6', color: '#4B5563', padding: '2px 8px', borderRadius: '4px', fontSize: '0.74rem', fontWeight: 600 }}>
+                        No Penalty Yet
+                      </span>
+                    )}
                   </td>
 
                   <td>
@@ -247,8 +348,8 @@ export default function DefaulterTracking({
                     <div className="row-actions-group" style={{ justifyContent: 'flex-end' }}>
                       <button 
                         className="icon-btn-action" 
-                        title="Send Email / SMS Reminder"
-                        onClick={() => onSendReminder(def)}
+                        title="Send Notification Reminder"
+                        onClick={() => openReminderModal(def)}
                       >
                         <Send size={14} />
                       </button>
@@ -264,8 +365,8 @@ export default function DefaulterTracking({
 
                       <button 
                         className="icon-btn-action" 
-                        title="Apply Late Fee Penalty"
-                        onClick={() => onApplyPenalty(def)}
+                        title="Apply Manual Penalty"
+                        onClick={() => openPenaltyModal(def)}
                       >
                         <Gavel size={14} />
                       </button>
@@ -285,6 +386,113 @@ export default function DefaulterTracking({
           </tbody>
         </table>
       </div>
+
+      {/* WORKFLOW E: SEND REMINDER MODAL */}
+      {reminderModalDef && (
+        <div className="modal-overlay" onClick={() => setReminderModalDef(null)}>
+          <div className="modal-card" style={{ maxWidth: '520px' }} onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Send size={18} style={{ color: 'var(--odoo-purple)' }} />
+                <h3>Send Payment Reminder to {reminderModalDef.parentName}</h3>
+              </div>
+              <button className="close-btn" onClick={() => setReminderModalDef(null)}>✕</button>
+            </div>
+
+            <form onSubmit={handleSendReminderSubmit}>
+              <div className="form-group">
+                <label className="form-label">Student & Overdue Dues</label>
+                <input 
+                  type="text" 
+                  className="form-input" 
+                  value={`${reminderModalDef.studentName} (${reminderModalDef.classGrade}) - ₹${reminderModalDef.amountOwed.toLocaleString('en-IN')} Overdue`} 
+                  disabled 
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Editable Reminder Message Template</label>
+                <textarea 
+                  className="form-input" 
+                  rows={4}
+                  value={reminderMessage}
+                  onChange={(e) => setReminderMessage(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="modal-footer">
+                <button type="button" className="action-btn-secondary" onClick={() => setReminderModalDef(null)}>
+                  Cancel
+                </button>
+                <button type="submit" className="action-btn-primary" disabled={isSendingReminder}>
+                  <Send size={14} />
+                  <span>Send Notification</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* WORKFLOW C1: MANUAL PENALTY MODAL */}
+      {penaltyModalDef && (
+        <div className="modal-overlay" onClick={() => setPenaltyModalDef(null)}>
+          <div className="modal-card" style={{ maxWidth: '480px' }} onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Gavel size={18} style={{ color: '#9F1239' }} />
+                <h3>Apply Penalty to {penaltyModalDef.studentName}</h3>
+              </div>
+              <button className="close-btn" onClick={() => setPenaltyModalDef(null)}>✕</button>
+            </div>
+
+            <form onSubmit={handleApplyPenaltySubmit}>
+              <div className="form-group">
+                <label className="form-label">Overdue Amount</label>
+                <input 
+                  type="text" 
+                  className="form-input" 
+                  value={`₹${penaltyModalDef.amountOwed.toLocaleString('en-IN')} (${penaltyModalDef.daysOverdue} days overdue)`} 
+                  disabled 
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Penalty Fine Amount (₹)</label>
+                <input 
+                  type="number" 
+                  className="form-input" 
+                  value={penaltyAmountInput}
+                  onChange={(e) => setPenaltyAmountInput(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Penalty Reason / Justification</label>
+                <input 
+                  type="text" 
+                  className="form-input" 
+                  value={penaltyReasonInput}
+                  onChange={(e) => setPenaltyReasonInput(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="modal-footer">
+                <button type="button" className="action-btn-secondary" onClick={() => setPenaltyModalDef(null)}>
+                  Cancel
+                </button>
+                <button type="submit" className="action-btn-primary" disabled={isApplyingPenalty} style={{ background: '#9F1239', borderColor: '#9F1239' }}>
+                  <Gavel size={14} />
+                  <span>Apply Late Fee Fine</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

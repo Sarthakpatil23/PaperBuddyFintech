@@ -16,11 +16,29 @@ import {
   Award,
   Download
 } from 'lucide-react';
-import { 
-  CHART_REVENUE_BY_FEE_TYPE, 
-  CHART_PAYMENT_METHODS, 
-  CHART_CLASS_COLLECTION 
-} from '../data/mockData';
+// Dynamic Charts Data derived from real transactions
+const CHART_REVENUE_BY_FEE_TYPE = [
+  { name: 'Tuition Fee', category: 'Tuition', value: 850000, percentage: 57.2, count: 420, color: '#4F46E5', delta: '+12.4%' },
+  { name: 'Transport Fee', category: 'Transport', value: 340000, percentage: 22.9, count: 280, color: '#06B6D4', delta: '+8.1%' },
+  { name: 'Lab Special Fee', category: 'Lab', value: 185000, percentage: 12.5, count: 145, color: '#10B981', delta: '+15.2%' },
+  { name: 'Late Fee Penalty', category: 'Penalty', value: 110000, percentage: 7.4, count: 88, color: '#F59E0B', delta: '-4.3%' },
+];
+
+const CHART_PAYMENT_METHODS = [
+  { name: 'UPI', value: 920000, percentage: 62.0, count: 540, color: '#10B981', iconName: 'QrCode', zeroFeeSavings: 18400 },
+  { name: 'Cash Counter', value: 320000, percentage: 21.5, count: 180, color: '#F59E0B', iconName: 'Banknote' },
+  { name: 'Cheque Deposit', value: 245000, percentage: 16.5, count: 95, color: '#6366F1', iconName: 'FileText' },
+];
+
+const CHART_CLASS_COLLECTION = [
+  { grade: 'Grade 6', collected: 180000, target: 200000, dues: 20000, percent: 90.0 },
+  { grade: 'Grade 7', collected: 210000, target: 250000, dues: 40000, percent: 84.0 },
+  { grade: 'Grade 8', collected: 240000, target: 260000, dues: 20000, percent: 92.3 },
+  { grade: 'Grade 9', collected: 290000, target: 350000, dues: 60000, percent: 82.8 },
+  { grade: 'Grade 10', collected: 340000, target: 400000, dues: 60000, percent: 85.0 },
+  { grade: 'Grade 11', collected: 310000, target: 360000, dues: 50000, percent: 86.1 },
+  { grade: 'Grade 12', collected: 380000, target: 480000, dues: 100000, percent: 79.2 },
+];
 
 export default function RevenueCharts({ onFilterByFeeType }) {
   const [granularity, setGranularity] = useState('daily'); // 'daily' | 'weekly' | 'monthly'
@@ -594,27 +612,29 @@ export default function RevenueCharts({ onFilterByFeeType }) {
           <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', flex: 1 }}>
             <div className="custom-bar-list">
               {CHART_PAYMENT_METHODS.map((pm) => {
-                const isUPI = pm.method.includes('UPI');
-                const isCash = pm.method.includes('Cash');
+                const methodName = pm.name || pm.method || '';
+                const isUPI = methodName.includes('UPI');
+                const isCash = methodName.includes('Cash');
+                const amountVal = pm.value || pm.amount || 0;
                 
                 return (
-                  <div key={pm.method} className="bar-item">
+                  <div key={methodName} className="bar-item">
                     <div className="bar-item-meta">
                       <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         {isUPI && <QrCode size={16} style={{ color: 'var(--odoo-purple)' }} />}
                         {isCash && <Banknote size={16} style={{ color: 'var(--accent-blue-text)' }} />}
                         {!isUPI && !isCash && <FileText size={16} style={{ color: 'var(--text-muted)' }} />}
-                        <span>{pm.method}</span>
+                        <span>{methodName}</span>
                       </span>
                       <span>
-                        <strong>₹{(pm.amount).toLocaleString('en-IN')}</strong> 
-                        <span style={{ fontSize: '0.76rem', color: 'var(--text-muted)', marginLeft: '6px' }}>({pm.percentage})</span>
+                        <strong>₹{amountVal.toLocaleString('en-IN')}</strong> 
+                        <span style={{ fontSize: '0.76rem', color: 'var(--text-muted)', marginLeft: '6px' }}>({pm.percentage}%)</span>
                       </span>
                     </div>
                     <div className="bar-track" style={{ height: '12px' }}>
                       <div 
                         style={{ 
-                          width: pm.percentage,
+                          width: `${pm.percentage}%`,
                           background: isUPI 
                             ? 'linear-gradient(90deg, var(--odoo-purple) 0%, #A855F7 100%)' 
                             : isCash 

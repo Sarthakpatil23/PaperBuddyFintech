@@ -10,15 +10,28 @@ import {
   ArrowUpRight 
 } from 'lucide-react';
 
-export default function OverviewCards({ data, onJumpToSection }) {
+export default function OverviewCards({ data = {}, onJumpToSection }) {
   const [revenueRange, setRevenueRange] = useState('MTD'); // 'Today' | 'MTD' | 'YTD'
   const [upcomingRange, setUpcomingRange] = useState(7); // 7 | 30
+
+  // Safe data extraction
+  const safeData = {
+    totalCollected: data?.totalCollected || 0,
+    collectedDelta: data?.collectedDelta || 0,
+    outstandingDues: data?.outstandingDues || 0,
+    activeDefaultersCount: data?.activeDefaultersCount || 0,
+    transactionsTodayCount: data?.transactionsTodayCount || 0,
+    transactionsTodayAmount: data?.transactionsTodayAmount || 0,
+    collectionEfficiency: data?.collectionEfficiency || 0,
+    upcomingDues7Days: data?.upcomingDues7Days || 0,
+    upcomingDues30Days: data?.upcomingDues30Days || 0,
+  };
 
   // Revenue dynamic display based on range selection
   const getRevenueValue = () => {
     if (revenueRange === 'Today') return '₹1,85,000';
     if (revenueRange === 'YTD') return '₹84,50,000';
-    return `₹${(data.totalCollected).toLocaleString('en-IN')}`;
+    return `₹${safeData.totalCollected.toLocaleString('en-IN')}`;
   };
 
   return (
@@ -36,7 +49,7 @@ export default function OverviewCards({ data, onJumpToSection }) {
           <div className="stat-card-value" style={{ marginBottom: 0 }}>{getRevenueValue()}</div>
           <span className="stat-delta-pill">
             <TrendingUp size={12} />
-            +{data.collectedDelta}%
+            +{safeData.collectedDelta}%
           </span>
         </div>
 
@@ -70,7 +83,7 @@ export default function OverviewCards({ data, onJumpToSection }) {
             <AlertTriangle size={18} />
           </div>
         </div>
-        <div className="stat-card-value">₹{(data.outstandingDues).toLocaleString('en-IN')}</div>
+        <div className="stat-card-value">₹{safeData.outstandingDues.toLocaleString('en-IN')}</div>
         <div className="stat-card-footer" style={{ borderTop: '1px solid var(--border-color)', paddingTop: '8px', marginTop: '8px' }}>
           <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Excludes ₹8,000 waived</span>
           <span style={{ fontSize: '0.78rem', fontWeight: 600, color: '#9F1239' }}>Action required</span>
@@ -81,7 +94,7 @@ export default function OverviewCards({ data, onJumpToSection }) {
       <div 
         className="stat-card" 
         style={{ cursor: 'pointer' }}
-        onClick={() => onJumpToSection('defaulters')}
+        onClick={() => onJumpToSection && onJumpToSection('defaulters')}
       >
         <div className="stat-card-header">
           <span className="stat-card-label">Active Defaulters</span>
@@ -89,7 +102,7 @@ export default function OverviewCards({ data, onJumpToSection }) {
             <ShieldAlert size={18} />
           </div>
         </div>
-        <div className="stat-card-value">{data.activeDefaultersCount} Students</div>
+        <div className="stat-card-value">{safeData.activeDefaultersCount} Students</div>
         <div className="stat-card-footer" style={{ borderTop: '1px solid var(--border-color)', paddingTop: '8px', marginTop: '8px' }}>
           <span className="stat-delta-pill down">
             <TrendingDown size={12} />
@@ -109,10 +122,10 @@ export default function OverviewCards({ data, onJumpToSection }) {
             <Receipt size={18} />
           </div>
         </div>
-        <div className="stat-card-value">{data.transactionsTodayCount} Txns</div>
+        <div className="stat-card-value">{safeData.transactionsTodayCount} Txns</div>
         <div className="stat-card-footer" style={{ borderTop: '1px solid var(--border-color)', paddingTop: '8px', marginTop: '8px' }}>
           <span style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--accent-blue-text)' }}>
-            ₹{(data.transactionsTodayAmount).toLocaleString('en-IN')}
+            ₹{safeData.transactionsTodayAmount.toLocaleString('en-IN')}
           </span>
           <span style={{ fontSize: '0.76rem', color: 'var(--text-muted)' }}>40 Paid / 2 Failed</span>
         </div>
@@ -126,7 +139,7 @@ export default function OverviewCards({ data, onJumpToSection }) {
             <CheckCircle2 size={18} />
           </div>
         </div>
-        <div className="stat-card-value">{data.collectionEfficiency}%</div>
+        <div className="stat-card-value">{safeData.collectionEfficiency}%</div>
         <div className="stat-card-footer" style={{ borderTop: '1px solid var(--border-color)', paddingTop: '8px', marginTop: '8px' }}>
           <span className="stat-delta-pill">
             Target: 85%
@@ -144,7 +157,7 @@ export default function OverviewCards({ data, onJumpToSection }) {
           </div>
         </div>
         <div className="stat-card-value">
-          ₹{(upcomingRange === 7 ? data.upcomingDues7Days : data.upcomingDues30Days).toLocaleString('en-IN')}
+          ₹{(upcomingRange === 7 ? safeData.upcomingDues7Days : safeData.upcomingDues30Days).toLocaleString('en-IN')}
         </div>
         <div className="stat-card-footer" style={{ borderTop: '1px solid var(--border-color)', paddingTop: '8px', marginTop: '8px' }}>
           <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>Window:</span>

@@ -1,0 +1,313 @@
+// Prisma schema file for PaperBuddy Fintech School Fee Management System
+// Connected to Neon serverless PostgreSQL database
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Role {
+  ADMIN
+  STAFF
+  PARENT
+}
+
+enum FeeCategory {
+  TUITION
+  TRANSPORT
+  LATE_FEE
+  EXAM
+  LIBRARY
+  CUSTOM
+}
+
+enum Recurrence {
+  ONE_TIME
+  MONTHLY
+  QUARTERLY
+  ANNUALLY
+}
+
+enum TargetScope {
+  ALL
+  GRADE
+  STUDENT
+}
+
+enum PaymentMethod {
+  UPI
+  ONLINE
+  CASH
+  CHEQUE
+  BANK_TRANSFER
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  BOUNCED
+  RECONCILED
+  REFUNDED
+}
+
+enum FeeStatus {
+  PENDING
+  PAID
+  PARTIAL
+  OVERDUE
+  WAIVED
+}
+
+enum ReconciliationStatus {
+  PENDING
+  RECONCILED
+  FLAGGED
+}
+
+enum RecipientType {
+  ADMIN
+  PARENT
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  password  String?  @default("paperbuddy2026")
+  role      Role     @default(PARENT)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  parent    Parent?
+}
+
+model Parent {
+  id              String          @id @default(cuid())
+  userId          String?         @unique
+  user            User?           @relation(fields: [userId], references: [id], onDelete: SetNull)
+  name            String
+  email           String          @unique
+  password        String?         @default("paperbuddy2026")
+  phone           String
+  address         String?
+  isPendingInvite Boolean         @default(false)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  parentStudents  ParentStudent[]
+
+  @@index([userId])
+}
+
+model Student {
+  id             String          @id @default(cuid())
+  studentId      String          @unique
+  name           String
+  grade          String
+  section        String?
+  rollNo         String?
+  isActive       Boolean         @default(true)
+  archivedAt     DateTime?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  parentStudents ParentStudent[]
+  feeAssignments FeeAssignment[]
+  transactions   Transaction[]
+  waivers        Waiver[]
+
+  @@index([studentId])
+  @@index([grade])
+  @@index([isActive])
+}
+
+model ParentStudent {
+  id        String   @id @default(cuid())
+  parentId  String
+  studentId String
+  parent    Parent   @relation(fields: [parentId], references: [id], onDelete: Cascade)
+  student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([parentId, studentId])
+  @@index([parentId])
+  @@index([studentId])
+}
+
+model FeeType {
+  id             String          @id @default(cuid())
+  name           String
+  category       FeeCategory
+  amount         Decimal         @db.Decimal(10, 2)
+  recurrence     Recurrence      @default(ONE_TIME)
+  targetScope    TargetScope     @default(ALL)
+  targetGrade    String?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  feeAssignments FeeAssignment[]
+  penaltyRules   PenaltyRule[]
+}
+
+model PenaltyRule {
+  id                  String           @id @default(cuid())
+  feeTypeId           String
+  feeType             FeeType          @relation(fields: [feeTypeId], references: [id], onDelete: Cascade)
+  triggerDaysAfterDue Int
+  penaltyAmount       Decimal?         @db.Decimal(10, 2)
+  penaltyPercent      Decimal?         @db.Decimal(5, 2)
+  autoApply           Boolean          @default(false)
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+  appliedPenalties    AppliedPenalty[]
+
+  @@index([feeTypeId])
+  @@index([autoApply])
+}
+
+model AppliedPenalty {
+  id              String        @id @default(cuid())
+  feeAssignmentId String
+  feeAssignment   FeeAssignment @relation(fields: [feeAssignmentId], references: [id], onDelete: Cascade)
+  penaltyRuleId   String
+  penaltyRule     PenaltyRule   @relation(fields: [penaltyRuleId], references: [id], onDelete: Cascade)
+  appliedAt       DateTime      @default(now())
+
+  @@unique([feeAssignmentId, penaltyRuleId])
+  @@index([feeAssignmentId])
+  @@index([penaltyRuleId])
+}
+
+model FeeAssignment {
+  id               String           @id @default(cuid())
+  studentId        String
+  student          Student          @relation(fields: [studentId], references: [id], onDelete: Restrict)
+  feeTypeId        String
+  feeType          FeeType          @relation(fields: [feeTypeId], references: [id], onDelete: Cascade)
+  originalAmount   Decimal          @db.Decimal(10, 2)
+  adjustedAmount   Decimal          @db.Decimal(10, 2)
+  dueDate          DateTime
+  status           FeeStatus        @default(PENDING)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  installments     Installment[]
+  transactions     Transaction[]
+  waivers          Waiver[]
+  appliedPenalties AppliedPenalty[]
+
+  @@index([studentId])
+  @@index([feeTypeId])
+  @@index([status])
+  @@index([dueDate])
+}
+
+model Installment {
+  id              String        @id @default(cuid())
+  feeAssignmentId String
+  feeAssignment   FeeAssignment @relation(fields: [feeAssignmentId], references: [id], onDelete: Cascade)
+  installmentNo   Int
+  amount          Decimal       @db.Decimal(10, 2)
+  dueDate         DateTime
+  status          FeeStatus     @default(PENDING)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([feeAssignmentId])
+  @@index([status])
+}
+
+model Transaction {
+  id                    String                 @id @default(cuid())
+  txnNumber             String                 @unique @default(uuid())
+  receiptNo             String                 @unique
+  studentId             String
+  student               Student                @relation(fields: [studentId], references: [id], onDelete: Restrict)
+  feeAssignmentId       String?
+  feeAssignment         FeeAssignment?         @relation(fields: [feeAssignmentId], references: [id], onDelete: SetNull)
+  amount                Decimal                @db.Decimal(10, 2)
+  method                PaymentMethod
+  status                PaymentStatus          @default(PENDING)
+  category              FeeCategory
+  chequeNumber          String?
+  bankReference         String?
+  collectedBy           String?
+  remarks               String?
+  refundedAmount        Decimal?               @db.Decimal(10, 2)
+  refundReason          String?
+  refundedAt            DateTime?
+  refundedBy            String?
+  dateTime              DateTime               @default(now())
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+  reconciliationEntries ReconciliationEntry[]
+
+  @@index([studentId])
+  @@index([feeAssignmentId])
+  @@index([status])
+  @@index([dateTime])
+  @@index([txnNumber])
+}
+
+model Waiver {
+  id              String         @id @default(cuid())
+  studentId       String
+  student         Student        @relation(fields: [studentId], references: [id], onDelete: Restrict)
+  feeAssignmentId String?
+  feeAssignment   FeeAssignment? @relation(fields: [feeAssignmentId], references: [id], onDelete: SetNull)
+  amount          Decimal        @db.Decimal(10, 2)
+  percent         Decimal?       @db.Decimal(5, 2)
+  reason          String
+  approvedBy      String
+  createdAt       DateTime       @default(now())
+
+  @@index([studentId])
+  @@index([feeAssignmentId])
+}
+
+model ReconciliationEntry {
+  id            String               @id @default(cuid())
+  transactionId String
+  transaction   Transaction          @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  status        ReconciliationStatus @default(PENDING)
+  chequeDetails String?
+  notes         String?
+  reconciledBy  String?
+  reconciledAt  DateTime?
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+
+  @@index([transactionId])
+  @@index([status])
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  actor       String
+  actionType  String
+  entityType  String?
+  entityId    String?
+  description String
+  isAnomaly   Boolean  @default(false)
+  timestamp   DateTime @default(now())
+
+  @@index([timestamp])
+  @@index([actor])
+}
+
+model Notification {
+  id            String        @id @default(cuid())
+  recipientType RecipientType @default(PARENT)
+  recipientId   String
+  title         String
+  message       String
+  type          String
+  channel       String        @default("in-app")
+  read          Boolean       @default(false)
+  timestamp     DateTime      @default(now())
+  createdAt     DateTime      @default(now())
+
+  @@index([recipientId])
+  @@index([read])
+}

@@ -5,17 +5,19 @@ import OverviewCards from '../components/OverviewCards';
 import RevenueCharts from '../components/RevenueCharts';
 
 export default function OverviewPage({ 
-  overview, 
-  defaulters, 
+  overview = {}, 
+  defaulters = [], 
   onFilterByFeeType, 
   onSelectStudentForLedger,
   onSendReminder
 }) {
   const navigate = useNavigate();
 
+  const safeDefaulters = Array.isArray(defaulters) ? defaulters : [];
+
   // Top 5 Defaulters sorted by amount owed
-  const top5Defaulters = [...defaulters]
-    .sort((a, b) => b.amountOwed - a.amountOwed)
+  const top5Defaulters = [...safeDefaulters]
+    .sort((a, b) => (b.amountOwed || 0) - (a.amountOwed || 0))
     .slice(0, 5);
 
   const handleJumpToSection = (sectionId) => {
@@ -64,7 +66,7 @@ export default function OverviewPage({
             onClick={() => navigate('/defaulters')}
             style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
           >
-            <span>View All Defaulters ({defaulters.length})</span>
+            <span>View All Defaulters ({safeDefaulters.length})</span>
             <ArrowUpRight size={16} />
           </button>
         </div>
@@ -98,19 +100,9 @@ export default function OverviewPage({
                     </td>
 
                     <td>
-                      <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
-                        {def.feeTypes.map((ft) => (
-                          <span 
-                            key={ft}
-                            style={{
-                              fontSize: '0.75rem',
-                              padding: '2px 8px',
-                              borderRadius: '4px',
-                              background: 'var(--bg-canvas)',
-                              border: '1px solid var(--border-color)',
-                              fontWeight: 500
-                            }}
-                          >
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                        {(def.feeTypes || []).map((ft, idx) => (
+                          <span key={idx} className="badge warning" style={{ fontSize: '0.72rem' }}>
                             {ft}
                           </span>
                         ))}
@@ -118,7 +110,7 @@ export default function OverviewPage({
                     </td>
 
                     <td style={{ fontWeight: 700, color: '#9F1239' }}>
-                      ₹{def.amountOwed.toLocaleString('en-IN')}
+                      ₹{(def.amountOwed || 0).toLocaleString('en-IN')}
                     </td>
 
                     <td>
@@ -126,36 +118,39 @@ export default function OverviewPage({
                     </td>
 
                     <td>
-                      <span className={`badge-status ${def.severity}`}>
-                        {def.severity === 'severe' && <AlertCircle size={12} />}
-                        {def.severity.toUpperCase()}
+                      <span className={`badge ${def.severity === 'severe' ? 'danger' : def.severity === 'moderate' ? 'warning' : 'neutral'}`}>
+                        {def.severity?.toUpperCase()}
                       </span>
                     </td>
 
                     <td>
-                      <div style={{ fontSize: '0.82rem' }}>{def.parentName}</div>
-                      <div style={{ fontSize: '0.76rem', color: 'var(--accent-blue-text)' }}>{def.phone}</div>
+                      <div style={{ fontSize: '0.85rem', fontWeight: 500 }}>{def.parentName}</div>
+                      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{def.phone}</div>
                     </td>
 
-                    <td>
-                      <div className="row-actions-group" style={{ justifyContent: 'flex-end' }}>
+                    <td style={{ textAlign: 'right' }}>
+                      <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
                         <button 
-                          className="icon-btn-action" 
-                          title="Send Reminder"
-                          onClick={() => onSendReminder(def)}
-                        >
-                          <Send size={14} />
-                        </button>
-
-                        <button 
-                          className="icon-btn-action" 
-                          title="Open Student Ledger"
+                          className="action-btn-secondary" 
+                          style={{ padding: '4px 8px', fontSize: '0.76rem' }}
                           onClick={() => {
-                            onSelectStudentForLedger(def.studentId);
+                            if (onSelectStudentForLedger) {
+                              onSelectStudentForLedger(def.studentId);
+                            }
                             navigate('/student-ledger');
                           }}
                         >
-                          <BookOpen size={14} />
+                          <BookOpen size={13} />
+                          <span>Ledger</span>
+                        </button>
+
+                        <button 
+                          className="action-btn-primary" 
+                          style={{ padding: '4px 8px', fontSize: '0.76rem' }}
+                          onClick={() => onSendReminder && onSendReminder(def)}
+                        >
+                          <Send size={13} />
+                          <span>Remind</span>
                         </button>
                       </div>
                     </td>

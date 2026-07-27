@@ -16,76 +16,118 @@ import {
   BarChart3, 
   Loader2,
   Sun,
-  Moon
+  Moon,
+  GraduationCap,
+  ShieldAlert
 } from 'lucide-react';
 
 export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
   const [role, setRole] = useState('admin'); // 'admin' | 'cashier' | 'parent'
-  const [email, setEmail] = useState('admin@paperbuddy.edu');
-  const [password, setPassword] = useState('••••••••••••');
+  const [email, setEmail] = useState('admin@school.edu');
+  const [password, setPassword] = useState('admin_password_2026');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [toastMessage, setToastMessage] = useState(null);
+  const [toastType, setToastType] = useState('info'); // 'info' | 'error'
+
+  // Database Student Accounts List
+  const studentAccounts = [
+    { id: 'STU-101', name: 'Aarav Sharma', grade: 'Grade 10-A', email: 'aarav.sharma@paperbuddy.edu', pass: 'aarav123' },
+    { id: 'STU-102', name: 'Ananya Patel', grade: 'Grade 8-B', email: 'ananya.patel@paperbuddy.edu', pass: 'ananya123' },
+    { id: 'STU-103', name: 'Rohan Verma', grade: 'Grade 12-C', email: 'rohan.verma@paperbuddy.edu', pass: 'rohan123' },
+    { id: 'STU-104', name: 'Priya Gupta', grade: 'Grade 9-A', email: 'priya.gupta@paperbuddy.edu', pass: 'priya123' },
+    { id: 'STU-105', name: 'Gurpreet Singh', grade: 'Grade 11-B', email: 'gurpreet.singh@paperbuddy.edu', pass: 'gurpreet123' }
+  ];
 
   // Role presets
   const rolePresets = {
     admin: {
-      email: 'admin@paperbuddy.edu',
+      email: 'admin@school.edu',
+      pass: 'admin_password_2026',
       label: 'School Admin',
       subtext: 'Manage fee structures, waivers & overall school ledger'
     },
     cashier: {
-      email: 'finance@paperbuddy.edu',
+      email: 'finance@school.edu',
+      pass: 'staff_password_2026',
       label: 'Finance Staff',
       subtext: 'Collect counter cash/cheque & reconcile bank deposits'
     },
     parent: {
-      email: 'parent@paperbuddy.edu',
-      label: 'Parent / Student',
+      email: 'aarav.sharma@paperbuddy.edu',
+      pass: 'aarav123',
+      label: 'Student / Parent Portal',
       subtext: 'View fee balance, receive alerts & pay via UPI/Online'
     }
   };
 
   const handleRoleChange = (newRole) => {
     setRole(newRole);
-    setEmail(rolePresets[newRole].email);
-    setPassword('••••••••••••');
+    if (newRole === 'parent') {
+      setEmail('aarav.sharma@paperbuddy.edu');
+      setPassword('aarav123');
+    } else {
+      setEmail(rolePresets[newRole].email);
+      setPassword(rolePresets[newRole].pass);
+    }
   };
 
-  const triggerAutofill = () => {
-    setEmail(rolePresets[role].email);
-    setPassword('paperbuddy2026');
-    showToast(`Autofilled credentials for ${rolePresets[role].label}`);
+  const autofillStudent = (stu) => {
+    setRole('parent');
+    setEmail(stu.email);
+    setPassword(stu.pass);
+    showToast(`Autofilled credentials for ${stu.name} (${stu.id})`, 'info');
   };
 
-  const showToast = (msg) => {
+  const autofillAdmin = (adminType) => {
+    setRole(adminType);
+    setEmail(rolePresets[adminType].email);
+    setPassword(rolePresets[adminType].pass);
+    showToast(`Autofilled credentials for ${rolePresets[adminType].label}`, 'info');
+  };
+
+  const showToast = (msg, type = 'info') => {
     setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 4000);
+    setToastType(type);
+    setTimeout(() => setToastMessage(null), 5000);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!email || !password) {
-      showToast('Please enter your email and password');
+      showToast('Please enter your email and password', 'error');
       return;
     }
 
     setIsLoading(true);
 
-    setTimeout(() => {
-      setIsLoading(false);
-      onLoginSuccess({
-        email,
-        role,
-        roleLabel: rolePresets[role].label
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password, role }),
       });
-    }, 800);
+
+      const data = await res.json();
+
+      if (res.ok && data.success && data.user) {
+        showToast(`Welcome ${data.user.name || data.user.roleLabel}!`, 'info');
+        onLoginSuccess(data.user);
+      } else {
+        showToast(data.error || 'Authentication failed', 'error');
+      }
+    } catch (err) {
+      console.error('Login error:', err);
+      showToast('Connection error to auth server', 'error');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleGoogleAuth = () => {
     setIsLoading(true);
-    showToast('Signing in with Google account...');
+    showToast('Signing in with Google Workspace...', 'info');
     setTimeout(() => {
       setIsLoading(false);
       onLoginSuccess({
@@ -93,11 +135,34 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
         role: 'admin',
         roleLabel: 'School Admin (Google Auth)'
       });
-    }, 1000);
+    }, 800);
   };
 
   return (
     <div className="login-page-container">
+      {/* Toast Notification Banner */}
+      {toastMessage && (
+        <div className="login-toast" style={{
+          position: 'fixed',
+          top: '20px',
+          right: '20px',
+          zIndex: 9999,
+          background: toastType === 'error' ? '#9F1239' : 'var(--odoo-purple)',
+          color: 'white',
+          padding: '14px 22px',
+          borderRadius: '10px',
+          fontWeight: 600,
+          boxShadow: '0 8px 24px rgba(0,0,0,0.2)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '10px',
+          maxWidth: '420px'
+        }}>
+          {toastType === 'error' ? <ShieldAlert size={20} /> : <Sparkles size={20} />}
+          <span>{toastMessage}</span>
+        </div>
+      )}
+
       {/* Top Navbar */}
       <header className="odoo-navbar">
         <a href="#" className="brand-logo-group">
@@ -124,7 +189,7 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
             <span>{theme === 'dark' ? 'Light Theme' : 'Dark Theme'}</span>
           </button>
 
-          <button className="help-pill-btn" onClick={() => showToast('PaperBuddy Support Ready')}>
+          <button className="help-pill-btn" onClick={() => showToast('PaperBuddy Support Ready', 'info')}>
             <HelpCircle size={16} />
             <span>Need Help?</span>
           </button>
@@ -224,36 +289,86 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
                 onClick={() => handleRoleChange('parent')}
               >
                 <UserCheck size={15} />
-                <span>Parent</span>
+                <span>Student / Parent</span>
               </button>
             </div>
 
-            {/* Quick Autofill Banner */}
-            <div className="demo-preset-banner">
-              <div className="demo-text">
-                <Sparkles size={14} />
-                <span>Preset: {rolePresets[role].label}</span>
+            {/* Role-Based Quick Credentials Banner */}
+            {role === 'admin' || role === 'cashier' ? (
+              <div style={{ background: '#FFF1F2', border: '1px solid #FECDD3', borderRadius: '12px', padding: '12px', marginBottom: '20px' }}>
+                <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#9F1239', textTransform: 'uppercase', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <Building2 size={14} />
+                  <span>Admin / Staff Restricted Credentials</span>
+                </div>
+                <div style={{ fontSize: '0.82rem', color: '#881337', marginBottom: '8px' }}>
+                  Email: <strong>{rolePresets[role].email}</strong> | Pass: <strong>{rolePresets[role].pass}</strong>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => autofillAdmin(role)}
+                  style={{
+                    background: '#9F1239',
+                    color: 'white',
+                    border: 'none',
+                    padding: '4px 10px',
+                    borderRadius: '6px',
+                    fontSize: '0.75rem',
+                    fontWeight: 700,
+                    cursor: 'pointer'
+                  }}
+                >
+                  Autofill {rolePresets[role].label} Credentials
+                </button>
               </div>
-              <button 
-                type="button" 
-                className="demo-autofill-btn"
-                onClick={triggerAutofill}
-              >
-                Auto-fill Demo
-              </button>
-            </div>
+            ) : (
+              <div style={{ background: 'var(--bg-canvas)', border: '1px solid var(--border-color)', borderRadius: '12px', padding: '12px', marginBottom: '20px' }}>
+                <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--odoo-purple)', textTransform: 'uppercase', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <GraduationCap size={14} />
+                  <span>Student Accounts Database Credentials</span>
+                </div>
+
+                <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                  {studentAccounts.map((stu) => (
+                    <button
+                      key={stu.id}
+                      type="button"
+                      onClick={() => autofillStudent(stu)}
+                      style={{
+                        padding: '4px 10px',
+                        borderRadius: 'var(--radius-pill)',
+                        border: '1px solid var(--border-color)',
+                        background: email.toLowerCase() === stu.email.toLowerCase() ? 'var(--odoo-purple)' : 'white',
+                        color: email.toLowerCase() === stu.email.toLowerCase() ? 'white' : 'var(--text-main)',
+                        fontSize: '0.76rem',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px'
+                      }}
+                      title={`Email: ${stu.email} | Password: ${stu.pass}`}
+                    >
+                      <span>{stu.name}</span>
+                      <span style={{ opacity: 0.7, fontSize: '0.7rem' }}>({stu.id})</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Login Form */}
             <form onSubmit={handleSubmit}>
               <div className="form-group">
-                <label className="form-label">School Email / User ID</label>
+                <label className="form-label">
+                  {role === 'parent' ? 'Student Email / Student ID' : 'School Email / User ID'}
+                </label>
                 <div className="input-input-wrapper">
                   <input 
-                    type="email" 
+                    type="text" 
                     className="form-input" 
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="e.g. admin@school.edu"
+                    placeholder={role === 'parent' ? 'e.g. aarav.sharma@paperbuddy.edu or STU-101' : 'e.g. admin@school.edu'}
                     required
                   />
                   <Mail className="input-icon" size={18} />
@@ -263,7 +378,7 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
               <div className="form-group">
                 <div className="form-label-row">
                   <label className="form-label">Password</label>
-                  <a href="#forgot" className="forgot-password-link" onClick={(e) => { e.preventDefault(); showToast('Reset password link sent to your email.'); }}>
+                  <a href="#forgot" className="forgot-password-link" onClick={(e) => { e.preventDefault(); showToast('Password reset instructions sent to your email.', 'info'); }}>
                     Forgot password?
                   </a>
                 </div>
@@ -301,15 +416,19 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
                 type="submit" 
                 className="btn-submit-primary"
                 disabled={isLoading}
+                style={{
+                  background: role === 'admin' || role === 'cashier' ? '#9F1239' : 'var(--odoo-purple)',
+                  borderColor: role === 'admin' || role === 'cashier' ? '#9F1239' : 'var(--odoo-purple)',
+                }}
               >
                 {isLoading ? (
                   <>
                     <Loader2 className="animate-spin" size={18} />
-                    <span>Signing In & Redirecting...</span>
+                    <span>Verifying Credentials...</span>
                   </>
                 ) : (
                   <>
-                    <span>Sign In to Dashboard</span>
+                    <span>Sign In to {role === 'parent' ? 'Student Portal' : 'Admin Portal'}</span>
                     <ArrowRight size={18} />
                   </>
                 )}
@@ -318,7 +437,7 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
 
             {/* Single Sign-On */}
             <div className="divider-or">
-              <span>OR</span>
+              <span>Or sign in with</span>
             </div>
 
             <button 
@@ -326,29 +445,17 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
               className="google-sso-btn"
               onClick={handleGoogleAuth}
             >
-              <svg width="20" height="20" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
-                <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.616z"/>
-                <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z"/>
-                <path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/>
-                <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/>
+              <svg width="18" height="18" viewBox="0 0 24 24">
+                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
               </svg>
-              <span>Sign in with Google</span>
+              <span>Sign in with Google Workspace</span>
             </button>
-
-            <div className="card-footer-prompt">
-              New school onboarding? <a href="#register" onClick={(e) => { e.preventDefault(); showToast('Contact sales to register a new school instance.'); }}>Register your institution</a>
-            </div>
           </div>
         </div>
       </div>
-
-      {/* Floating Toast Notification */}
-      {toastMessage && (
-        <div className="notification-toast success">
-          <Check size={18} style={{ color: 'var(--accent-blue-text)' }} />
-          <span>{toastMessage}</span>
-        </div>
-      )}
     </div>
   );
 }

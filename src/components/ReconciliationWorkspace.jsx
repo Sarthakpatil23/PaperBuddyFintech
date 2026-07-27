@@ -51,35 +51,37 @@ export default function ReconciliationWorkspace({
   const [resolutionNote, setResolutionNote] = useState('');
 
   // Tab Item Filtered Queues
+  const safeQueue = useMemo(() => Array.isArray(queue) ? queue : [], [queue]);
+
   const pendingEntries = useMemo(() => {
-    return queue.filter((q) => q.status === 'pending' && (
-      methodFilter === 'all' || q.paymentMethod === methodFilter
+    return safeQueue.filter((q) => (q.status === 'PENDING' || q.status === 'pending') && (
+      methodFilter === 'all' || q.paymentMethod === methodFilter || q.method === methodFilter
     ) && (
-      q.studentName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (q.studentName || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
       (q.chequeNo && q.chequeNo.toLowerCase().includes(searchQuery.toLowerCase()))
     ));
-  }, [queue, methodFilter, searchQuery]);
+  }, [safeQueue, methodFilter, searchQuery]);
 
   const flaggedEntries = useMemo(() => {
-    return queue.filter((q) => q.status === 'flagged' && (
-      q.studentName.toLowerCase().includes(searchQuery.toLowerCase())
+    return safeQueue.filter((q) => (q.status === 'FLAGGED' || q.status === 'flagged') && (
+      (q.studentName || '').toLowerCase().includes(searchQuery.toLowerCase())
     ));
-  }, [queue, searchQuery]);
+  }, [safeQueue, searchQuery]);
 
   const reconciledEntries = useMemo(() => {
-    return queue.filter((q) => q.status === 'reconciled' && (
-      q.studentName.toLowerCase().includes(searchQuery.toLowerCase())
+    return safeQueue.filter((q) => (q.status === 'RECONCILED' || q.status === 'reconciled') && (
+      (q.studentName || '').toLowerCase().includes(searchQuery.toLowerCase())
     ));
-  }, [queue, searchQuery]);
+  }, [safeQueue, searchQuery]);
 
   // Summary Metrics
-  const pendingAmount = queue
-    .filter((q) => q.status === 'pending')
-    .reduce((sum, q) => sum + q.amount, 0);
+  const pendingAmount = safeQueue
+    .filter((q) => q.status === 'PENDING' || q.status === 'pending')
+    .reduce((sum, q) => sum + (q.amount || 0), 0);
 
-  const flaggedCount = queue.filter((q) => q.status === 'flagged').length;
-  const reconciledCount = queue.filter((q) => q.status === 'reconciled').length;
-  const totalOfflineCount = queue.length;
+  const flaggedCount = safeQueue.filter((q) => q.status === 'FLAGGED' || q.status === 'flagged').length;
+  const reconciledCount = safeQueue.filter((q) => q.status === 'RECONCILED' || q.status === 'reconciled').length;
+  const totalOfflineCount = safeQueue.length;
   const reconciledPct = totalOfflineCount > 0 ? Math.round((reconciledCount / totalOfflineCount) * 100) : 100;
 
   // Checkbox handlers

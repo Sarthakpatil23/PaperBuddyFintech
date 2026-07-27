@@ -21,6 +21,38 @@ export const INITIAL_STUDENTS = [
   { id: 'STU-106', name: 'Isha Reddy', classGrade: 'Grade 11-A', parentName: 'Venkat Reddy', phone: '+91 97112 33445', email: 'venkat.reddy@example.com', totalBilled: 90000, totalPaid: 90000, totalWaived: 0, balanceDue: 0 },
   { id: 'STU-107', name: 'Vihaan Joshi', classGrade: 'Grade 7-C', parentName: 'Amit Joshi', phone: '+91 98990 44556', email: 'amit.joshi@example.com', totalBilled: 64000, totalPaid: 32000, totalWaived: 0, balanceDue: 32000 },
   { id: 'STU-108', name: 'Meera Nair', classGrade: 'Grade 10-B', parentName: 'Ramesh Nair', phone: '+91 96554 88776', email: 'ramesh.nair@example.com', totalBilled: 85000, totalPaid: 85000, totalWaived: 0, balanceDue: 0 },
+  { id: 'STU-109', name: 'Ananya Sharma', classGrade: 'Grade 7-A', parentName: 'Rajesh Sharma', phone: '+91 98765 43210', email: 'rajesh.sharma@example.com', totalBilled: 58000, totalPaid: 40000, totalWaived: 0, balanceDue: 18000 },
+];
+
+export const INITIAL_PARENTS = [
+  {
+    id: 'PAR-101',
+    name: 'Rajesh Sharma',
+    email: 'rajesh.sharma@example.com',
+    phone: '+91 98765 43210',
+    childrenIds: ['STU-101', 'STU-109'],
+  },
+  {
+    id: 'PAR-102',
+    name: 'Vikram Verma',
+    email: 'vikram.verma@example.com',
+    phone: '+91 97654 32109',
+    childrenIds: ['STU-103'],
+  },
+  {
+    id: 'PAR-103',
+    name: 'Anil Gupta',
+    email: 'anil.gupta@example.com',
+    phone: '+91 99887 76655',
+    childrenIds: ['STU-104'],
+  },
+  {
+    id: 'PAR-104',
+    name: 'Harpreet Singh',
+    email: 'harpreet.singh@example.com',
+    phone: '+91 98450 11223',
+    childrenIds: ['STU-105'],
+  },
 ];
 
 export const INITIAL_DEFAULTERS = [

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { downloadReceiptPDF } from '../utils/pdfReceiptGenerator';
 import { 
   Receipt, 
   Search, 
@@ -153,16 +154,17 @@ export default function TransactionsLog({
 
   // Filter Data Logic
   const filteredTxns = useMemo(() => {
-    return transactions.filter((txn) => {
+    const safeTxns = Array.isArray(transactions) ? transactions : [];
+    return safeTxns.filter((txn) => {
       const matchesSearch = 
-        txn.studentName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        txn.studentId.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        txn.receiptNo.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        txn.id.toLowerCase().includes(searchQuery.toLowerCase());
+        (txn.studentName || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (txn.studentId || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (txn.receiptNo || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (txn.id || '').toLowerCase().includes(searchQuery.toLowerCase());
       
       const matchesMethod = methodFilter === 'all' || txn.paymentMethod === methodFilter;
       const matchesStatus = statusFilter === 'all' || txn.status === statusFilter;
-      const matchesFee = feeFilter === 'all' || txn.feeType.includes(feeFilter);
+      const matchesFee = feeFilter === 'all' || (txn.feeType || '').includes(feeFilter);
       const matchesGrade = gradeFilter === 'all' || txn.classGrade === gradeFilter;
 
       return matchesSearch && matchesMethod && matchesStatus && matchesFee && matchesGrade;
@@ -881,7 +883,7 @@ export default function TransactionsLog({
               <div style={{ display: 'flex', gap: '10px' }}>
                 <button 
                   className="action-btn-secondary" 
-                  onClick={() => alert(`Downloading PDF receipt for #${activeDrillDown.receiptNo}...`)}
+                  onClick={() => downloadReceiptPDF(activeDrillDown)}
                 >
                   <Download size={14} />
                   Download PDF Receipt

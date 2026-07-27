@@ -8,7 +8,9 @@ import {
   Coins 
 } from 'lucide-react';
 
-export default function ActivityFeed({ activities }) {
+export default function ActivityFeed({ activities = [] }) {
+  const safeActivities = Array.isArray(activities) ? activities : [];
+
   return (
     <div className="dashboard-section-card" id="activity-feed">
       <div className="section-card-header">
@@ -21,19 +23,19 @@ export default function ActivityFeed({ activities }) {
         </div>
 
         <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-muted)' }}>
-          {activities.length} Recent Events
+          {safeActivities.length} Recent Events
         </span>
       </div>
 
       <div className="activity-feed-list">
-        {activities.map((act) => (
+        {safeActivities.map((act) => (
           <div key={act.id} className={`activity-item ${act.isAnomaly ? 'anomaly' : ''}`}>
             <div className="activity-icon">
               {act.isAnomaly ? (
                 <AlertTriangle size={18} style={{ color: '#E11D48' }} />
-              ) : act.actionType.includes('Penalty') ? (
+              ) : (act.actionType || '').includes('Penalty') ? (
                 <Coins size={18} style={{ color: 'var(--odoo-purple)' }} />
-              ) : act.actionType.includes('Waiver') ? (
+              ) : (act.actionType || '').includes('Waiver') ? (
                 <ShieldCheck size={18} style={{ color: 'var(--accent-blue-text)' }} />
               ) : (
                 <CheckCircle2 size={18} style={{ color: 'var(--accent-blue-text)' }} />

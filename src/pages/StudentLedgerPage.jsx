@@ -4,7 +4,8 @@ import StudentLedgerView from '../components/StudentLedgerView';
 export default function StudentLedgerPage({ 
   students, 
   selectedStudentId, 
-  onRecordPaymentClick 
+  onRecordPaymentClick,
+  onStudentUpdated
 }) {
   return (
     <div className="student-ledger-page-wrapper">
@@ -12,6 +13,7 @@ export default function StudentLedgerPage({
         students={students}
         selectedStudentId={selectedStudentId}
         onRecordPaymentClick={onRecordPaymentClick}
+        onStudentUpdated={onStudentUpdated}
       />
     </div>
   );

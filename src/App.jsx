@@ -1,16 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
-
-import { 
-  INITIAL_OVERVIEW, 
-  INITIAL_STUDENTS, 
-  INITIAL_DEFAULTERS, 
-  INITIAL_TRANSACTIONS, 
-  INITIAL_RECONCILIATION_QUEUE, 
-  INITIAL_FEE_STRUCTURES, 
-  INITIAL_WAIVERS, 
-  INITIAL_ACTIVITY_LOG 
-} from './data/mockData';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { io } from 'socket.io-client';
 
 import LoginPage from './components/LoginPage';
 import AppLayout from './components/AppLayout';
@@ -23,13 +13,50 @@ import FeeStructuresPage from './pages/FeeStructuresPage';
 import StudentLedgerPage from './pages/StudentLedgerPage';
 import AuditActivityPage from './pages/AuditActivityPage';
 
+// Parent Portal Component Imports
+import ParentLayout from './components/parent/ParentLayout';
+import ParentOverviewPage from './components/parent/ParentOverviewPage';
+import ParentFeesPage from './components/parent/ParentFeesPage';
+import ParentPaymentPage from './components/parent/ParentPaymentPage';
+import ParentHistoryPage from './components/parent/ParentHistoryPage';
+import ParentReceiptsPage from './components/parent/ParentReceiptsPage';
+import ParentNotificationsPage from './components/parent/ParentNotificationsPage';
+import ParentSettingsPage from './components/parent/ParentSettingsPage';
+import ReceiptPDFModal from './components/parent/ReceiptPDFModal';
+
 import ReportGeneratorModal from './components/ReportGeneratorModal';
 import QuickActionsModal from './components/QuickActionsModal';
+import ChatbotWidget from './components/ChatbotWidget';
+
+// Initialize Socket.IO Client
+const socket = io('/', { autoConnect: true });
 
 export default function App() {
-  // Navigation & View State
-  const [currentView, setCurrentView] = useState('login'); // 'login' | 'dashboard'
-  const [authUser, setAuthUser] = useState(null);
+  const navigate = useNavigate();
+
+  // Active View State: 'login' | 'admin' | 'parent'
+  // On refresh: restore from localStorage so the correct portal stays open
+  const [currentView, setCurrentView] = useState(() => {
+    const saved = localStorage.getItem('paperbuddy_session');
+    if (saved) {
+      try {
+        const session = JSON.parse(saved);
+        if (session.role === 'parent') return 'parent';
+        if (session.role === 'admin' || session.role === 'staff') return 'admin';
+      } catch {}
+    }
+    const path = window.location.pathname;
+    if (path.startsWith('/parent')) return 'parent';
+    if (path !== '/' && path !== '/login') return 'admin';
+    return 'login';
+  });
+
+  const [authUser, setAuthUser] = useState(() => {
+    try {
+      const saved = localStorage.getItem('paperbuddy_session');
+      return saved ? JSON.parse(saved) : null;
+    } catch { return null; }
+  });
 
   // Theme State (Dark / Light Mode)
   const [theme, setTheme] = useState(() => localStorage.getItem('paperbuddy_theme') || 'light');
@@ -43,15 +70,45 @@ export default function App() {
     setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
   };
 
-  // Dynamic State Layer
-  const [overview, setOverview] = useState(INITIAL_OVERVIEW);
-  const [students] = useState(INITIAL_STUDENTS);
-  const [defaulters] = useState(INITIAL_DEFAULTERS);
-  const [transactions, setTransactions] = useState(INITIAL_TRANSACTIONS);
-  const [reconciliationQueue, setReconciliationQueue] = useState(INITIAL_RECONCILIATION_QUEUE);
-  const [feeTypes, setFeeTypes] = useState(INITIAL_FEE_STRUCTURES);
-  const [waivers] = useState(INITIAL_WAIVERS);
-  const [activities, setActivities] = useState(INITIAL_ACTIVITY_LOG);
+  // Real Database State Layer (Persisted in Neon PostgreSQL)
+  const [overview, setOverview] = useState({
+    totalCollected: 0,
+    collectedDelta: 14.2,
+    outstandingDues: 0,
+    activeDefaultersCount: 0,
+    transactionsTodayCount: 0,
+    transactionsTodayAmount: 0,
+    collectionEfficiency: 0,
+    upcomingDues7Days: 0,
+    upcomingDues30Days: 0,
+  });
+
+  const [students, setStudents] = useState([]);
+  const [parents, setParents] = useState([]);
+  const [defaulters, setDefaulters] = useState([]);
+  const [transactions, setTransactions] = useState([]);
+  const [reconciliationQueue, setReconciliationQueue] = useState([]);
+  const [feeTypes, setFeeTypes] = useState([]);
+  const [waivers, setWaivers] = useState([]);
+  const [activities, setActivities] = useState([]);
+
+  // Parent Portal State
+  const [activeParent, setActiveParent] = useState(null);
+  // Restore selectedChildId from saved session on refresh
+  const [selectedChildId, setSelectedChildId] = useState(() => {
+    try {
+      const saved = localStorage.getItem('paperbuddy_session');
+      if (saved) {
+        const session = JSON.parse(saved);
+        return session.studentId || '';
+      }
+    } catch {}
+    return '';
+  });
+  const [parentFeeItems, setParentFeeItems] = useState({});
+  const [parentNotifications, setParentNotifications] = useState([]);
+  const [checkoutSelectedItems, setCheckoutSelectedItems] = useState([]);
+  const [activeReceiptModal, setActiveReceiptModal] = useState(null);
 
   // Filter state for cross-component drill down
   const [activeFeeFilter, setActiveFeeFilter] = useState(null);
@@ -67,220 +124,546 @@ export default function App() {
     setTimeout(() => setToastMessage(null), 4000);
   };
 
-  const handleLoginSuccess = (userObj) => {
+  // -------------------------------------------------------------
+  // FETCH ALL REAL DATA FROM NEON BACKEND API
+  // -------------------------------------------------------------
+  const fetchAllData = useCallback(async () => {
+    try {
+      // Build parent/data URL — pass the currently-logged-in student's ID if available
+      const parentDataUrl = selectedChildId
+        ? `/api/parent/data?studentId=${encodeURIComponent(selectedChildId)}`
+        : '/api/parent/data';
+
+      const [
+        overviewRes,
+        studentsRes,
+        defaultersRes,
+        transactionsRes,
+        reconcileRes,
+        feeTypesRes,
+        waiversRes,
+        activitiesRes,
+        parentDataRes
+      ] = await Promise.all([
+        fetch('/api/overview').then(r => r.json()),
+        fetch('/api/students').then(r => r.json()),
+        fetch('/api/defaulters').then(r => r.json()),
+        fetch('/api/transactions').then(r => r.json()),
+        fetch('/api/reconciliation').then(r => r.json()),
+        fetch('/api/fee-structures').then(r => r.json()),
+        fetch('/api/waivers').then(r => r.json()),
+        fetch('/api/audit-logs').then(r => r.json()),
+        fetch(parentDataUrl).then(r => r.json()).catch(() => null)
+      ]);
+
+      if (overviewRes && !overviewRes.error) setOverview(overviewRes);
+      if (Array.isArray(studentsRes)) setStudents(studentsRes);
+      if (Array.isArray(defaultersRes)) setDefaulters(defaultersRes);
+      if (Array.isArray(transactionsRes)) setTransactions(transactionsRes);
+      if (Array.isArray(reconcileRes)) setReconciliationQueue(reconcileRes);
+      if (Array.isArray(feeTypesRes)) setFeeTypes(feeTypesRes);
+      if (Array.isArray(waiversRes)) setWaivers(waiversRes);
+      if (Array.isArray(activitiesRes)) setActivities(activitiesRes);
+
+      if (parentDataRes && parentDataRes.parent) {
+        setActiveParent(parentDataRes.parent);
+        if (parentDataRes.students && parentDataRes.students.length > 0) {
+          if (!selectedChildId) {
+            setSelectedChildId(parentDataRes.students[0].id);
+          }
+
+          // Build a rich fee items map keyed by student's human-readable studentId (e.g. 'STU-101')
+          const itemsMap = {};
+          const today = new Date();
+
+          parentDataRes.students.forEach((stu) => {
+            // Build waiver lookup: feeAssignmentId -> waiver record
+            const waiverByFaId = {};
+            (stu.waivers || []).forEach((w) => {
+              if (w.feeAssignmentId) waiverByFaId[w.feeAssignmentId] = w;
+            });
+
+            itemsMap[stu.id] = (stu.feeAssignments || []).map((fa) => {
+              const dueDate = new Date(fa.dueDate);
+              const daysOverdue = fa.status === 'OVERDUE'
+                ? Math.max(0, Math.floor((today - dueDate) / (1000 * 60 * 60 * 24)))
+                : 0;
+
+              // Normalize status for frontend display
+              let displayStatus;
+              if (fa.status === 'PAID') displayStatus = 'Paid';
+              else if (fa.status === 'OVERDUE') displayStatus = 'Overdue';
+              else if (fa.status === 'PARTIAL') displayStatus = 'Partial';
+              else if (dueDate > today) displayStatus = 'Upcoming';
+              else displayStatus = 'Due';
+
+              // Normalize category for display
+              const catMap = {
+                TUITION: 'Tuition', TRANSPORT: 'Transport', HOSTEL: 'Hostel',
+                LATE_FEE: 'Late Fee', EXAM: 'Exam', CUSTOM: 'Custom', OTHER: 'Other'
+              };
+              const category = catMap[fa.feeType?.category] || fa.feeType?.category || 'Tuition';
+
+              // Waiver info for this fee assignment
+              const waiver = waiverByFaId[fa.id];
+              const waiverAmount = waiver ? Number(waiver.amount) : 0;
+              const waiverReason = waiver?.reason || null;
+              const originalAmount = Number(fa.originalAmount);
+              const adjustedAmount = Number(fa.adjustedAmount);
+
+              // Late fee: if category is LATE_FEE, add to parent fee's lateFee field
+              const isLateFee = fa.feeType?.category === 'LATE_FEE';
+
+              // Installments
+              const installments = fa.installments || [];
+              const hasInstallments = installments.length > 0;
+              const paidInstallments = installments.filter(i => i.status === 'PAID');
+              const pendingInstallments = installments.filter(i => i.status !== 'PAID');
+
+              return {
+                id: fa.id,
+                title: fa.feeType?.name || 'Fee Item',
+                name: fa.feeType?.name || 'Fee Item',
+                category,
+                amount: adjustedAmount,
+                originalAmount,
+                adjustedAmount,
+                waiverAmount,
+                waiverReason,
+                lateFee: isLateFee ? adjustedAmount : 0,
+                daysOverdue,
+                dueDate: dueDate.toISOString().split('T')[0],
+                status: displayStatus,
+                isLateFee,
+                description: waiver
+                  ? `Original: ₹${originalAmount.toLocaleString('en-IN')} | Scholarship/Waiver: -₹${waiverAmount.toLocaleString('en-IN')} (${waiverReason || 'Applied'}) | Net Due: ₹${adjustedAmount.toLocaleString('en-IN')}`
+                  : null,
+                hasInstallments,
+                installments: installments.map((inst, idx) => ({
+                  id: inst.id,
+                  installmentNo: inst.installmentNo || (idx + 1),
+                  amount: Number(inst.amount),
+                  dueDate: new Date(inst.dueDate).toISOString().split('T')[0],
+                  status: inst.status === 'PAID' ? 'Paid' : inst.status === 'OVERDUE' ? 'Overdue' : 'Pending',
+                })),
+                installmentNumber: hasInstallments ? (paidInstallments.length + 1) : null,
+                totalInstallments: hasInstallments ? installments.length : null,
+              };
+            });
+          });
+
+          setParentFeeItems(itemsMap);
+        }
+        if (Array.isArray(parentDataRes.notifications)) {
+          setParentNotifications(parentDataRes.notifications);
+        }
+      }
+    } catch (err) {
+      console.error('Error fetching data from Neon database backend:', err);
+    }
+  }, [selectedChildId]);
+
+  // Initial data fetch on mount
+  useEffect(() => {
+    fetchAllData();
+  }, [fetchAllData]);
+
+  // Socket.IO listeners — registered once on mount, never re-registered
+  useEffect(() => {
+    const handleRealtimeEvent = (event) => {
+      console.log('🔄 Real-Time Event Received:', event?.type || 'DATA_UPDATED');
+      fetchAllData();
+      if (event?.type === 'PAYMENT_RECEIVED') {
+        showToast(`💰 Payment Verified! Receipt #${event.payload?.txn?.receiptNo || ''}`);
+      } else if (event?.type === 'WAIVER_APPLIED') {
+        showToast('🎁 Fee Waiver Applied & Synced!');
+      } else if (event?.type === 'PENALTY_APPLIED' || event?.type === 'AUTO_PENALTIES_APPLIED') {
+        showToast('⚠️ Late Fee Penalty Updated!');
+      } else if (event?.type === 'FEE_ASSIGNED') {
+        showToast('📋 New Fee Structure Assigned!');
+      } else if (event?.type === 'REMINDER_SENT') {
+        showToast('📢 Payment Reminder Broadcasted!');
+      }
+    };
+
+    socket.on('connect', () => {
+      // Always join admin room for broadcast events
+      socket.emit('join_admin');
+      // Re-join parent room if a student session is active (handles page refresh)
+      try {
+        const saved = localStorage.getItem('paperbuddy_session');
+        if (saved) {
+          const session = JSON.parse(saved);
+          if (session.role === 'parent' && session.studentId) {
+            // Parent room is keyed by parent DB id, not studentId — fetch it
+            fetch(`/api/parent/data?studentId=${encodeURIComponent(session.studentId)}`)
+              .then(r => r.json())
+              .then(d => { if (d?.parent?.id) socket.emit('join_parent', d.parent.id); })
+              .catch(() => {});
+          }
+        }
+      } catch {}
+    });
+    socket.on('DATA_UPDATED', handleRealtimeEvent);
+    socket.on('PAYMENT_RECEIVED', handleRealtimeEvent);
+    socket.on('WAIVER_APPLIED', handleRealtimeEvent);
+    socket.on('PENALTY_APPLIED', handleRealtimeEvent);
+    socket.on('AUTO_PENALTIES_APPLIED', handleRealtimeEvent);
+    socket.on('FEE_ASSIGNED', handleRealtimeEvent);
+    socket.on('REMINDER_SENT', handleRealtimeEvent);
+
+    return () => {
+      socket.off('connect');
+      socket.off('DATA_UPDATED', handleRealtimeEvent);
+      socket.off('PAYMENT_RECEIVED', handleRealtimeEvent);
+      socket.off('WAIVER_APPLIED', handleRealtimeEvent);
+      socket.off('PENALTY_APPLIED', handleRealtimeEvent);
+      socket.off('AUTO_PENALTIES_APPLIED', handleRealtimeEvent);
+      socket.off('FEE_ASSIGNED', handleRealtimeEvent);
+      socket.off('REMINDER_SENT', handleRealtimeEvent);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // mount-only — never re-register listeners
+
+  const handleLoginSuccess = async (userObj) => {
+    // Persist session to localStorage — survives page refresh
+    localStorage.setItem('paperbuddy_session', JSON.stringify(userObj));
     setAuthUser(userObj);
-    setCurrentView('dashboard');
-    showToast(`Signed in successfully as ${userObj.roleLabel}!`);
+    if (userObj.role === 'parent') {
+      setCurrentView('parent');
+      const studentId = userObj.studentId || '';
+      setSelectedChildId(studentId);
+      showToast(`Welcome, ${userObj.studentName || userObj.roleLabel}!`);
+      navigate('/parent/overview');
+      // Immediately fetch with the correct studentId — don't wait for re-render cycle
+      if (studentId) {
+        try {
+          const parentDataUrl = `/api/parent/data?studentId=${encodeURIComponent(studentId)}`;
+          const [
+            overviewRes, studentsRes, defaultersRes, transactionsRes,
+            reconcileRes, feeTypesRes, waiversRes, activitiesRes, parentDataRes
+          ] = await Promise.all([
+            fetch('/api/overview').then(r => r.json()),
+            fetch('/api/students').then(r => r.json()),
+            fetch('/api/defaulters').then(r => r.json()),
+            fetch('/api/transactions').then(r => r.json()),
+            fetch('/api/reconciliation').then(r => r.json()),
+            fetch('/api/fee-structures').then(r => r.json()),
+            fetch('/api/waivers').then(r => r.json()),
+            fetch('/api/audit-logs').then(r => r.json()),
+            fetch(parentDataUrl).then(r => r.json()).catch(() => null),
+          ]);
+          if (overviewRes && !overviewRes.error) setOverview(overviewRes);
+          if (Array.isArray(studentsRes)) setStudents(studentsRes);
+          if (Array.isArray(defaultersRes)) setDefaulters(defaultersRes);
+          if (Array.isArray(transactionsRes)) setTransactions(transactionsRes);
+          if (Array.isArray(reconcileRes)) setReconciliationQueue(reconcileRes);
+          if (Array.isArray(feeTypesRes)) setFeeTypes(feeTypesRes);
+          if (Array.isArray(waiversRes)) setWaivers(waiversRes);
+          if (Array.isArray(activitiesRes)) setActivities(activitiesRes);
+
+          if (parentDataRes && parentDataRes.parent) {
+            setActiveParent(parentDataRes.parent);
+            const today = new Date();
+            const itemsMap = {};
+            (parentDataRes.students || []).forEach((stu) => {
+              const waiverByFaId = {};
+              (stu.waivers || []).forEach((w) => { if (w.feeAssignmentId) waiverByFaId[w.feeAssignmentId] = w; });
+              itemsMap[stu.id] = (stu.feeAssignments || []).map((fa) => {
+                const dueDate = new Date(fa.dueDate);
+                const daysOverdue = fa.status === 'OVERDUE' ? Math.max(0, Math.floor((today - dueDate) / 86400000)) : 0;
+                let displayStatus;
+                if (fa.status === 'PAID') displayStatus = 'Paid';
+                else if (fa.status === 'OVERDUE') displayStatus = 'Overdue';
+                else if (fa.status === 'PARTIAL') displayStatus = 'Partial';
+                else if (dueDate > today) displayStatus = 'Upcoming';
+                else displayStatus = 'Due';
+                const catMap = { TUITION: 'Tuition', TRANSPORT: 'Transport', HOSTEL: 'Hostel', LATE_FEE: 'Late Fee', EXAM: 'Exam', CUSTOM: 'Custom', OTHER: 'Other' };
+                const category = catMap[fa.feeType?.category] || fa.feeType?.category || 'Tuition';
+                const waiver = waiverByFaId[fa.id];
+                const waiverAmount = waiver ? Number(waiver.amount) : 0;
+                const waiverReason = waiver?.reason || null;
+                const originalAmount = Number(fa.originalAmount);
+                const adjustedAmount = Number(fa.adjustedAmount);
+                const isLateFee = fa.feeType?.category === 'LATE_FEE';
+                const installments = fa.installments || [];
+                const hasInstallments = installments.length > 0;
+                const paidInstallments = installments.filter(i => i.status === 'PAID');
+                return {
+                  id: fa.id, title: fa.feeType?.name || 'Fee Item', name: fa.feeType?.name || 'Fee Item',
+                  category, amount: adjustedAmount, originalAmount, adjustedAmount, waiverAmount, waiverReason,
+                  lateFee: isLateFee ? adjustedAmount : 0, daysOverdue,
+                  dueDate: dueDate.toISOString().split('T')[0], status: displayStatus, isLateFee,
+                  hasInstallments,
+                  installments: installments.map((inst, idx) => ({
+                    id: inst.id, installmentNo: inst.installmentNo || (idx + 1), amount: Number(inst.amount),
+                    dueDate: new Date(inst.dueDate).toISOString().split('T')[0],
+                    status: inst.status === 'PAID' ? 'Paid' : inst.status === 'OVERDUE' ? 'Overdue' : 'Pending',
+                  })),
+                  installmentNumber: hasInstallments ? (paidInstallments.length + 1) : null,
+                  totalInstallments: hasInstallments ? installments.length : null,
+                };
+              });
+            });
+            setParentFeeItems(itemsMap);
+            if (Array.isArray(parentDataRes.notifications)) setParentNotifications(parentDataRes.notifications);
+            // Join parent socket room for real-time updates
+            if (parentDataRes.parent?.id) socket.emit('join_parent', parentDataRes.parent.id);
+          }
+        } catch (err) {
+          console.error('Login data fetch error:', err);
+        }
+      }
+    } else {
+      setCurrentView('admin');
+      showToast(`Signed in successfully as ${userObj.roleLabel}!`);
+      navigate('/overview');
+      fetchAllData();
+    }
   };
 
   const handleSignOut = () => {
+    // Clear persisted session so login page is shown on next visit
+    localStorage.removeItem('paperbuddy_session');
     setAuthUser(null);
+    setActiveParent(null);
+    setSelectedChildId('');
+    setParentFeeItems({});
+    setParentNotifications([]);
     setCurrentView('login');
+    navigate('/login');
     showToast('Signed out of PaperBuddy portal.');
   };
 
-  const handleRecordPaymentSubmit = (paymentData) => {
-    const newTxnId = `TXN-${Math.floor(8900 + Math.random() * 1000)}`;
-    const newReceiptNo = `RCP-2026-${Math.floor(1000 + Math.random() * 9000)}`;
-
-    const newTxn = {
-      id: newTxnId,
-      dateTime: new Date().toISOString().replace('T', ' ').slice(0, 16),
-      studentId: paymentData.studentId,
-      studentName: paymentData.studentName,
-      classGrade: paymentData.classGrade,
-      feeType: paymentData.feeType,
-      amount: paymentData.amount,
-      paymentMethod: paymentData.paymentMethod,
-      status: paymentData.paymentMethod === 'Cheque' ? 'Pending' : 'Paid',
-      processedBy: authUser?.email || 'Admin Staff',
-      receiptNo: newReceiptNo,
-      reconciled: false,
-    };
-
-    setTransactions([newTxn, ...transactions]);
-
-    if (paymentData.paymentMethod === 'Cash' || paymentData.paymentMethod === 'Cheque') {
-      const newRecEntry = {
-        id: `REC-${Math.floor(600 + Math.random() * 900)}`,
-        txnId: newTxnId,
-        dateTime: newTxn.dateTime,
-        studentName: paymentData.studentName,
-        amount: paymentData.amount,
-        paymentMethod: paymentData.paymentMethod,
-        recordedBy: authUser?.email || 'Admin Staff',
-        chequeNo: paymentData.chequeNo || null,
-        bankName: paymentData.bankName || null,
-        depositDate: new Date().toISOString().slice(0, 10),
-        clearingStatus: paymentData.paymentMethod === 'Cheque' ? 'Deposited - Pending Clearing' : 'Counter Cash Verified',
-        status: 'pending',
-      };
-      setReconciliationQueue([newRecEntry, ...reconciliationQueue]);
+  const handleSwitchToAdmin = () => {
+    if (authUser?.role === 'parent') {
+      showToast('⚠️ Access Denied: Student/Parent accounts are strictly restricted from accessing the Admin Dashboard.');
+      return;
     }
-
-    setOverview((prev) => ({
-      ...prev,
-      totalCollected: prev.totalCollected + paymentData.amount,
-      outstandingDues: Math.max(0, prev.outstandingDues - paymentData.amount),
-    }));
-
-    setActivities([
-      {
-        id: `ACT-${Date.now()}`,
-        actor: authUser?.email || 'Admin Staff',
-        actionType: 'Payment Recorded',
-        timestamp: new Date().toISOString().replace('T', ' ').slice(0, 16),
-        description: `Recorded ₹${paymentData.amount.toLocaleString('en-IN')} payment (${paymentData.paymentMethod}) for ${paymentData.studentName}.`,
-        isAnomaly: false,
-      },
-      ...activities,
-    ]);
-
-    showToast(`Payment recorded successfully! Receipt #${newReceiptNo}`);
+    setCurrentView('admin');
+    navigate('/overview');
+    showToast('Switched to School Admin Dashboard.');
   };
 
-  const handleReconcileEntries = (ids, bankRef) => {
-    const now = new Date().toISOString().replace('T', ' ').slice(0, 16);
-    setReconciliationQueue((prev) => 
-      prev.map((q) => ids.includes(q.id) ? { 
-        ...q, 
-        status: 'reconciled', 
-        clearingStatus: 'Bank Reconciled & Cleared',
-        reconciledDetails: {
-          reconciledAt: now,
-          reconciledBy: authUser?.email || 'Admin Staff',
-          bankRef: bankRef || 'STMT-2026-AUTO'
-        }
-      } : q)
-    );
-
-    const targetTxnIds = reconciliationQueue.filter((q) => ids.includes(q.id)).map((q) => q.txnId);
-    setTransactions((prev) =>
-      prev.map((t) => targetTxnIds.includes(t.id) ? { ...t, reconciled: true } : t)
-    );
-
-    showToast(`Marked ${ids.length} entry(s) as Bank Reconciled.`);
+  const handleSwitchToParent = () => {
+    setCurrentView('parent');
+    navigate('/parent/overview');
+    showToast(authUser?.role === 'admin' ? 'Viewing Student Portal (Admin Mode)' : 'Switched to Student Portal.');
   };
 
-  const handleFlagBounce = (recEntry) => {
-    setReconciliationQueue((prev) => 
-      prev.map((q) => q.id === recEntry.id ? { 
-        ...q, 
-        status: 'flagged', 
-        clearingStatus: 'Bounced - Discrepancy Flagged',
-        flagDetails: recEntry.flagDetails || {
-          reason: 'Cheque Bounced',
-          note: 'Bounced cheque dishonour memo received',
-          flaggedBy: authUser?.email || 'Admin Staff',
-          flaggedDate: new Date().toISOString().replace('T', ' ').slice(0, 16)
-        }
-      } : q)
-    );
+  // Selected Child details derived from real database students or active auth session (prevents default fallback on page refresh)
+  const selectedChild = React.useMemo(() => {
+    const targetId = selectedChildId || authUser?.studentId;
+    if (targetId && Array.isArray(students) && students.length > 0) {
+      const found = students.find((s) => s.id === targetId || s.dbId === targetId);
+      if (found) return found;
+    }
+    if (authUser && authUser.role === 'parent' && authUser.studentId) {
+      return {
+        id: authUser.studentId,
+        dbId: authUser.studentDbId || authUser.studentId,
+        name: authUser.studentName || 'Student Account',
+        classGrade: authUser.classGrade || 'Grade Level',
+        balanceDue: 0,
+        totalPaid: 0,
+        totalBilled: 0
+      };
+    }
+    if (Array.isArray(students) && students.length > 0) {
+      return students[0];
+    }
+    return { id: 'STU-101', name: 'Student Account', classGrade: 'Grade Level', balanceDue: 0, totalPaid: 0, totalBilled: 0 };
+  }, [students, selectedChildId, authUser]);
 
-    setTransactions((prev) =>
-      prev.map((t) => t.id === recEntry.txnId ? { ...t, status: 'Bounced' } : t)
-    );
+  const currentParentAccount = activeParent || (authUser?.role === 'parent' ? {
+    id: authUser.id || `PAR-${authUser.studentId}`,
+    name: authUser.name || `Parent of ${authUser.studentName || 'Student'}`,
+    email: authUser.email || '',
+    phone: authUser.phone || 'N/A'
+  } : { name: 'Parent', email: 'parent@example.com' });
 
-    setOverview((prev) => ({
-      ...prev,
-      outstandingDues: prev.outstandingDues + recEntry.amount,
-    }));
+  const childrenList = students.filter((s) => activeParent?.childrenIds?.includes(s.id));
 
-    setActivities([
-      {
-        id: `ACT-${Date.now()}`,
-        actor: 'Bank Clearing Rail',
-        actionType: 'Cheque Bounced',
-        timestamp: new Date().toISOString().replace('T', ' ').slice(0, 16),
-        description: `Bounced Cheque flagged for ${recEntry.studentName} (₹${recEntry.amount.toLocaleString('en-IN')}). Balance automatically reopened.`,
-        isAnomaly: true,
-      },
-      ...activities,
-    ]);
+  // Handle Parent Online Fee Payment Submission (Persisted to Neon DB)
+  const handleParentPaymentComplete = async (newTxn, paidItemIds) => {
+    try {
+      const res = await fetch('/api/transactions/pay', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          studentId: selectedChildId,
+          amount: newTxn.amount,
+          itemIds: paidItemIds,
+          method: 'UPI',
+          utrNo: newTxn.utrNo,
+          payerVPA: newTxn.payerVPA,
+        }),
+      });
 
-    showToast(`Cheque marked as Bounced. Re-opened balance for ${recEntry.studentName}.`);
+      const data = await res.json();
+      if (data.success) {
+        showToast(`Payment of ₹${newTxn.amount.toLocaleString('en-IN')} processed! Receipt #${data.receiptNo}`);
+        await fetchAllData();
+      } else {
+        showToast(`Payment error: ${data.error}`);
+      }
+    } catch (error) {
+      console.error('Error recording payment:', error);
+    }
   };
 
-  const handleResolveFlag = (recId, resolutionType, note) => {
+  // Parent Notification Actions
+  const handleMarkNotificationRead = async (notifId) => {
+    try {
+      await fetch('/api/notifications/read', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: notifId }),
+      });
+      await fetchAllData();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleMarkAllNotificationsRead = async (studentId) => {
+    try {
+      await fetch('/api/notifications/read-all', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ parentId: activeParent?.id }),
+      });
+      showToast('All notifications marked as read.');
+      await fetchAllData();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // Admin record payment submit (Persisted to Neon DB)
+  const handleRecordPaymentSubmit = async (paymentData) => {
+    try {
+      const res = await fetch('/api/transactions/manual', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          studentId: paymentData.studentId,
+          feeCategory: paymentData.feeType,
+          amount: paymentData.amount,
+          method: (paymentData.paymentMethod || '').toUpperCase() === 'CHEQUE' ? 'CHEQUE' : 'CASH',
+          chequeNumber: paymentData.chequeNo,
+          bankReference: paymentData.bankName,
+          remarks: paymentData.remarks,
+          collectedBy: authUser?.name || 'Admin Staff',
+        }),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        showToast(`Payment recorded successfully! Receipt #${data.receiptNo}`);
+        await fetchAllData();
+      } else {
+        showToast(`Error recording payment: ${data.error}`);
+      }
+    } catch (err) {
+      console.error('Error submitting payment:', err);
+    }
+  };
+
+  const handleReconcileEntries = async (ids, bankRef) => {
+    try {
+      for (const id of ids) {
+        await fetch('/api/reconciliation/confirm', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id }),
+        });
+      }
+      showToast(`Marked ${ids.length} entry(s) as Bank Reconciled.`);
+      await fetchAllData();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleFlagBounce = async (recEntry) => {
+    try {
+      const res = await fetch('/api/reconciliation/flag-bounce', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: recEntry.id,
+          reason: 'Bounced cheque dishonour memo received',
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast(`Cheque marked as Bounced. Re-opened balance for ${recEntry.studentName}.`);
+        await fetchAllData();
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleResolveFlag = async (recId, resolutionType, note) => {
     const entry = reconciliationQueue.find((q) => q.id === recId);
     if (!entry) return;
 
     if (resolutionType === 'bounced') {
-      handleFlagBounce(entry);
+      await handleFlagBounce(entry);
     } else {
-      setReconciliationQueue((prev) =>
-        prev.map((q) => q.id === recId ? { 
-          ...q, 
-          status: 'reconciled', 
-          clearingStatus: 'Resolved & Bank Reconciled',
-          reconciledDetails: {
-            reconciledAt: new Date().toISOString().replace('T', ' ').slice(0, 16),
-            reconciledBy: authUser?.email || 'Admin Staff',
-            bankRef: 'RESOLVED-ADJUSTMENT'
-          }
-        } : q)
-      );
-
-      setActivities([
-        {
-          id: `ACT-${Date.now()}`,
-          actor: authUser?.email || 'Admin Staff',
-          actionType: 'Discrepancy Resolved',
-          timestamp: new Date().toISOString().replace('T', ' ').slice(0, 16),
-          description: `Resolved discrepancy for ${entry.studentName} (₹${entry.amount.toLocaleString('en-IN')}). Note: ${note}`,
-          isAnomaly: false,
-        },
-        ...activities,
-      ]);
-
-      showToast(`Discrepancy resolved for ${entry.studentName}.`);
+      await handleReconcileEntries([recId], note);
     }
   };
 
-  const handleRefundTransaction = (txnId, reason, note) => {
-    const txn = transactions.find((t) => t.id === txnId);
-    if (!txn) return;
-
-    setTransactions((prev) => 
-      prev.map((t) => t.id === txnId ? { 
-        ...t, 
-        status: 'Refunded', 
-        refundDetails: {
-          refundedAt: new Date().toISOString().replace('T', ' ').slice(0, 16),
-          reason,
-          note,
-          refundedBy: authUser?.email || 'Admin Staff'
-        }
-      } : t)
-    );
-
-    setOverview((prev) => ({
-      ...prev,
-      outstandingDues: prev.outstandingDues + txn.amount
-    }));
-
-    setActivities([
-      {
-        id: `ACT-${Date.now()}`,
-        actor: authUser?.email || 'Admin Staff',
-        actionType: 'Refund Issued',
-        timestamp: new Date().toISOString().replace('T', ' ').slice(0, 16),
-        description: `Issued refund of ₹${txn.amount.toLocaleString('en-IN')} for receipt #${txn.receiptNo} (${txn.studentName}). Reason: ${reason}. Note: ${note}`,
-        isAnomaly: false
-      },
-      ...activities
-    ]);
-
-    showToast(`Refund processed for receipt #${txn.receiptNo}. Reopened ₹${txn.amount.toLocaleString('en-IN')} balance.`);
+  const handleRefundTransaction = async (txnId, reason, note) => {
+    try {
+      const res = await fetch(`/api/transactions/${txnId}/refund`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          refundReason: reason ? `${reason}: ${note}` : note,
+          refundedBy: 'Finance Admin',
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast(`Refund processed for receipt #${data.transaction.receiptNo}`);
+        await fetchAllData();
+      } else {
+        showToast(`Refund error: ${data.error}`);
+      }
+    } catch (err) {
+      console.error('Error processing refund:', err);
+    }
   };
 
-  const handleCreateFeeType = (newFee) => {
-    setFeeTypes([...feeTypes, newFee]);
-    showToast(`Created fee structure: ${newFee.name}`);
+  const handleCreateFeeType = async (newFee) => {
+    try {
+      const res = await fetch('/api/fee-structures', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: newFee.name,
+          category: (newFee.category || '').toUpperCase() === 'TUITION' ? 'TUITION' : (newFee.category || '').toUpperCase() === 'TRANSPORT' ? 'TRANSPORT' : 'CUSTOM',
+          amount: newFee.amount,
+          recurrence: 'ONE_TIME',
+          targetScope: 'ALL',
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast(`Created fee structure: ${newFee.name}`);
+        await fetchAllData();
+      }
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const handleDeactivateFeeType = (id) => {
-    setFeeTypes(feeTypes.filter((f) => f.id !== id));
+    setFeeTypes((prev) => prev.filter((f) => f.id !== id));
     showToast('Fee structure deactivated.');
   };
 
@@ -292,21 +675,133 @@ export default function App() {
     showToast(`Executed bulk ${type} action on ${ids.length} defaulter student(s).`);
   };
 
-  // 1. LANDING VIEW: LOGIN PAGE
-  if (currentView === 'login') {
-    return (
-      <LoginPage 
-        onLoginSuccess={handleLoginSuccess} 
-        theme={theme}
-        toggleTheme={toggleTheme}
-      />
-    );
-  }
-
-  // 2. MULTI-PAGE APPLICATION ROUTES WRAPPED IN APPLAYOUT
   return (
     <>
       <Routes>
+        {/* LOGIN / HOME ROUTE */}
+        <Route 
+          path="/login" 
+          element={
+            <LoginPage 
+              onLoginSuccess={handleLoginSuccess} 
+              theme={theme}
+              toggleTheme={toggleTheme}
+            />
+          } 
+        />
+        <Route 
+          path="/" 
+          element={
+            currentView === 'parent' ? (
+              <Navigate to="/parent/overview" replace />
+            ) : currentView === 'admin' ? (
+              <Navigate to="/overview" replace />
+            ) : (
+              <LoginPage 
+                onLoginSuccess={handleLoginSuccess} 
+                theme={theme}
+                toggleTheme={toggleTheme}
+              />
+            )
+          } 
+        />
+
+        {/* PARENT PORTAL ROUTES */}
+        <Route 
+          element={
+            <ParentLayout 
+              parentAccount={currentParentAccount}
+              childrenList={childrenList.length > 0 ? childrenList : [selectedChild]}
+              selectedChild={selectedChild}
+              onSelectChild={(childId) => setSelectedChildId(childId)}
+              notifications={parentNotifications}
+              theme={theme}
+              toggleTheme={toggleTheme}
+              onSignOut={handleSignOut}
+              onSwitchToAdmin={handleSwitchToAdmin}
+              toastMessage={toastMessage}
+            />
+          }
+        >
+          <Route path="/parent" element={<Navigate to="/parent/overview" replace />} />
+          <Route 
+            path="/parent/overview" 
+            element={
+              <ParentOverviewPage 
+                parentAccount={currentParentAccount}
+                selectedChild={selectedChild}
+                feeItems={parentFeeItems}
+                transactions={transactions}
+                notifications={parentNotifications}
+                onOpenReceipt={(txn) => setActiveReceiptModal(txn)}
+              />
+            } 
+          />
+          <Route 
+            path="/parent/fees" 
+            element={
+              <ParentFeesPage 
+                selectedChild={selectedChild}
+                feeItems={parentFeeItems}
+                onSelectForPayment={(items) => setCheckoutSelectedItems(items)}
+              />
+            } 
+          />
+          <Route 
+            path="/parent/pay" 
+            element={
+              <ParentPaymentPage 
+                selectedChild={selectedChild}
+                selectedFeeItems={checkoutSelectedItems}
+                onCompletePayment={handleParentPaymentComplete}
+                onOpenReceipt={(txn) => setActiveReceiptModal(txn)}
+              />
+            } 
+          />
+          <Route 
+            path="/parent/history" 
+            element={
+              <ParentHistoryPage 
+                selectedChild={selectedChild}
+                transactions={transactions}
+                onOpenReceipt={(txn) => setActiveReceiptModal(txn)}
+              />
+            } 
+          />
+          <Route 
+            path="/parent/receipts" 
+            element={
+              <ParentReceiptsPage 
+                selectedChild={selectedChild}
+                transactions={transactions}
+                onOpenReceipt={(txn) => setActiveReceiptModal(txn)}
+              />
+            } 
+          />
+          <Route 
+            path="/parent/notifications" 
+            element={
+              <ParentNotificationsPage 
+                selectedChild={selectedChild}
+                notifications={parentNotifications}
+                onMarkRead={handleMarkNotificationRead}
+                onMarkAllRead={handleMarkAllNotificationsRead}
+              />
+            } 
+          />
+          <Route 
+            path="/parent/settings" 
+            element={
+              <ParentSettingsPage 
+                parentAccount={activeParent}
+                selectedChild={selectedChild}
+                toastMessage={toastMessage}
+              />
+            } 
+          />
+        </Route>
+
+        {/* ADMIN DASHBOARD ROUTES */}
         <Route 
           element={
             <AppLayout 
@@ -316,12 +811,11 @@ export default function App() {
               toggleTheme={toggleTheme}
               onSignOut={handleSignOut}
               onShowReportModal={() => setShowReportModal(true)}
-              onRecordPaymentClick={() => setQuickActionModal({ mode: 'recordPayment' })}
+              onRecordPaymentClick={(stu) => setQuickActionModal({ mode: 'recordPayment', student: stu })}
               toastMessage={toastMessage}
             />
           }
         >
-          <Route path="/" element={<Navigate to="/overview" replace />} />
           <Route 
             path="/overview" 
             element={
@@ -341,8 +835,8 @@ export default function App() {
                 defaulters={defaulters}
                 onSendReminder={handleSendReminder}
                 onApplyPenalty={(def) => setQuickActionModal({ mode: 'bulkPenalty', student: def })}
-                onSelectStudentForLedger={(stuId) => setSelectedStudentForLedger(stuId)}
                 onBulkAction={handleBulkDefaulterAction}
+                onSelectStudentForLedger={(stuId) => setSelectedStudentForLedger(stuId)}
               />
             } 
           />
@@ -352,7 +846,8 @@ export default function App() {
               <TransactionsPage 
                 transactions={transactions}
                 activeFeeFilter={activeFeeFilter}
-                onRecordPaymentClick={() => setQuickActionModal({ mode: 'recordPayment' })}
+                onClearFilter={() => setActiveFeeFilter(null)}
+                onRecordPaymentClick={(stu) => setQuickActionModal({ mode: 'recordPayment', student: stu })}
                 onSelectStudentForLedger={(stuId) => setSelectedStudentForLedger(stuId)}
                 onRefundTransaction={handleRefundTransaction}
                 onBulkReconcile={handleReconcileEntries}
@@ -388,37 +883,65 @@ export default function App() {
               <StudentLedgerPage 
                 students={students}
                 selectedStudentId={selectedStudentForLedger}
+                onSelectStudent={(stuId) => setSelectedStudentForLedger(stuId)}
                 onRecordPaymentClick={(stu) => setQuickActionModal({ mode: 'recordPayment', student: stu })}
+                onStudentUpdated={fetchAllData}
+                waivers={waivers}
+                transactions={transactions}
               />
             } 
           />
           <Route 
             path="/audit-activity" 
             element={
-              <AuditActivityPage activities={activities} />
+              <AuditActivityPage 
+                activities={activities}
+              />
             } 
           />
-          <Route path="*" element={<Navigate to="/overview" replace />} />
         </Route>
+
+        {/* WILDCARD FALLBACK */}
+        <Route path="*" element={<Navigate to="/overview" replace />} />
       </Routes>
 
-      {/* Global Report Generator Modal */}
+      {/* Global Modals */}
       {showReportModal && (
         <ReportGeneratorModal 
-          onClose={() => setShowReportModal(false)}
-          onDownloadReport={(cfg) => showToast(`Downloaded ${cfg.reportType} report as ${cfg.format.toUpperCase()}!`)}
+          onClose={() => setShowReportModal(false)} 
+          onGenerate={(type) => showToast(`Generated and downloaded ${type} report!`)}
         />
       )}
 
-      {/* Global Quick Action Modal */}
       {quickActionModal && (
         <QuickActionsModal 
           mode={quickActionModal.mode}
-          student={quickActionModal.student}
+          student={quickActionModal.student || students[0]}
+          students={students}
+          feeTypes={feeTypes}
           onClose={() => setQuickActionModal(null)}
           onSubmitPayment={handleRecordPaymentSubmit}
           onSendReminder={handleSendReminder}
-          onBulkPenalty={(amt) => showToast(`Applied ₹${amt} late fee penalty policy.`)}
+          onBulkPenalty={(amt) => showToast(`Applied ₹${amt} penalty`)}
+        />
+      )}
+
+      {/* Global Receipt Printable PDF Modal */}
+      {activeReceiptModal && (
+        <ReceiptPDFModal 
+          receipt={activeReceiptModal}
+          student={selectedChild}
+          onClose={() => setActiveReceiptModal(null)}
+          onDownload={(rcpNo) => showToast(`Downloaded official PDF receipt #${rcpNo}`)}
+        />
+      )}
+
+      {/* Grounded AI Chatbot Widget (Llama via Groq) */}
+      {authUser && (
+        <ChatbotWidget 
+          role={['admin', 'cashier', 'staff'].includes(authUser.role) ? 'admin' : 'parent'}
+          studentId={selectedChild?.id || authUser.studentId}
+          onActionExecuted={fetchAllData}
         />
       )}
     </>
