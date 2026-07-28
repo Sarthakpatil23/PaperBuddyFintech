@@ -387,6 +387,28 @@ export default function ParentLayout({
             >
               {theme === 'dark' ? <Sun size={17} style={{ color: '#F59E0B' }} /> : <Moon size={17} style={{ color: 'var(--odoo-purple)' }} />}
             </button>
+
+            {/* Mobile-Only Logout Button */}
+            <button 
+              type="button"
+              className="icon-btn-ghost parent-mobile-logout-btn"
+              onClick={onSignOut}
+              style={{
+                width: '36px',
+                height: '36px',
+                borderRadius: 'var(--radius-md)',
+                border: '1px solid rgba(239, 68, 68, 0.3)',
+                background: 'rgba(239, 68, 68, 0.1)',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#EF4444',
+                cursor: 'pointer',
+                flexShrink: 0
+              }}
+              title="Sign Out"
+            >
+              <LogOut size={17} />
+            </button>
           </div>
         </header>
 

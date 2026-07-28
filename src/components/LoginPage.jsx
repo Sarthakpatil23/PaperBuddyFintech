@@ -6,7 +6,7 @@ import {
   Sun, Moon, GraduationCap, ShieldAlert, Zap, Bot, TrendingUp, Users,
   CreditCard, FileText, Settings, BarChart2, ChevronRight, Menu, X,
   PlayCircle, Landmark, Activity, DollarSign, CheckCircle2, ArrowUpRight,
-  Brain, MessageSquare, Database, Bell
+  Brain, MessageSquare, Database, Bell, Github
 } from 'lucide-react';
 
 import BrandLogo from './BrandLogo';
@@ -253,6 +253,33 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
 
         {/* Right CTA Group */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          {/* GitHub Repository Link */}
+          <a
+            href="https://github.com/Sarthakpatil23/PaperBuddyFintech"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="View GitHub Repository"
+            style={{
+              padding: '9px 14px',
+              borderRadius: '10px',
+              border: '1px solid var(--border-color)',
+              background: 'var(--bg-card)',
+              color: 'var(--text-muted)',
+              textDecoration: 'none',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              fontSize: '0.86rem',
+              fontWeight: 600,
+              transition: 'all 0.18s ease'
+            }}
+            onMouseEnter={e => { e.currentTarget.style.color = 'var(--text-main)'; e.currentTarget.style.borderColor = 'var(--primary)'; }}
+            onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.borderColor = 'var(--border-color)'; }}
+          >
+            <Github size={17} />
+            <span className="landing-desktop-nav">GitHub</span>
+          </a>
+
           <button onClick={toggleTheme} title="Toggle theme" style={{
             padding: '9px', borderRadius: '10px', border: '1px solid var(--border-color)',
             background: 'var(--bg-card)', color: 'var(--text-muted)', cursor: 'pointer',
@@ -305,6 +332,21 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
           background: 'var(--bg-card)', borderBottom: '1px solid var(--border-color)',
           padding: '20px 6%', display: 'flex', flexDirection: 'column', gap: '6px'
         }}>
+          <a
+            href="https://github.com/Sarthakpatil23/PaperBuddyFintech"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => setMobileMenuOpen(false)}
+            style={{
+              padding: '12px 16px', borderRadius: '10px', fontSize: '0.92rem',
+              fontWeight: 600, color: 'var(--primary)', textDecoration: 'none',
+              display: 'flex', alignItems: 'center', gap: '8px',
+              background: 'var(--primary-light)', marginBottom: '8px'
+            }}
+          >
+            <Github size={18} />
+            <span>GitHub Repository</span>
+          </a>
           {['Features', 'Solutions', 'Why Finlyt', 'AI Assistant', 'Resources', 'Contact'].map(item => (
             <a key={item} href={`#${item.toLowerCase().replace(/\s+/g, '-')}`}
               onClick={() => setMobileMenuOpen(false)}

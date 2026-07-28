@@ -3647,3 +3647,59 @@ html {
   color: var(--odoo-purple);
   transform: translateY(-1px);
 }
+
+/* ── Mobile UI Polish & Responsive Adjustments ───────────────────────────── */
+
+/* Parent Mobile Header Logout Button */
+.parent-mobile-logout-btn {
+  display: flex !important;
+}
+
+@media (min-width: 768px) {
+  .parent-mobile-logout-btn {
+    display: none !important;
+  }
+}
+
+/* Position Chatbot Floating Button & Panel above Mobile Bottom Nav Bar */
+@media (max-width: 767px) {
+  .chatbot-trigger-btn {
+    bottom: 85px !important;
+    right: 18px !important;
+    width: 52px !important;
+    height: 52px !important;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3) !important;
+  }
+
+  .chatbot-panel-window {
+    bottom: 80px !important;
+    right: 12px !important;
+    left: 12px !important;
+    width: auto !important;
+    max-width: 100% !important;
+    height: calc(100vh - 100px) !important;
+    max-height: 560px !important;
+  }
+
+  .finlyt-landing .odoo-card {
+    padding: 24px 18px !important;
+    border-radius: 18px !important;
+  }
+
+  .hero-cta-group {
+    flex-direction: column !important;
+    width: 100% !important;
+  }
+
+  .hero-cta-group button {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  .hero-stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 16px !important;
+    text-align: center !important;
+  }
+}
+
