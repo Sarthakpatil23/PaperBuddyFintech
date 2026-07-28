@@ -3,20 +3,33 @@
 
 # 💳 PaperBuddy Fintech — Comprehensive School Fee Management & Bank Reconciliation Platform
 
-[![Live Demo](https://img.shields.io/badge/Live_Demo-paper--buddy--fintech.vercel.app-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://paper-buddy-fintech.vercel.app/login)
-[![YouTube Video](https://img.shields.io/badge/YouTube-Video_Walkthrough-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/watch?v=5FhrPB4zIxs)
-[![Express](https://img.shields.io/badge/Express-v5.2-black.svg)](https://expressjs.com/)
-[![React](https://img.shields.io/badge/React-v18.2-blue.svg)](https://reactjs.org/)
-[![Vite](https://img.shields.io/badge/Vite-v5.1-646CFF.svg)](https://vitejs.dev/)
-[![Prisma](https://img.shields.io/badge/Prisma-v5.22-2D3748.svg)](https://www.prisma.io/)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Neon_Serverless-4169E1.svg)](https://neon.tech/)
-[![Socket.IO](https://img.shields.io/badge/Socket.IO-v4.8-010101.svg)](https://socket.io/)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+<p align="center">
+  <a href="https://paper-buddy-fintech.vercel.app/login"><img src="https://img.shields.io/badge/Live_Demo-paper--buddy--fintech.vercel.app-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Live Demo" /></a>
+  <a href="https://www.youtube.com/watch?v=5FhrPB4zIxs"><img src="https://img.shields.io/badge/YouTube-Video_Walkthrough-FF0000?style=for-the-badge&logo=youtube&logoColor=white" alt="YouTube Video" /></a>
+  <a href="https://expressjs.com/"><img src="https://img.shields.io/badge/Express-v5.2-black.svg" alt="Express" /></a>
+  <a href="https://reactjs.org/"><img src="https://img.shields.io/badge/React-v18.2-blue.svg" alt="React" /></a>
+  <a href="https://vitejs.dev/"><img src="https://img.shields.io/badge/Vite-v5.1-646CFF.svg" alt="Vite" /></a>
+  <a href="https://www.prisma.io/"><img src="https://img.shields.io/badge/Prisma-v5.22-2D3748.svg" alt="Prisma" /></a>
+  <a href="https://neon.tech/"><img src="https://img.shields.io/badge/PostgreSQL-Neon_Serverless-4169E1.svg" alt="PostgreSQL" /></a>
+  <a href="https://socket.io/"><img src="https://img.shields.io/badge/Socket.IO-v4.8-010101.svg" alt="Socket.IO" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License" /></a>
+</p>
 
 > 🚀 **LIVE DEMO APPLICATION**: **[https://paper-buddy-fintech.vercel.app/login](https://paper-buddy-fintech.vercel.app/login)**  
 > 📺 **VIDEO DEMO & WALKTHROUGH**: **[Watch Video on YouTube (https://www.youtube.com/watch?v=5FhrPB4zIxs)](https://www.youtube.com/watch?v=5FhrPB4zIxs)**
 
-[![PaperBuddy Fintech Video Walkthrough](https://img.youtube.com/vi/5FhrPB4zIxs/hqdefault.jpg)](https://www.youtube.com/watch?v=5FhrPB4zIxs)
+<p align="center">
+  <a href="https://paper-buddy-fintech.vercel.app/login">
+    <img src="public/live_demo_cta.jpg" alt="PaperBuddy Fintech Live Demo CTA" width="100%" />
+  </a>
+</p>
+
+<p align="center">
+  <b>🎬 Video Walkthrough (Click to Watch on YouTube)</b><br/>
+  <a href="https://www.youtube.com/watch?v=5FhrPB4zIxs">
+    <img src="https://img.youtube.com/vi/5FhrPB4zIxs/hqdefault.jpg" alt="PaperBuddy Fintech Video Walkthrough" width="700" />
+  </a>
+</p>
 
 > **PaperBuddy Fintech** is a production-ready, full-stack financial management platform designed specifically for educational institutions. It digitizes the entire school fee lifecycle — transforming fragmented spreadsheets, offline cash counters, and manual cheque tracking into a unified, audit-grade single source of truth with automated late fee calculation, real-time bank reconciliation, and live parent alerts.
 
