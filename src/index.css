@@ -3360,8 +3360,8 @@ body {
 /* ── Hero Grid ─────────────────────────────────────────────────────────── */
 .hero-grid {
   display: grid;
-  grid-template-columns: 1fr 440px;
-  gap: 80px;
+  grid-template-columns: minmax(0, 1.05fr) 500px;
+  gap: 56px;
   align-items: center;
 }
 
@@ -3414,8 +3414,24 @@ html {
 /* ── Responsive: Tablet ≤ 1100px ──────────────────────────────────────── */
 @media (max-width: 1100px) {
   .hero-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr !important;
     gap: 48px;
+    justify-items: center;
+  }
+
+  .hero-grid > div:first-child {
+    max-width: 720px;
+    text-align: center;
+    width: 100%;
+  }
+
+  .hero-grid p {
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  .hero-grid .hero-cta-group {
+    justify-content: center;
   }
 
   .hero-grid .login-form-panel {
@@ -3425,8 +3441,9 @@ html {
   }
 
   .hero-stats-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 20px;
+    justify-items: center;
   }
 
   .ai-section-grid {
@@ -3445,33 +3462,6 @@ html {
 
   .footer-grid > div:first-child {
     grid-column: 1 / -1;
-  }
-}
-
-/* ── Responsive: ≤ 1080px ─────────────────────────────────────────────── */
-@media (max-width: 1080px) {
-  .hero-grid {
-    grid-template-columns: 1fr;
-    gap: 48px;
-    justify-items: center;
-  }
-  .hero-grid > div:first-child {
-    max-width: 720px;
-    text-align: center;
-  }
-  .hero-grid p {
-    margin-left: auto !important;
-    margin-right: auto !important;
-  }
-  .hero-grid .hero-cta-group {
-    justify-content: center;
-  }
-  .hero-stats-grid {
-    justify-content: center;
-  }
-  .ai-section-grid {
-    grid-template-columns: 1fr;
-    gap: 40px;
   }
 }
 
@@ -3498,9 +3488,19 @@ html {
   }
 
   .hero-grid {
-    grid-template-columns: 1fr;
-    gap: 40px;
+    grid-template-columns: 1fr !important;
+    gap: 36px;
     padding: 0;
+  }
+
+  .hero-grid > div:first-child {
+    text-align: center;
+  }
+
+  .hero-grid .login-form-panel {
+    max-width: 100%;
+    width: 100%;
+    padding: 0 !important;
   }
 
   .hero-stats-grid {

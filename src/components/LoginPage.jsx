@@ -404,8 +404,6 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
 
         <div style={{
           maxWidth: '1360px', margin: '0 auto', width: '100%',
-          display: 'grid', gridTemplateColumns: 'minmax(0, 1.05fr) 500px',
-          gap: '56px', alignItems: 'center',
           position: 'relative', zIndex: 2
         }} className="hero-grid">
 
@@ -464,7 +462,7 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
                 Request Demo <ArrowRight size={18} />
               </button>
 
-              <button onClick={() => showToast('Product demo video coming soon!', 'info')} style={{
+              <button onClick={() => { document.getElementById('demo-video')?.scrollIntoView({ behavior: 'smooth', block: 'center' }); }} style={{
                 padding: '15px 28px', borderRadius: '12px',
                 background: 'transparent', border: '1.5px solid var(--border-color)',
                 color: 'var(--text-main)', cursor: 'pointer',
