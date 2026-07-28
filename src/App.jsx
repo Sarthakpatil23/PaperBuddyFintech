@@ -28,9 +28,14 @@ import ReportGeneratorModal from './components/ReportGeneratorModal';
 import QuickActionsModal from './components/QuickActionsModal';
 import ChatbotWidget from './components/ChatbotWidget';
 import LoadingScreen from './components/LoadingScreen';
+import { API_BASE_URL, getApiUrl } from './config/api';
 
-// Initialize Socket.IO Client
-const socket = io('/', { autoConnect: true });
+// Initialize Socket.IO Client with deployment-ready URL
+const SOCKET_URL = API_BASE_URL || '/';
+const socket = io(SOCKET_URL, { 
+  autoConnect: true,
+  transports: ['websocket', 'polling']
+});
 
 export default function App() {
   const navigate = useNavigate();
@@ -133,8 +138,8 @@ export default function App() {
     try {
       // Build parent/data URL — pass the currently-logged-in student's ID if available
       const parentDataUrl = selectedChildId
-        ? `/api/parent/data?studentId=${encodeURIComponent(selectedChildId)}`
-        : '/api/parent/data';
+        ? getApiUrl(`/api/parent/data?studentId=${encodeURIComponent(selectedChildId)}`)
+        : getApiUrl('/api/parent/data');
 
       const [
         overviewRes,
@@ -147,14 +152,14 @@ export default function App() {
         activitiesRes,
         parentDataRes
       ] = await Promise.all([
-        fetch('/api/overview').then(r => r.json()),
-        fetch('/api/students').then(r => r.json()),
-        fetch('/api/defaulters').then(r => r.json()),
-        fetch('/api/transactions').then(r => r.json()),
-        fetch('/api/reconciliation').then(r => r.json()),
-        fetch('/api/fee-structures').then(r => r.json()),
-        fetch('/api/waivers').then(r => r.json()),
-        fetch('/api/audit-logs').then(r => r.json()),
+        fetch(getApiUrl('/api/overview')).then(r => r.json()),
+        fetch(getApiUrl('/api/students')).then(r => r.json()),
+        fetch(getApiUrl('/api/defaulters')).then(r => r.json()),
+        fetch(getApiUrl('/api/transactions')).then(r => r.json()),
+        fetch(getApiUrl('/api/reconciliation')).then(r => r.json()),
+        fetch(getApiUrl('/api/fee-structures')).then(r => r.json()),
+        fetch(getApiUrl('/api/waivers')).then(r => r.json()),
+        fetch(getApiUrl('/api/audit-logs')).then(r => r.json()),
         fetch(parentDataUrl).then(r => r.json()).catch(() => null)
       ]);
 
@@ -301,7 +306,7 @@ export default function App() {
           const session = JSON.parse(saved);
           if (session.role === 'parent' && session.studentId) {
             // Parent room is keyed by parent DB id, not studentId — fetch it
-            fetch(`/api/parent/data?studentId=${encodeURIComponent(session.studentId)}`)
+            fetch(getApiUrl(`/api/parent/data?studentId=${encodeURIComponent(session.studentId)}`))
               .then(r => r.json())
               .then(d => { if (d?.parent?.id) socket.emit('join_parent', d.parent.id); })
               .catch(() => {});
@@ -343,19 +348,19 @@ export default function App() {
       // Immediately fetch with the correct studentId — don't wait for re-render cycle
       if (studentId) {
         try {
-          const parentDataUrl = `/api/parent/data?studentId=${encodeURIComponent(studentId)}`;
+          const parentDataUrl = getApiUrl(`/api/parent/data?studentId=${encodeURIComponent(studentId)}`);
           const [
             overviewRes, studentsRes, defaultersRes, transactionsRes,
             reconcileRes, feeTypesRes, waiversRes, activitiesRes, parentDataRes
           ] = await Promise.all([
-            fetch('/api/overview').then(r => r.json()),
-            fetch('/api/students').then(r => r.json()),
-            fetch('/api/defaulters').then(r => r.json()),
-            fetch('/api/transactions').then(r => r.json()),
-            fetch('/api/reconciliation').then(r => r.json()),
-            fetch('/api/fee-structures').then(r => r.json()),
-            fetch('/api/waivers').then(r => r.json()),
-            fetch('/api/audit-logs').then(r => r.json()),
+            fetch(getApiUrl('/api/overview')).then(r => r.json()),
+            fetch(getApiUrl('/api/students')).then(r => r.json()),
+            fetch(getApiUrl('/api/defaulters')).then(r => r.json()),
+            fetch(getApiUrl('/api/transactions')).then(r => r.json()),
+            fetch(getApiUrl('/api/reconciliation')).then(r => r.json()),
+            fetch(getApiUrl('/api/fee-structures')).then(r => r.json()),
+            fetch(getApiUrl('/api/waivers')).then(r => r.json()),
+            fetch(getApiUrl('/api/audit-logs')).then(r => r.json()),
             fetch(parentDataUrl).then(r => r.json()).catch(() => null),
           ]);
           if (overviewRes && !overviewRes.error) setOverview(overviewRes);
@@ -504,7 +509,7 @@ export default function App() {
   // Handle Parent Online Fee Payment Submission (Persisted to Neon DB)
   const handleParentPaymentComplete = async (newTxn, paidItemIds) => {
     try {
-      const res = await fetch('/api/transactions/pay', {
+      const res = await fetch(getApiUrl('/api/transactions/pay'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -532,7 +537,7 @@ export default function App() {
   // Parent Notification Actions
   const handleMarkNotificationRead = async (notifId) => {
     try {
-      await fetch('/api/notifications/read', {
+      await fetch(getApiUrl('/api/notifications/read'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: notifId }),
@@ -545,7 +550,7 @@ export default function App() {
 
   const handleMarkAllNotificationsRead = async (studentId) => {
     try {
-      await fetch('/api/notifications/read-all', {
+      await fetch(getApiUrl('/api/notifications/read-all'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ parentId: activeParent?.id }),
@@ -560,7 +565,7 @@ export default function App() {
   // Admin record payment submit (Persisted to Neon DB)
   const handleRecordPaymentSubmit = async (paymentData) => {
     try {
-      const res = await fetch('/api/transactions/manual', {
+      const res = await fetch(getApiUrl('/api/transactions/manual'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -590,7 +595,7 @@ export default function App() {
   const handleReconcileEntries = async (ids, bankRef) => {
     try {
       for (const id of ids) {
-        await fetch('/api/reconciliation/confirm', {
+        await fetch(getApiUrl('/api/reconciliation/confirm'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ id }),
@@ -605,7 +610,7 @@ export default function App() {
 
   const handleFlagBounce = async (recEntry) => {
     try {
-      const res = await fetch('/api/reconciliation/flag-bounce', {
+      const res = await fetch(getApiUrl('/api/reconciliation/flag-bounce'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -636,7 +641,7 @@ export default function App() {
 
   const handleRefundTransaction = async (txnId, reason, note) => {
     try {
-      const res = await fetch(`/api/transactions/${txnId}/refund`, {
+      const res = await fetch(getApiUrl(`/api/transactions/${txnId}/refund`), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -658,7 +663,7 @@ export default function App() {
 
   const handleCreateFeeType = async (newFee) => {
     try {
-      const res = await fetch('/api/fee-structures', {
+      const res = await fetch(getApiUrl('/api/fee-structures'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

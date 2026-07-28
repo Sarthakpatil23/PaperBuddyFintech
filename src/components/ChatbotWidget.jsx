@@ -16,8 +16,13 @@ import {
   Mail, 
   Minimize2,
   Trash2,
-  ChevronRight
+  ChevronRight,
+  HelpCircle,
+  DollarSign,
+  Calendar,
+  FileText
 } from 'lucide-react';
+import { getApiUrl } from '../config/api';
 
 const STARTER_PROMPTS = {
   admin: [
@@ -263,7 +268,7 @@ export default function ChatbotWidget({ role = 'parent', studentId = null, onAct
     setIsLoading(true);
 
     try {
-      const res = await fetch('/api/chatbot/message', {
+      const res = await fetch(getApiUrl('/api/chatbot/message'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -315,7 +320,7 @@ export default function ChatbotWidget({ role = 'parent', studentId = null, onAct
     setExecutingActionId(msgId);
     try {
       if (actionPayload.actionType === 'send_reminder') {
-        const res = await fetch('/api/reminders/send', {
+        const res = await fetch(getApiUrl('/api/reminders/send'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

@@ -4,6 +4,7 @@ import { Server } from 'socket.io';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 import cron from 'node-cron';
 import { PrismaClient } from '@prisma/client';
@@ -27,6 +28,11 @@ const prisma = new PrismaClient();
 
 app.use(cors());
 app.use(express.json());
+
+// Health Check Endpoints for Render Deployment Monitoring
+app.get(['/health', '/api/health'], (req, res) => {
+  res.status(200).json({ status: 'ok', service: 'PaperBuddy Fintech Backend', timestamp: new Date().toISOString() });
+});
 
 // Socket.IO Connection & Room Management
 io.on('connection', (socket) => {
@@ -2232,18 +2238,26 @@ app.post('/api/parents/link-student', async (req, res) => {
   }
 });
 
-// Serve static build from dist folder if present
-app.use(express.static(path.join(__dirname, '../dist')));
+// Serve static build from dist folder ONLY if it exists (local/unified mode)
+// In split-deploy mode (frontend on Vercel, backend on Render), dist/ won't exist — that's fine.
+const distPath = path.join(__dirname, '../dist');
+const distIndexPath = path.join(distPath, 'index.html');
 
-// SPA Fallback for non-API routes (Express 5 compatible)
-app.use((req, res, next) => {
-  if (req.path.startsWith('/api') || req.path.startsWith('/socket.io')) {
-    return next();
-  }
-  res.sendFile(path.join(__dirname, '../dist/index.html'));
-});
+if (fs.existsSync(distIndexPath)) {
+  app.use(express.static(distPath));
+  // SPA Fallback for non-API routes
+  app.use((req, res, next) => {
+    if (req.path.startsWith('/api') || req.path.startsWith('/socket.io')) {
+      return next();
+    }
+    res.sendFile(distIndexPath);
+  });
+  console.log('📁 Serving static frontend from dist/');
+} else {
+  console.log('ℹ️  No dist/ folder found — running in API-only mode (frontend deployed separately).');
+}
 
 const PORT = process.env.PORT || 3001;
-server.listen(PORT, () => {
-  console.log(`🚀 PaperBuddy Unified Server running on http://localhost:${PORT}`);
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`🚀 PaperBuddy Unified Server running on port ${PORT}`);
 });

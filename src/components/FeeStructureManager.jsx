@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getApiUrl } from '../config/api';
 import { 
   Coins, 
   Plus, 
@@ -47,7 +48,7 @@ export default function FeeStructureManager({
 
   const fetchPenaltyRules = async () => {
     try {
-      const res = await fetch('/api/penalty-rules');
+      const res = await fetch(getApiUrl('/api/penalty-rules'));
       const data = await res.json();
       if (Array.isArray(data)) setPenaltyRules(data);
     } catch (err) {
@@ -67,7 +68,7 @@ export default function FeeStructureManager({
     if (!name || !amount) return;
 
     try {
-      const res = await fetch('/api/fee-structures', {
+      const res = await fetch(getApiUrl('/api/fee-structures'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -133,7 +134,7 @@ export default function FeeStructureManager({
     }
 
     try {
-      const res = await fetch('/api/penalty-rules', {
+      const res = await fetch(getApiUrl('/api/penalty-rules'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -154,7 +155,7 @@ export default function FeeStructureManager({
   const handleDeletePenaltyRule = async (ruleId) => {
     if (!window.confirm('Delete this automated penalty rule?')) return;
     try {
-      await fetch(`/api/penalty-rules/${ruleId}`, { method: 'DELETE' });
+      await fetch(getApiUrl(`/api/penalty-rules/${ruleId}`), { method: 'DELETE' });
       fetchPenaltyRules();
     } catch (err) {
       console.error(err);
@@ -164,7 +165,7 @@ export default function FeeStructureManager({
   const handleRunPenaltyJobNow = async () => {
     setIsProcessingPenaltyCheck(true);
     try {
-      const res = await fetch('/api/penalty-rules/run-check', { method: 'POST' });
+      const res = await fetch(getApiUrl('/api/penalty-rules/run-check'), { method: 'POST' });
       const data = await res.json();
       if (data.success) {
         alert(`Automated Penalty Engine completed!\nOverdue assignments checked: ${data.result.processedCount}\nPenalties applied: ${data.result.appliedCount}`);

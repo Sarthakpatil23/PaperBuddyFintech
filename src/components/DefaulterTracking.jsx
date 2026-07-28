@@ -24,6 +24,7 @@ import {
   MessageSquare
 } from 'lucide-react';
 import CustomSelect from './CustomSelect';
+import { getApiUrl } from '../config/api';
 
 export default function DefaulterTracking({ 
   defaulters, 
@@ -117,7 +118,7 @@ export default function DefaulterTracking({
     setIsSendingReminder(true);
 
     try {
-      const res = await fetch('/api/reminders/send', {
+      const res = await fetch(getApiUrl('/api/reminders/send'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -154,7 +155,7 @@ export default function DefaulterTracking({
     setIsApplyingPenalty(true);
 
     try {
-      const res = await fetch('/api/penalties/manual', {
+      const res = await fetch(getApiUrl('/api/penalties/manual'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

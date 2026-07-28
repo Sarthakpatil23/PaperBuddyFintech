@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { getApiUrl } from '../config/api';
 import { 
   UserCheck, 
   Search, 
@@ -80,7 +81,7 @@ export default function StudentLedgerView({
     if (!window.confirm(`Are you sure you want to archive ${currentStudent.name}? Financial records will be preserved safely.`)) return;
     setIsProcessing(true);
     try {
-      const res = await fetch(`/api/students/${currentStudent.id}/archive`, { method: 'POST' });
+      const res = await fetch(getApiUrl(`/api/students/${currentStudent.id}/archive`), { method: 'POST' });
       const data = await res.json();
       if (data.success) {
         if (onStudentUpdated) onStudentUpdated();
@@ -97,7 +98,7 @@ export default function StudentLedgerView({
   const handleRestoreStudent = async () => {
     setIsProcessing(true);
     try {
-      const res = await fetch(`/api/students/${currentStudent.id}/restore`, { method: 'POST' });
+      const res = await fetch(getApiUrl(`/api/students/${currentStudent.id}/restore`), { method: 'POST' });
       const data = await res.json();
       if (data.success) {
         if (onStudentUpdated) onStudentUpdated();
@@ -127,7 +128,7 @@ export default function StudentLedgerView({
         payload.percent = Number(waiverPercent);
       }
 
-      const res = await fetch('/api/waivers', {
+      const res = await fetch(getApiUrl('/api/waivers'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -153,7 +154,7 @@ export default function StudentLedgerView({
     e.preventDefault();
     setIsProcessing(true);
     try {
-      const res = await fetch('/api/penalties/manual', {
+      const res = await fetch(getApiUrl('/api/penalties/manual'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -184,7 +185,7 @@ export default function StudentLedgerView({
     if (!parentEmailInput) return;
     setIsProcessing(true);
     try {
-      const res = await fetch('/api/parents/link-student', {
+      const res = await fetch(getApiUrl('/api/parents/link-student'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

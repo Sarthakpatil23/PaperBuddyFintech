@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { getApiUrl } from '../config/api';
 import {
   Building2, ShieldCheck, Lock, Mail, Eye, EyeOff, ArrowRight, Check,
   Sparkles, HelpCircle, UserCheck, Receipt, Coins, BarChart3, Loader2,
@@ -99,7 +100,7 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
     }
     setIsLoading(true);
     try {
-      const res = await fetch('/api/auth/login', {
+      const res = await fetch(getApiUrl('/api/auth/login'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password, role }),
