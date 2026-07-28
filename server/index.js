@@ -105,6 +105,26 @@ function normalizePaymentMethod(rawMethod) {
   return 'CASH';
 }
 
+function normalizeRecurrence(rawRecurrence) {
+  if (!rawRecurrence) return 'ONE_TIME';
+  const str = String(rawRecurrence).trim().toUpperCase();
+  if (['ONE_TIME', 'MONTHLY', 'QUARTERLY', 'ANNUALLY'].includes(str)) return str;
+  if (str.includes('MONTH')) return 'MONTHLY';
+  if (str.includes('QUART')) return 'QUARTERLY';
+  if (str.includes('ANNUAL') || str.includes('YEAR')) return 'ANNUALLY';
+  return 'ONE_TIME';
+}
+
+function normalizeTargetScope(rawScope) {
+  if (!rawScope) return 'ALL';
+  const str = String(rawScope).trim().toUpperCase();
+  if (['ALL', 'GRADE', 'STUDENT'].includes(str)) return str;
+  if (str.includes('GRADE') || str.includes('CLASS')) return 'GRADE';
+  if (str.includes('STUDENT') || str.includes('INDIVIDUAL')) return 'STUDENT';
+  return 'ALL';
+}
+
+
 // Helper to resolve primary parent details from ParentStudent join table
 function getPrimaryParentDetails(student) {
   const ps = student?.parentStudents && student.parentStudents.length > 0 ? student.parentStudents[0] : null;
@@ -858,20 +878,37 @@ app.post('/api/reminders/send', async (req, res) => {
 
     for (const student of students) {
       const parentDetails = getPrimaryParentDetails(student);
-      if (parentDetails.hasParent) {
-        const notif = await prisma.notification.create({
-          data: {
-            recipientType: 'PARENT',
-            recipientId: parentDetails.parentId,
-            title: '📢 Fee Payment Reminder',
-            message: messageTemplate || `Important Reminder: Please clear outstanding fee dues for ${student.name}.`,
-            type: 'REMINDER',
-            channel: 'in-app',
-          },
-        });
-        notifications.push(notif);
-        sentCount++;
-      }
+      const recipientId = parentDetails.parentId || `PAR-SYN-${student.studentId}`;
+      
+      const notif = await prisma.notification.create({
+        data: {
+          recipientType: 'PARENT',
+          recipientId: recipientId,
+          title: '📢 Fee Payment Reminder',
+          message: messageTemplate || `Important Reminder: Please clear outstanding fee dues of ₹${student.feeAssignments?.[0]?.adjustedAmount || 'due amount'} for ${student.name}.`,
+          type: 'due_reminder',
+          channel: 'in-app',
+        },
+      });
+
+      notifications.push({
+        ...notif,
+        studentId: student.studentId,
+        studentName: student.name
+      });
+      sentCount++;
+
+      // Broadcast real-time Socket.IO notification to both specific parent room and global update channel
+      broadcastUpdate('REMINDER_SENT', { 
+        sentCount, 
+        notifications, 
+        parentId: parentDetails.parentId, 
+        studentId: student.studentId, 
+        notification: {
+          ...notif,
+          studentId: student.studentId
+        } 
+      });
     }
 
     await prisma.auditLog.create({
@@ -884,9 +921,7 @@ app.post('/api/reminders/send', async (req, res) => {
       },
     });
 
-    broadcastUpdate('REMINDER_SENT', { sentCount, notifications });
-
-    res.json({ success: true, sentCount, message: `Reminders sent to ${sentCount} parents.` });
+    res.json({ success: true, sentCount, message: `Reminders sent to ${sentCount} parents successfully.` });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -1241,84 +1276,150 @@ app.post('/api/waivers', async (req, res) => {
 
     const student = await prisma.student.findFirst({
       where: { OR: [{ studentId }, { id: studentId }] },
-      include: { parentStudents: { include: { parent: true } }, feeAssignments: { include: { feeType: true } } },
+      include: { 
+        parentStudents: { include: { parent: true } }, 
+        feeAssignments: { include: { feeType: true }, orderBy: { createdAt: 'desc' } } 
+      },
     });
 
     if (!student) {
       return res.status(404).json({ error: 'Student not found' });
     }
 
-    let targetFa = null;
+    // RULE ENFORCEMENT: Waivers apply STRICTLY to TUITION FEES ONLY
+    const tuitionAssignments = student.feeAssignments.filter(fa => fa.feeType && fa.feeType.category === 'TUITION');
+
+    // Find active (unpaid) Tuition fee assignment: status PENDING, PARTIAL, or OVERDUE
+    let targetTuitionFa = tuitionAssignments.find(fa => ['PENDING', 'PARTIAL', 'OVERDUE'].includes(fa.status));
+
+    // If explicit feeAssignmentId was provided, verify it's a Tuition fee
     if (feeAssignmentId) {
-      targetFa = student.feeAssignments.find(fa => fa.id === feeAssignmentId);
-    }
-    if (!targetFa && student.feeAssignments.length > 0) {
-      targetFa = student.feeAssignments.find(fa => fa.status !== 'PAID' && fa.status !== 'WAIVED') || student.feeAssignments[0];
-    }
-
-    if (!targetFa) {
-      return res.status(400).json({ error: 'No active fee assignment found to apply waiver to' });
+      const explicitFa = student.feeAssignments.find(fa => fa.id === feeAssignmentId);
+      if (explicitFa && explicitFa.feeType && explicitFa.feeType.category === 'TUITION' && ['PENDING', 'PARTIAL', 'OVERDUE'].includes(explicitFa.status)) {
+        targetTuitionFa = explicitFa;
+      }
     }
 
+    // Calculate waiver amount
     let waiverVal = 0;
     if (amount !== undefined && amount !== null && Number(amount) > 0) {
       waiverVal = Number(amount);
     } else if (percent !== undefined && percent !== null && Number(percent) > 0) {
-      waiverVal = Number(targetFa.originalAmount) * (Number(percent) / 100);
+      const baseVal = targetTuitionFa ? Number(targetTuitionFa.originalAmount) : 45000;
+      waiverVal = baseVal * (Number(percent) / 100);
     } else {
       return res.status(400).json({ error: 'Valid waiver amount or percentage is required' });
     }
 
-    const waiver = await prisma.waiver.create({
+    const parentDetails = getPrimaryParentDetails(student);
+
+    // CASE 1: Active Unpaid Tuition Fee Assignment Exists -> Apply Immediately
+    if (targetTuitionFa) {
+      const currentAdjusted = Number(targetTuitionFa.adjustedAmount);
+      const newAdjusted = Math.max(0, currentAdjusted - waiverVal);
+      const newStatus = newAdjusted === 0 ? 'WAIVED' : targetTuitionFa.status;
+
+      const waiver = await prisma.waiver.create({
+        data: {
+          studentId: student.id,
+          feeAssignmentId: targetTuitionFa.id,
+          amount: waiverVal,
+          percent: percent ? Number(percent) : null,
+          reason: reason || 'Tuition Fee Scholarship / Discount',
+          approvedBy,
+        },
+      });
+
+      const updatedFa = await prisma.feeAssignment.update({
+        where: { id: targetTuitionFa.id },
+        data: {
+          adjustedAmount: newAdjusted,
+          status: newStatus,
+        },
+        include: { feeType: true }
+      });
+
+      await prisma.auditLog.create({
+        data: {
+          actor: approvedBy,
+          actionType: 'WAIVER_APPLIED',
+          entityType: 'Waiver',
+          entityId: waiver.id,
+          description: `Applied Tuition Fee waiver of ₹${waiverVal.toLocaleString('en-IN')} for ${student.name} (${targetTuitionFa.feeType.name}). Reason: ${reason || 'Scholarship'}`,
+        },
+      });
+
+      let notification = null;
+      if (parentDetails.hasParent) {
+        notification = await prisma.notification.create({
+          data: {
+            recipientType: 'PARENT',
+            recipientId: parentDetails.parentId,
+            title: '🎁 Tuition Fee Waiver Applied',
+            message: `A Tuition Fee waiver of ₹${waiverVal.toLocaleString('en-IN')} has been applied to ${student.name}'s account for ${targetTuitionFa.feeType.name}. New Tuition amount due: ₹${newAdjusted.toLocaleString('en-IN')}.`,
+            type: 'waiver_applied',
+            channel: 'in-app',
+          },
+        });
+      }
+
+      broadcastUpdate('WAIVER_APPLIED', { waiver, updatedFa, studentId: student.studentId, parentId: parentDetails.parentId, notification });
+
+      return res.json({
+        success: true,
+        message: `Tuition Fee waiver of ₹${waiverVal.toLocaleString('en-IN')} applied successfully to ${targetTuitionFa.feeType.name}.`,
+        waiver,
+        feeAssignment: updatedFa,
+        notification
+      });
+    }
+
+    // CASE 2: Current Tuition Fee is ALREADY PAID in full -> Save & Queue for Next Tuition Fee
+    const deferredWaiver = await prisma.waiver.create({
       data: {
         studentId: student.id,
-        feeAssignmentId: targetFa.id,
+        feeAssignmentId: null, // Unassigned — queued for next Tuition fee!
         amount: waiverVal,
-        reason: reason || 'Scholarship / Financial Discount',
+        percent: percent ? Number(percent) : null,
+        reason: `${reason || 'Tuition Fee Scholarship'} (Queued for Next Tuition Fee)`,
         approvedBy,
       },
-    });
-
-    const newAdjusted = Math.max(0, Number(targetFa.originalAmount) - waiverVal);
-    const newStatus = newAdjusted === 0 ? 'WAIVED' : targetFa.status;
-
-    const updatedFa = await prisma.feeAssignment.update({
-      where: { id: targetFa.id },
-      data: {
-        adjustedAmount: newAdjusted,
-        status: newStatus,
-      },
-      include: { feeType: true }
     });
 
     await prisma.auditLog.create({
       data: {
         actor: approvedBy,
-        actionType: 'WAIVER_APPLIED',
+        actionType: 'WAIVER_DEFERRED',
         entityType: 'Waiver',
-        entityId: waiver.id,
-        description: `Applied waiver of ₹${waiverVal.toLocaleString('en-IN')} for ${student.name} (${targetFa.feeType.name}). Reason: ${reason || 'Discount'}`,
+        entityId: deferredWaiver.id,
+        description: `Queued Tuition Fee discount of ₹${waiverVal.toLocaleString('en-IN')} for ${student.name}. Current Tuition Fee is paid in full; discount will automatically apply to the next Tuition fee bill.`,
       },
     });
 
-    const parentDetails = getPrimaryParentDetails(student);
     let notification = null;
     if (parentDetails.hasParent) {
       notification = await prisma.notification.create({
         data: {
           recipientType: 'PARENT',
           recipientId: parentDetails.parentId,
-          title: '🎁 Fee Waiver Applied',
-          message: `A fee waiver of ₹${waiverVal.toLocaleString('en-IN')} has been applied to ${student.name}'s account for ${targetFa.feeType.name}. New amount due: ₹${newAdjusted.toLocaleString('en-IN')}.`,
+          title: '🎁 Saved Tuition Discount Credit',
+          message: `A Tuition Fee discount of ₹${waiverVal.toLocaleString('en-IN')} has been approved for ${student.name}. Since current Tuition fees are paid in full, this credit will automatically apply to your next Tuition fee bill.`,
           type: 'waiver_applied',
           channel: 'in-app',
         },
       });
     }
 
-    broadcastUpdate('WAIVER_APPLIED', { waiver, updatedFa, studentId: student.studentId, parentId: parentDetails.parentId, notification });
+    broadcastUpdate('WAIVER_APPLIED', { waiver: deferredWaiver, studentId: student.studentId, parentId: parentDetails.parentId, notification });
 
-    res.json({ success: true, waiver, feeAssignment: updatedFa, notification });
+    return res.json({
+      success: true,
+      deferred: true,
+      message: `Current Tuition Fee is already paid in full. A Tuition Fee discount of ₹${waiverVal.toLocaleString('en-IN')} has been saved and will automatically apply when the next Tuition Fee is billed.`,
+      waiver: deferredWaiver,
+      notification
+    });
+
   } catch (error) {
     console.error('Error applying waiver:', error);
     res.status(500).json({ error: error.message });
@@ -1562,14 +1663,16 @@ app.post('/api/fee-structures', async (req, res) => {
   try {
     const { name, category, amount, recurrence, targetScope, targetGrade, targetStudentIds = [], dueDate: customDueDate } = req.body;
     const validCategory = normalizeFeeCategory(category || 'CUSTOM');
+    const validRecurrence = normalizeRecurrence(recurrence);
+    const validScope = normalizeTargetScope(targetScope);
 
     const feeType = await prisma.feeType.create({
       data: {
         name,
         category: validCategory,
         amount: Number(amount),
-        recurrence: recurrence || 'ONE_TIME',
-        targetScope: targetScope || 'ALL',
+        recurrence: validRecurrence,
+        targetScope: validScope,
         targetGrade: targetGrade || null,
       },
     });
@@ -1598,14 +1701,66 @@ app.post('/api/fee-structures', async (req, res) => {
     const unlinkedStudents = [];
 
     for (const student of targetStudents) {
+      let initialAdjusted = Number(amount);
+      let initialStatus = 'PENDING';
+
+      // If assigning a TUITION fee, check for queued/deferred tuition waivers (feeAssignmentId === null)
+      if (validCategory === 'TUITION') {
+        const deferredWaivers = await prisma.waiver.findMany({
+          where: { studentId: student.id, feeAssignmentId: null }
+        });
+
+        if (deferredWaivers.length > 0) {
+          const totalDeferred = deferredWaivers.reduce((sum, w) => sum + Number(w.amount), 0);
+          initialAdjusted = Math.max(0, initialAdjusted - totalDeferred);
+          if (initialAdjusted === 0) initialStatus = 'WAIVED';
+
+          const fa = await prisma.feeAssignment.create({
+            data: {
+              studentId: student.id,
+              feeTypeId: feeType.id,
+              originalAmount: Number(amount),
+              adjustedAmount: initialAdjusted,
+              dueDate,
+              status: initialStatus,
+            },
+          });
+
+          // Link the deferred waivers to this new Tuition fee assignment!
+          for (const dw of deferredWaivers) {
+            await prisma.waiver.update({
+              where: { id: dw.id },
+              data: { feeAssignmentId: fa.id }
+            });
+          }
+
+          const parentDetails = getPrimaryParentDetails(student);
+          if (parentDetails.hasParent) {
+            await prisma.notification.create({
+              data: {
+                recipientType: 'PARENT',
+                recipientId: parentDetails.parentId,
+                title: '🎁 Saved Tuition Discount Applied!',
+                message: `Your saved Tuition Fee waiver discount of ₹${totalDeferred.toLocaleString('en-IN')} has been automatically applied to ${student.name}'s new ${feeType.name} bill. Adjusted amount due: ₹${initialAdjusted.toLocaleString('en-IN')}.`,
+                type: 'waiver_applied',
+                channel: 'in-app',
+              },
+            });
+          }
+
+          createdAssignments.push(fa);
+          continue;
+        }
+      }
+
       const fa = await prisma.feeAssignment.create({
         data: {
           studentId: student.id,
           feeTypeId: feeType.id,
           originalAmount: Number(amount),
-          adjustedAmount: Number(amount),
+          adjustedAmount: initialAdjusted,
           dueDate,
-          status: 'PENDING',
+          status: initialStatus,
         },
       });
       createdAssignments.push(fa);
@@ -1880,10 +2035,23 @@ app.get('/api/parent/data', async (req, res) => {
         linkedStudents = parent.parentStudents.map((ps) => ps.student).filter(s => s && s.isActive !== false);
       }
 
-      const notifications = (parent && parent.id) ? await prisma.notification.findMany({
-        where: { recipientId: parent.id },
+      const targetStudentId = targetStudent?.studentId;
+      const rawNotifications = (parent && parent.id) ? await prisma.notification.findMany({
+        where: { 
+          OR: [
+            { recipientId: parent.id },
+            ...(targetStudentId ? [{ recipientId: `PAR-SYN-${targetStudentId}` }, { recipientId: targetStudentId }] : []),
+            ...linkedStudents.map(s => ({ recipientId: s.studentId })),
+            ...linkedStudents.map(s => ({ recipientId: s.id }))
+          ]
+        },
         orderBy: { timestamp: 'desc' },
       }) : [];
+
+      const notifications = rawNotifications.map(n => ({
+        ...n,
+        studentId: targetStudentId || (linkedStudents[0]?.studentId)
+      }));
 
       if (!parent) return null;
 

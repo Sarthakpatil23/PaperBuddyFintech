@@ -3387,3 +3387,71 @@ html {
 .workflow-step-circle:hover svg {
   color: white !important;
 }
+
+/* ── Sleek notification modal & custom textarea scrollbars ── */
+.clean-notification-textarea {
+  min-height: 160px;
+  max-height: 320px;
+  resize: vertical;
+  font-family: inherit;
+  font-size: 0.92rem;
+  line-height: 1.6;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1.5px solid var(--border-color);
+  background: var(--bg-canvas);
+  color: var(--text-main);
+  transition: all 0.2s ease;
+}
+
+.clean-notification-textarea:focus {
+  outline: none;
+  border-color: var(--odoo-purple);
+  background: var(--surface-card);
+  box-shadow: 0 0 0 3.5px var(--odoo-purple-glow);
+}
+
+.clean-notification-textarea::-webkit-scrollbar,
+.custom-modal-scroll::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.clean-notification-textarea::-webkit-scrollbar-track,
+.custom-modal-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.clean-notification-textarea::-webkit-scrollbar-thumb,
+.custom-modal-scroll::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 99px;
+}
+
+.clean-notification-textarea::-webkit-scrollbar-thumb:hover,
+.custom-modal-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--odoo-purple);
+}
+
+/* Preset chip buttons */
+.preset-chip-btn {
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  background: var(--surface-card);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.18s ease;
+}
+
+.preset-chip-btn:hover {
+  background: var(--odoo-purple-light);
+  border-color: var(--odoo-purple);
+  color: var(--odoo-purple);
+  transform: translateY(-1px);
+}

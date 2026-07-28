@@ -11,7 +11,13 @@ import {
   Gavel,
   Link,
   ShieldCheck,
-  CheckCircle2
+  CheckCircle2,
+  X,
+  ShieldAlert,
+  Phone,
+  Sparkles,
+  Percent,
+  Tag
 } from 'lucide-react';
 
 export default function StudentLedgerView({ 
@@ -447,94 +453,553 @@ export default function StudentLedgerView({
                     <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Receipt Verified Online | Real-Time Sync Confirmed</div>
                   </div>
                 </div>
-              )}
             </div>
           </div>
         </div>
       )}
 
-      {/* WORKFLOW B: APPLY WAIVER MODAL */}
+      {/* WORKFLOW B: MODERN, CLEAN APPLY WAIVER MODAL */}
       {showWaiverModal && (
-        <div className="modal-overlay" onClick={() => setShowWaiverModal(false)}>
-          <div className="modal-card" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3>Apply Fee Waiver / Scholarship</h3>
-              <button className="close-btn" onClick={() => setShowWaiverModal(false)}>✕</button>
+        <div className="modal-overlay fade-in" onClick={() => setShowWaiverModal(false)} style={{ backdropFilter: 'blur(6px)', background: 'rgba(15, 23, 42, 0.65)' }}>
+          <div 
+            className="modal-card fade-in custom-modal-scroll" 
+            style={{ 
+              maxWidth: '620px', 
+              width: '92%', 
+              borderRadius: '20px', 
+              boxShadow: '0 25px 50px -12px rgba(113, 75, 103, 0.25)',
+              padding: '0',
+              overflow: 'hidden',
+              background: 'var(--surface-card)',
+              border: '1px solid var(--border-color)'
+            }} 
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div style={{
+              padding: '22px 28px',
+              background: 'linear-gradient(135deg, var(--odoo-purple) 0%, #4A2E44 100%)',
+              color: 'white',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                <div style={{
+                  width: '44px',
+                  height: '44px',
+                  borderRadius: '12px',
+                  background: 'rgba(255, 255, 255, 0.15)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#FFFFFF'
+                }}>
+                  <Gift size={22} />
+                </div>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: '#FFFFFF' }}>
+                    Apply Fee Waiver / Scholarship
+                  </h3>
+                  <p style={{ margin: '3px 0 0 0', fontSize: '0.8rem', color: 'rgba(255, 255, 255, 0.8)' }}>
+                    Grant tuition fee discount credit to student account
+                  </p>
+                </div>
+              </div>
+
+              <button 
+                className="close-btn" 
+                onClick={() => setShowWaiverModal(false)}
+                style={{ color: 'rgba(255, 255, 255, 0.8)', background: 'transparent', border: 'none', cursor: 'pointer', padding: '6px', borderRadius: '8px' }}
+              >
+                <X size={20} />
+              </button>
             </div>
 
-            <form onSubmit={handleApplyWaiverSubmit}>
-              <div className="form-group">
-                <label className="form-label">Student</label>
-                <input type="text" className="form-input" value={`${currentStudent.name} (${currentStudent.id})`} disabled />
+            <form onSubmit={handleApplyWaiverSubmit} style={{ padding: '28px', display: 'flex', flexDirection: 'column', gap: '22px' }}>
+              
+              {/* Student Financial Summary Card */}
+              <div style={{
+                padding: '18px 20px',
+                background: 'var(--bg-canvas)',
+                borderRadius: '14px',
+                border: '1px solid var(--border-color)',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                gap: '16px'
+              }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ fontWeight: 800, fontSize: '1rem', color: 'var(--text-main)' }}>
+                      {currentStudent.name}
+                    </span>
+                    <span style={{ fontSize: '0.74rem', padding: '2px 9px', borderRadius: '6px', background: 'var(--surface-hover)', color: 'var(--text-secondary)', fontWeight: 700 }}>
+                      {currentStudent.classGrade || 'Student'}
+                    </span>
+                  </div>
+                  <div style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <span>ID: <strong>{currentStudent.id}</strong></span>
+                    <span>•</span>
+                    <span>Parent: <strong>{currentStudent.parentName || 'Linked Parent'}</strong></span>
+                  </div>
+                </div>
+
+                <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                  <div style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--text-muted)', letterSpacing: '0.5px' }}>
+                    CURRENT BALANCE
+                  </div>
+                  <div style={{ fontSize: '1.3rem', fontWeight: 900, color: 'var(--odoo-purple)', marginTop: '2px' }}>
+                    ₹{(currentStudent.totalDue || 0).toLocaleString('en-IN')}
+                  </div>
+                  <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '4px', marginTop: '2px' }}>
+                    <Sparkles size={12} style={{ color: 'var(--odoo-purple)' }} />
+                    <span>Tuition Eligible</span>
+                  </div>
+                </div>
               </div>
 
-              <div className="form-group">
-                <label className="form-label">Discount Type</label>
-                <div style={{ display: 'flex', gap: '16px', marginTop: '6px' }}>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
-                    <input type="radio" name="wType" value="flat" checked={waiverType === 'flat'} onChange={() => setWaiverType('flat')} />
+              {/* Discount Type Segmented Selector */}
+              <div>
+                <label style={{ display: 'block', fontSize: '0.76rem', fontWeight: 800, color: 'var(--text-muted)', letterSpacing: '0.5px', textTransform: 'uppercase', marginBottom: '8px' }}>
+                  Select Discount Format
+                </label>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <button
+                    type="button"
+                    onClick={() => setWaiverType('flat')}
+                    style={{
+                      flex: 1,
+                      padding: '10px 16px',
+                      borderRadius: '10px',
+                      border: waiverType === 'flat' ? '2px solid var(--odoo-purple)' : '1px solid var(--border-color)',
+                      background: waiverType === 'flat' ? 'var(--odoo-purple-light)' : 'var(--surface-card)',
+                      color: waiverType === 'flat' ? 'var(--odoo-purple)' : 'var(--text-secondary)',
+                      fontWeight: 700,
+                      fontSize: '0.85rem',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px',
+                      transition: 'all 0.18s ease'
+                    }}
+                  >
+                    <Tag size={16} />
                     <span>Flat Amount (₹)</span>
-                  </label>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
-                    <input type="radio" name="wType" value="percent" checked={waiverType === 'percent'} onChange={() => setWaiverType('percent')} />
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setWaiverType('percent')}
+                    style={{
+                      flex: 1,
+                      padding: '10px 16px',
+                      borderRadius: '10px',
+                      border: waiverType === 'percent' ? '2px solid var(--odoo-purple)' : '1px solid var(--border-color)',
+                      background: waiverType === 'percent' ? 'var(--odoo-purple-light)' : 'var(--surface-card)',
+                      color: waiverType === 'percent' ? 'var(--odoo-purple)' : 'var(--text-secondary)',
+                      fontWeight: 700,
+                      fontSize: '0.85rem',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px',
+                      transition: 'all 0.18s ease'
+                    }}
+                  >
+                    <Percent size={16} />
                     <span>Percentage (%)</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Quick Preset Buttons */}
+              <div>
+                <label style={{ display: 'block', fontSize: '0.76rem', fontWeight: 800, color: 'var(--text-muted)', letterSpacing: '0.5px', textTransform: 'uppercase', marginBottom: '8px' }}>
+                  Quick Preset Scholarships
+                </label>
+                <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                  <button
+                    type="button"
+                    className="preset-chip-btn"
+                    onClick={() => { setWaiverType('flat'); setWaiverAmount('2500'); setWaiverReason('Early Bird Term Scholarship'); }}
+                  >
+                    <Sparkles size={14} style={{ color: 'var(--odoo-purple)' }} />
+                    <span>₹2,500 (Early Bird)</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    className="preset-chip-btn"
+                    onClick={() => { setWaiverType('flat'); setWaiverAmount('5000'); setWaiverReason('Merit Excellence Scholarship'); }}
+                  >
+                    <Gift size={14} style={{ color: 'var(--accent-blue)' }} />
+                    <span>₹5,000 (Merit Scholarship)</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    className="preset-chip-btn"
+                    onClick={() => { setWaiverType('percent'); setWaiverPercent('15'); setWaiverReason('Sibling Enrollment Concession'); }}
+                  >
+                    <Percent size={14} style={{ color: '#D97706' }} />
+                    <span>15% Off (Sibling Concession)</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Waiver Value & Reason Inputs */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '14px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <label style={{ margin: 0, fontWeight: 700, fontSize: '0.86rem', color: 'var(--text-main)' }}>
+                    {waiverType === 'flat' ? 'Waiver Amount (₹)' : 'Waiver Percentage (%)'}
                   </label>
+                  {waiverType === 'flat' ? (
+                    <input 
+                      type="number" 
+                      className="form-input" 
+                      placeholder="e.g. 5000" 
+                      value={waiverAmount} 
+                      onChange={(e) => setWaiverAmount(e.target.value)} 
+                      required 
+                      style={{
+                        borderRadius: '12px',
+                        padding: '12px 14px',
+                        fontSize: '0.95rem',
+                        fontWeight: 800,
+                        color: 'var(--odoo-purple)',
+                        border: '1.5px solid var(--border-color)',
+                        background: 'var(--bg-canvas)'
+                      }}
+                    />
+                  ) : (
+                    <input 
+                      type="number" 
+                      step="0.1" 
+                      className="form-input" 
+                      placeholder="e.g. 20" 
+                      value={waiverPercent} 
+                      onChange={(e) => setWaiverPercent(e.target.value)} 
+                      required 
+                      style={{
+                        borderRadius: '12px',
+                        padding: '12px 14px',
+                        fontSize: '0.95rem',
+                        fontWeight: 800,
+                        color: 'var(--odoo-purple)',
+                        border: '1.5px solid var(--border-color)',
+                        background: 'var(--bg-canvas)'
+                      }}
+                    />
+                  )}
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <label style={{ margin: 0, fontWeight: 700, fontSize: '0.86rem', color: 'var(--text-main)' }}>
+                    Mandatory Waiver Reason
+                  </label>
+                  <input 
+                    type="text" 
+                    className="form-input" 
+                    placeholder="e.g. Academic Excellence Scholarship" 
+                    value={waiverReason} 
+                    onChange={(e) => setWaiverReason(e.target.value)} 
+                    required 
+                    style={{
+                      borderRadius: '12px',
+                      padding: '12px 14px',
+                      fontSize: '0.88rem',
+                      border: '1.5px solid var(--border-color)',
+                      background: 'var(--bg-canvas)'
+                    }}
+                  />
                 </div>
               </div>
 
-              {waiverType === 'flat' ? (
-                <div className="form-group">
-                  <label className="form-label">Waiver Amount (₹)</label>
-                  <input type="number" className="form-input" placeholder="e.g. 5000" value={waiverAmount} onChange={(e) => setWaiverAmount(e.target.value)} required />
-                </div>
-              ) : (
-                <div className="form-group">
-                  <label className="form-label">Waiver Percentage (%)</label>
-                  <input type="number" step="0.1" className="form-input" placeholder="e.g. 20" value={waiverPercent} onChange={(e) => setWaiverPercent(e.target.value)} required />
-                </div>
-              )}
-
-              <div className="form-group">
-                <label className="form-label">Mandatory Waiver Reason</label>
-                <input type="text" className="form-input" placeholder="e.g. Academic Excellence Scholarship" value={waiverReason} onChange={(e) => setWaiverReason(e.target.value)} required />
+              {/* Tuition Policy Callout */}
+              <div style={{
+                padding: '12px 16px',
+                background: 'var(--odoo-purple-light)',
+                borderRadius: '12px',
+                border: '1px solid rgba(113, 75, 103, 0.2)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                fontSize: '0.8rem',
+                color: 'var(--odoo-purple)',
+                lineHeight: '1.4'
+              }}>
+                <ShieldCheck size={20} style={{ flexShrink: 0 }} />
+                <span>
+                  <strong>Tuition Waiver Policy:</strong> Fee waivers apply strictly to Tuition Fees. If current Tuition Fees are paid in full, this discount will be saved and automatically deducted from the student's next Tuition Fee bill.
+                </span>
               </div>
 
-              <button type="submit" className="btn-submit-primary" disabled={isProcessing} style={{ marginTop: '12px' }}>
-                Confirm & Apply Waiver
-              </button>
+              {/* Modal Footer */}
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '6px' }}>
+                <button 
+                  type="button" 
+                  className="action-btn-secondary" 
+                  onClick={() => setShowWaiverModal(false)}
+                  style={{ padding: '10px 20px', borderRadius: '12px', fontSize: '0.88rem' }}
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit" 
+                  className="action-btn-primary" 
+                  disabled={isProcessing}
+                  style={{
+                    padding: '10px 24px',
+                    borderRadius: '12px',
+                    fontSize: '0.88rem',
+                    background: 'var(--odoo-purple)',
+                    borderColor: 'var(--odoo-purple)',
+                    color: 'white',
+                    fontWeight: 700,
+                    boxShadow: 'var(--shadow-primary)'
+                  }}
+                >
+                  <Gift size={16} />
+                  <span>{isProcessing ? 'Applying Waiver...' : 'Confirm & Apply Waiver'}</span>
+                </button>
+              </div>
+
             </form>
           </div>
         </div>
       )}
 
-      {/* WORKFLOW C1: APPLY MANUAL PENALTY MODAL */}
+      {/* WORKFLOW C1: MODERN, CLEAN APPLY MANUAL PENALTY MODAL */}
       {showPenaltyModal && (
-        <div className="modal-overlay" onClick={() => setShowPenaltyModal(false)}>
-          <div className="modal-card" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3>Apply Manual Late Fee Penalty</h3>
-              <button className="close-btn" onClick={() => setShowPenaltyModal(false)}>✕</button>
+        <div className="modal-overlay fade-in" onClick={() => setShowPenaltyModal(false)} style={{ backdropFilter: 'blur(6px)', background: 'rgba(15, 23, 42, 0.65)' }}>
+          <div 
+            className="modal-card fade-in custom-modal-scroll" 
+            style={{ 
+              maxWidth: '600px', 
+              width: '92%', 
+              borderRadius: '20px', 
+              boxShadow: '0 25px 50px -12px rgba(159, 18, 57, 0.25)',
+              padding: '0',
+              overflow: 'hidden',
+              background: 'var(--surface-card)',
+              border: '1px solid var(--border-color)'
+            }} 
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div style={{
+              padding: '22px 28px',
+              background: 'linear-gradient(135deg, #881337 0%, #4C0519 100%)',
+              color: 'white',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                <div style={{
+                  width: '44px',
+                  height: '44px',
+                  borderRadius: '12px',
+                  background: 'rgba(255, 255, 255, 0.15)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#FFFFFF'
+                }}>
+                  <Gavel size={22} />
+                </div>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: '#FFFFFF' }}>
+                    Apply Manual Late Fee Fine
+                  </h3>
+                  <p style={{ margin: '3px 0 0 0', fontSize: '0.8rem', color: 'rgba(255, 255, 255, 0.8)' }}>
+                    Impose policy penalty fine on overdue student balance
+                  </p>
+                </div>
+              </div>
+
+              <button 
+                className="close-btn" 
+                onClick={() => setShowPenaltyModal(false)}
+                style={{ color: 'rgba(255, 255, 255, 0.8)', background: 'transparent', border: 'none', cursor: 'pointer', padding: '6px', borderRadius: '8px' }}
+              >
+                <X size={20} />
+              </button>
             </div>
 
-            <form onSubmit={handleApplyPenaltySubmit}>
-              <div className="form-group">
-                <label className="form-label">Student</label>
-                <input type="text" className="form-input" value={`${currentStudent.name} (${currentStudent.id})`} disabled />
+            <form onSubmit={handleApplyPenaltySubmit} style={{ padding: '28px', display: 'flex', flexDirection: 'column', gap: '22px' }}>
+              
+              {/* Student Financial Summary Card */}
+              <div style={{
+                padding: '18px 20px',
+                background: 'var(--bg-canvas)',
+                borderRadius: '14px',
+                border: '1px solid var(--border-color)',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                gap: '16px'
+              }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ fontWeight: 800, fontSize: '1rem', color: 'var(--text-main)' }}>
+                      {currentStudent.name}
+                    </span>
+                    <span style={{ fontSize: '0.74rem', padding: '2px 9px', borderRadius: '6px', background: 'var(--surface-hover)', color: 'var(--text-secondary)', fontWeight: 700 }}>
+                      {currentStudent.classGrade || 'Student'}
+                    </span>
+                  </div>
+                  <div style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <span>ID: <strong>{currentStudent.id}</strong></span>
+                    <span>•</span>
+                    <span>Parent: <strong>{currentStudent.parentName || 'Linked Parent'}</strong></span>
+                  </div>
+                </div>
+
+                <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                  <div style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--text-muted)', letterSpacing: '0.5px' }}>
+                    OUTSTANDING BALANCE
+                  </div>
+                  <div style={{ fontSize: '1.3rem', fontWeight: 900, color: 'var(--status-danger-text)', marginTop: '2px' }}>
+                    ₹{(currentStudent.totalDue || 0).toLocaleString('en-IN')}
+                  </div>
+                  <div style={{ fontSize: '0.74rem', color: 'var(--status-pending-text)', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '4px', marginTop: '2px' }}>
+                    <Clock size={12} />
+                    <span>Overdue Account</span>
+                  </div>
+                </div>
               </div>
 
-              <div className="form-group">
-                <label className="form-label">Late Fee Fine Amount (₹)</label>
-                <input type="number" className="form-input" placeholder="e.g. 500" value={penaltyAmount} onChange={(e) => setPenaltyAmount(e.target.value)} required />
+              {/* Quick Penalty Amount Presets */}
+              <div>
+                <label style={{ display: 'block', fontSize: '0.76rem', fontWeight: 800, color: 'var(--text-muted)', letterSpacing: '0.5px', textTransform: 'uppercase', marginBottom: '8px' }}>
+                  Standard Fine Presets
+                </label>
+                <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                  <button
+                    type="button"
+                    className="preset-chip-btn"
+                    onClick={() => { setPenaltyAmount('250'); setPenaltyReason('Standard Late Fee Fine (1-15 days overdue)'); }}
+                  >
+                    <span>₹250 (Standard Fine)</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    className="preset-chip-btn"
+                    onClick={() => { setPenaltyAmount('500'); setPenaltyReason('30+ Days Overdue Administrative Fine'); }}
+                  >
+                    <span>₹500 (30+ Days Overdue)</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    className="preset-chip-btn"
+                    onClick={() => { setPenaltyAmount('1000'); setPenaltyReason('Severe Delay Policy Penalty Fine'); }}
+                  >
+                    <span>₹1,000 (Severe Penalty)</span>
+                  </button>
+                </div>
               </div>
 
-              <div className="form-group">
-                <label className="form-label">Reason / Justification</label>
-                <input type="text" className="form-input" placeholder="e.g. Overdue past 30 days" value={penaltyReason} onChange={(e) => setPenaltyReason(e.target.value)} required />
+              {/* Penalty Inputs */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '14px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <label style={{ margin: 0, fontWeight: 700, fontSize: '0.86rem', color: 'var(--text-main)' }}>
+                    Fine Amount (₹)
+                  </label>
+                  <input 
+                    type="number" 
+                    className="form-input" 
+                    value={penaltyAmount}
+                    onChange={(e) => setPenaltyAmount(e.target.value)}
+                    placeholder="500"
+                    required
+                    style={{
+                      borderRadius: '12px',
+                      padding: '12px 14px',
+                      fontSize: '0.95rem',
+                      fontWeight: 800,
+                      color: '#9F1239',
+                      border: '1.5px solid var(--border-color)',
+                      background: 'var(--bg-canvas)'
+                    }}
+                  />
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <label style={{ margin: 0, fontWeight: 700, fontSize: '0.86rem', color: 'var(--text-main)' }}>
+                    Audit Justification / Reason
+                  </label>
+                  <input 
+                    type="text" 
+                    className="form-input" 
+                    value={penaltyReason}
+                    onChange={(e) => setPenaltyReason(e.target.value)}
+                    placeholder="State justification..."
+                    required
+                    style={{
+                      borderRadius: '12px',
+                      padding: '12px 14px',
+                      fontSize: '0.88rem',
+                      border: '1.5px solid var(--border-color)',
+                      background: 'var(--bg-canvas)'
+                    }}
+                  />
+                </div>
               </div>
 
-              <button type="submit" className="btn-submit-primary" disabled={isProcessing} style={{ marginTop: '12px', background: '#9F1239', borderColor: '#9F1239' }}>
-                Confirm & Apply Penalty
-              </button>
+              {/* Policy Audit Alert Callout */}
+              <div style={{
+                padding: '12px 16px',
+                background: '#FFE4E6',
+                borderRadius: '12px',
+                border: '1px solid #FECDD3',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                fontSize: '0.82rem',
+                color: '#9F1239'
+              }}>
+                <ShieldAlert size={20} style={{ flexShrink: 0 }} />
+                <span>
+                  <strong>Audit Policy:</strong> Applying a manual penalty increases the student's total due balance, updates their financial ledger timeline, and notifies the parent.
+                </span>
+              </div>
+
+              {/* Modal Footer */}
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '6px' }}>
+                <button 
+                  type="button" 
+                  className="action-btn-secondary" 
+                  onClick={() => setShowPenaltyModal(false)}
+                  style={{ padding: '10px 20px', borderRadius: '12px', fontSize: '0.88rem' }}
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit" 
+                  className="action-btn-primary" 
+                  disabled={isProcessing}
+                  style={{
+                    padding: '10px 24px',
+                    borderRadius: '12px',
+                    fontSize: '0.88rem',
+                    background: '#9F1239',
+                    borderColor: '#9F1239',
+                    color: 'white',
+                    fontWeight: 700,
+                    boxShadow: '0 8px 20px -4px rgba(159, 18, 57, 0.35)'
+                  }}
+                >
+                  <Gavel size={16} />
+                  <span>{isProcessing ? 'Applying Fine...' : 'Apply Late Fee Fine'}</span>
+                </button>
+              </div>
+
             </form>
           </div>
         </div>

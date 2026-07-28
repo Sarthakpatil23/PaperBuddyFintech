@@ -34,6 +34,188 @@ const STARTER_PROMPTS = {
   ]
 };
 
+function FormattedMarkdown({ text, isUser }) {
+  if (!text) return null;
+
+  const lines = text.split('\n');
+  const elements = [];
+  let currentList = null;
+
+  lines.forEach((line, idx) => {
+    const trimmed = line.trim();
+    if (!trimmed) {
+      if (currentList) {
+        elements.push(renderList(currentList, `list-${idx}`, isUser));
+        currentList = null;
+      }
+      return;
+    }
+
+    // Headings: ###, ##, #
+    if (trimmed.startsWith('### ') || trimmed.startsWith('## ') || trimmed.startsWith('# ')) {
+      if (currentList) {
+        elements.push(renderList(currentList, `list-${idx}`, isUser));
+        currentList = null;
+      }
+      const headingText = trimmed.replace(/^#+\s+/, '');
+      elements.push(
+        <div
+          key={`h-${idx}`}
+          style={{
+            fontWeight: 800,
+            fontSize: '0.9rem',
+            color: isUser ? '#FFFFFF' : '#1E1B4B',
+            marginTop: elements.length > 0 ? '10px' : '0',
+            marginBottom: '4px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            borderBottom: isUser ? 'none' : '1px solid #E2E8F0',
+            paddingBottom: '3px'
+          }}
+        >
+          {parseFormattedInline(headingText, isUser)}
+        </div>
+      );
+      return;
+    }
+
+    // Bullet points: - , * , •
+    if (trimmed.startsWith('- ') || trimmed.startsWith('* ') || trimmed.startsWith('• ')) {
+      const itemContent = trimmed.replace(/^[-*•]\s+/, '');
+      if (!currentList) {
+        currentList = { type: 'unordered', items: [] };
+      }
+      currentList.items.push(itemContent);
+      return;
+    }
+
+    // Numbered lists: 1. , 2. 
+    const numMatch = trimmed.match(/^(\d+)\.\s+(.+)$/);
+    if (numMatch) {
+      if (!currentList) {
+        currentList = { type: 'ordered', items: [] };
+      }
+      currentList.items.push(numMatch[2]);
+      return;
+    }
+
+    // Regular paragraph
+    if (currentList) {
+      elements.push(renderList(currentList, `list-${idx}`, isUser));
+      currentList = null;
+    }
+
+    elements.push(
+      <p
+        key={`p-${idx}`}
+        style={{
+          margin: '0 0 6px 0',
+          lineHeight: '1.5',
+          fontSize: '0.85rem'
+        }}
+      >
+        {parseFormattedInline(trimmed, isUser)}
+      </p>
+    );
+  });
+
+  if (currentList) {
+    elements.push(renderList(currentList, `list-end`, isUser));
+  }
+
+  return <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>{elements}</div>;
+}
+
+function renderList(listObj, key, isUser) {
+  if (listObj.type === 'unordered') {
+    return (
+      <ul
+        key={key}
+        style={{
+          margin: '4px 0 8px 0',
+          paddingLeft: '18px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '4px'
+        }}
+      >
+        {listObj.items.map((item, i) => (
+          <li key={i} style={{ lineHeight: '1.45', fontSize: '0.84rem' }}>
+            {parseFormattedInline(item, isUser)}
+          </li>
+        ))}
+      </ul>
+    );
+  }
+  return (
+    <ol
+      key={key}
+      style={{
+        margin: '4px 0 8px 0',
+        paddingLeft: '20px',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '4px'
+      }}
+    >
+      {listObj.items.map((item, i) => (
+        <li key={i} style={{ lineHeight: '1.45', fontSize: '0.84rem' }}>
+          {parseFormattedInline(item, isUser)}
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+function parseFormattedInline(text, isUser) {
+  if (!text) return null;
+
+  const parts = text.split(/(\*\*[^*]+\*\*)/g);
+
+  return parts.map((part, index) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      const boldText = part.slice(2, -2);
+      return (
+        <strong
+          key={index}
+          style={{
+            fontWeight: 700,
+            color: isUser ? '#FFFFFF' : '#0F172A',
+            background: isUser ? 'rgba(255,255,255,0.18)' : 'rgba(2, 132, 199, 0.08)',
+            padding: isUser ? '0 3px' : '1px 5px',
+            borderRadius: '4px'
+          }}
+        >
+          {boldText}
+        </strong>
+      );
+    }
+
+    const currencyParts = part.split(/(₹\s?[\d,]+(?:\.\d+)?)/g);
+    if (currencyParts.length > 1) {
+      return currencyParts.map((cPart, cIdx) => {
+        if (cPart.match(/^₹\s?[\d,]+(?:\.\d+)?$/)) {
+          return (
+            <span
+              key={`${index}-${cIdx}`}
+              style={{
+                fontWeight: 800,
+                color: isUser ? '#FFFFFF' : '#714B67'
+              }}
+            >
+              {cPart}
+            </span>
+          );
+        }
+        return cPart;
+      });
+    }
+
+    return part;
+  });
+}
+
 export default function ChatbotWidget({ role = 'parent', studentId = null, onActionExecuted }) {
   const navigate = useNavigate();
 
@@ -339,9 +521,7 @@ export default function ChatbotWidget({ role = 'parent', studentId = null, onAct
                 }}>
                   
                   {/* Text Content */}
-                  <div style={{ whiteSpace: 'pre-wrap' }}>
-                    {msg.text}
-                  </div>
+                  <FormattedMarkdown text={msg.text} isUser={msg.sender === 'user'} />
 
                   {/* STRUCTURED CONTENT: DATA CARD */}
                   {msg.type === 'data_card' && msg.payload && (

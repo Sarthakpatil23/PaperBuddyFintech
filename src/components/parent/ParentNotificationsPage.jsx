@@ -22,7 +22,12 @@ export default function ParentNotificationsPage({
 }) {
   const [filterTab, setFilterTab] = useState('all'); // 'all' | 'unread' | 'due' | 'payment'
 
-  const childNotifs = notifications.filter((n) => n.studentId === selectedChild?.id);
+  const childNotifs = notifications.filter((n) => 
+    !n.studentId || 
+    n.studentId === selectedChild?.id || 
+    n.studentId === selectedChild?.dbId || 
+    (selectedChild?.name && n.message?.toLowerCase().includes(selectedChild.name.toLowerCase()))
+  );
 
   const filteredNotifs = childNotifs.filter((n) => {
     if (filterTab === 'unread') return !n.read;

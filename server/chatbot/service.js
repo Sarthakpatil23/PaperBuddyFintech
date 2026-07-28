@@ -117,12 +117,21 @@ export async function processChatbotMessage({ message, history = [], role = 'par
     });
 
   } catch (error) {
-    console.error('Chatbot Processing Error:', error);
+    console.error('Chatbot Processing Error (attempting local DB fallback):', error.message);
     
-    // Return structured response with actual error details
+    try {
+      const fallbackResult = await handleLocalFallback({ message, role, studentId });
+      if (fallbackResult) {
+        return fallbackResult;
+      }
+    } catch (fallbackErr) {
+      console.error('Local fallback processing error:', fallbackErr.message);
+    }
+
+    // Return structured response with error details and support escalation contact
     return {
       type: 'escalation',
-      message: `I encountered an issue processing your request (${error.message}). Please contact our accounts support team.`,
+      message: `The AI assistant API service is currently unavailable (${error.message}). Please contact our accounts support team or update your GROQ_API_KEY in .env.`,
       payload: {
         adminContact: ADMIN_CONTACT,
         reason: error.message
@@ -131,11 +140,117 @@ export async function processChatbotMessage({ message, history = [], role = 'par
   }
 }
 
+async function handleLocalFallback({ message, role, studentId }) {
+  const lower = (message || '').toLowerCase();
+
+  if (role === 'admin') {
+    if (lower.includes('defaulter') || lower.includes('overdue') || lower.includes('unpaid') || lower.includes('pending')) {
+      const defaulters = await executeAdminTool('getDefaulters', {});
+      return {
+        type: 'list',
+        message: `### Overdue Defaulters List\nHere is the current list of students with overdue fee assignments retrieved directly from the database:`,
+        payload: {
+          title: 'Overdue Defaulters List',
+          items: defaulters
+        }
+      };
+    }
+
+    if (lower.includes('revenue') || lower.includes('collection') || lower.includes('total') || lower.includes('efficiency') || lower.includes('summary')) {
+      const summary = await executeAdminTool('getRevenueSummary', {});
+      return {
+        type: 'data_card',
+        message: `### School Revenue Overview\nHere is the real-time financial collection breakdown:`,
+        payload: {
+          title: 'School Revenue Overview',
+          collected: summary.totalCollected,
+          outstanding: summary.outstandingDues,
+          efficiency: summary.collectionEfficiency
+        }
+      };
+    }
+
+    if (lower.includes('reconcil') || lower.includes('bank') || lower.includes('cheque')) {
+      const status = await executeAdminTool('getReconciliationStatus', {});
+      return {
+        type: 'text',
+        message: `### Reconciliation Status Overview\n- **Pending Entries**: ${status.pendingCount} (₹${status.pendingAmount.toLocaleString('en-IN')})\n- **Flagged Discrepancies**: ${status.flaggedCount}\n- **Reconciled Entries**: ${status.reconciledCount}`
+      };
+    }
+
+    if (lower.includes('transaction') || lower.includes('recent') || lower.includes('history')) {
+      const txns = await executeAdminTool('getTransactions', {});
+      const txnListStr = txns.map(t => `- **${t.receiptNo}**: ${t.studentName} — ₹${t.amount.toLocaleString('en-IN')} (${t.method}, ${t.status})`).join('\n');
+      return {
+        type: 'text',
+        message: `### Recent Transactions\n${txnListStr || 'No recent transactions found.'}`
+      };
+    }
+
+    if (lower.includes('ledger') || lower.includes('student')) {
+      const ledger = await executeAdminTool('getStudentLedger', { studentId: 'STU-101' });
+      if (!ledger.error) {
+        return {
+          type: 'text',
+          message: `### Student Ledger for ${ledger.studentName} (${ledger.studentId})\n- **Class/Grade**: ${ledger.classGrade}\n- **Total Billed**: ₹${ledger.totalBilled.toLocaleString('en-IN')}\n- **Total Waived**: ₹${ledger.totalWaived.toLocaleString('en-IN')}\n- **Total Paid**: ₹${ledger.totalPaid.toLocaleString('en-IN')}\n- **Balance Due**: ₹${ledger.balanceDue.toLocaleString('en-IN')}`
+        };
+      }
+    }
+  } else {
+    // Parent Role Fallback
+    if (lower.includes('fee') || lower.includes('due') || lower.includes('balance') || lower.includes('outstanding') || lower.includes('owe') || lower.includes('amount')) {
+      const fees = await executeParentTool('getOutstandingFees', {}, studentId);
+      if (!fees.error) {
+        return {
+          type: 'data_card',
+          message: `### Outstanding Fees Summary\nHere are the active fee dues for **${fees.studentName}**:`,
+          payload: {
+            title: `Outstanding Fees for ${fees.studentName}`,
+            amount: fees.totalOutstanding,
+            status: fees.totalOutstanding > 0 ? 'OVERDUE' : 'PAID',
+            items: fees.items || []
+          }
+        };
+      }
+    }
+
+    if (lower.includes('history') || lower.includes('paid') || lower.includes('receipt') || lower.includes('past')) {
+      const history = await executeParentTool('getPaymentHistory', {}, studentId);
+      if (Array.isArray(history) && history.length > 0) {
+        const histStr = history.map(h => `- **Receipt #${h.receiptNo}**: ${h.feeTitle} — ₹${h.amount.toLocaleString('en-IN')} via ${h.method} on ${h.date}`).join('\n');
+        return {
+          type: 'text',
+          message: `### Recent Payment History\n${histStr}`
+        };
+      }
+    }
+
+    if (lower.includes('pay') || lower.includes('checkout') || lower.includes('online')) {
+      return {
+        type: 'navigation_link',
+        message: `You can proceed to clear outstanding fee dues using our secure zero-fee payment checkout:`,
+        payload: {
+          isNavigation: true,
+          url: '/parent/pay',
+          buttonText: 'Proceed to Payment Checkout'
+        }
+      };
+    }
+  }
+
+  return null;
+}
+
 async function callGroqAPI(payload) {
+  const apiKey = process.env.GROQ_API_KEY;
+  if (!apiKey || apiKey.includes('your_') || apiKey.trim() === '') {
+    throw new Error('GROQ_API_KEY is not configured or is invalid in .env');
+  }
+
   const res = await fetch(GROQ_API_URL, {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${GROQ_API_KEY}`,
+      'Authorization': `Bearer ${apiKey}`,
       'Content-Type': 'application/json'
     },
     body: JSON.stringify(payload)
@@ -236,3 +351,4 @@ function formatStructuredResponse({ role, userMessage, replyText, toolExecResult
     message: replyText
   };
 }
+

@@ -84,5 +84,13 @@ Name: ${adminContact.name}
 Email: ${adminContact.email}
 Phone: ${adminContact.phone}
 
+=== FORMATTING & PRESENTATION REQUIREMENTS ===
+1. Keep responses clean, concise, elegant, and neatly structured.
+2. Use clear bullet points (-) or numbered lists (1.) for itemized information.
+3. Use bold text (**like this**) for key metrics, student names, status badges, and monetary figures.
+4. Format headings using markdown (e.g. ### Section Title) to organize information into digestible sections.
+5. Always format currency as ₹ (INR) with standard comma separators (e.g., ₹15,000).
+6. Do NOT output raw JSON strings, code blocks, or debug output unless explicitly requested.
+
 Respond concisely and professionally in Markdown. Whenever possible, format financial amounts as ₹ (INR).`;
 }

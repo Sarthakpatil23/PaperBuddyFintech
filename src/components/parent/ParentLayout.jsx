@@ -49,7 +49,14 @@ export default function ParentLayout({
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [showChildDropdown, setShowChildDropdown] = useState(false);
 
-  const unreadCount = notifications.filter(n => !n.read && n.studentId === selectedChild?.id).length;
+  const unreadCount = notifications.filter(n => 
+    !n.read && (
+      !n.studentId || 
+      n.studentId === selectedChild?.id || 
+      n.studentId === selectedChild?.dbId || 
+      (selectedChild?.name && n.message?.toLowerCase().includes(selectedChild.name.toLowerCase()))
+    )
+  ).length;
   const currentMeta = ROUTE_BREADCRUMBS[location.pathname] || { title: 'Parent Portal', section: 'Overview' };
 
   return (

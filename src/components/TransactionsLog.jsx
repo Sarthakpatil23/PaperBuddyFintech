@@ -635,7 +635,7 @@ export default function TransactionsLog({
                     </td>
 
                     <td>
-                      <div style={{ textAlign: 'right' }}>
+                      <div style={{ textAlign: 'right', display: 'flex', justifyContent: 'flex-end', gap: '6px' }}>
                         <button 
                           className="icon-btn-action"
                           title="View Full Transaction Receipt & Audit Details"
@@ -646,6 +646,20 @@ export default function TransactionsLog({
                         >
                           <Eye size={14} />
                         </button>
+
+                        {(txn.status === 'Paid' || txn.status === 'SUCCESS' || txn.status === 'RECONCILED') && (
+                          <button
+                            className="icon-btn-action"
+                            title="Issue Refund for Paid Fee"
+                            style={{ color: '#9F1239', background: '#FFE4E6', borderColor: '#FECDD3' }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setRefundModalTxn(txn);
+                            }}
+                          >
+                            <RotateCcw size={14} />
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>
