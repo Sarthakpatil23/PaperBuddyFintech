@@ -16,7 +16,7 @@
 > 🚀 **LIVE DEMO APPLICATION**: **[https://paper-buddy-fintech.vercel.app/login](https://paper-buddy-fintech.vercel.app/login)**  
 > 📺 **VIDEO DEMO & WALKTHROUGH**: **[Watch Video on YouTube (https://www.youtube.com/watch?v=5FhrPB4zIxs)](https://www.youtube.com/watch?v=5FhrPB4zIxs)**
 
-[![PaperBuddy Fintech Video Walkthrough](https://img.youtube.com/vi/5FhrPB4zIxs/maxresdefault.jpg)](https://www.youtube.com/watch?v=5FhrPB4zIxs)
+[![PaperBuddy Fintech Video Walkthrough](https://img.youtube.com/vi/5FhrPB4zIxs/hqdefault.jpg)](https://www.youtube.com/watch?v=5FhrPB4zIxs)
 
 > **PaperBuddy Fintech** is a production-ready, full-stack financial management platform designed specifically for educational institutions. It digitizes the entire school fee lifecycle — transforming fragmented spreadsheets, offline cash counters, and manual cheque tracking into a unified, audit-grade single source of truth with automated late fee calculation, real-time bank reconciliation, and live parent alerts.
 
