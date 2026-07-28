@@ -666,6 +666,75 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════════
+          2.5 VIDEO DEMO WALKTHROUGH SECTION
+      ══════════════════════════════════════════════════════════════════════ */}
+      <section id="demo-video" style={{
+        padding: '80px 6%',
+        background: theme === 'dark' ? 'rgba(15, 23, 42, 0.6)' : 'rgba(248, 250, 252, 0.8)',
+        borderTop: '1px solid var(--border-color)',
+        borderBottom: '1px solid var(--border-color)',
+        position: 'relative'
+      }}>
+        <div style={{ maxWidth: '1100px', margin: '0 auto', textAlign: 'center' }}>
+          {/* Section Badge */}
+          <div style={{
+            display: 'inline-flex', alignItems: 'center', gap: '8px',
+            padding: '7px 18px', borderRadius: '99px', marginBottom: '16px',
+            background: 'var(--primary-light)', border: '1px solid var(--border)',
+            fontSize: '0.78rem', fontWeight: 700, color: 'var(--primary)',
+            textTransform: 'uppercase', letterSpacing: '0.08em'
+          }}>
+            <PlayCircle size={15} /> Video Demo Walkthrough
+          </div>
+
+          <h2 style={{
+            fontSize: 'clamp(1.8rem, 3.5vw, 2.6rem)', fontWeight: 900,
+            letterSpacing: '-0.035em', color: 'var(--text-main)',
+            margin: '0 0 16px 0', lineHeight: 1.2
+          }}>
+            Watch PaperBuddy Fintech in Action
+          </h2>
+
+          <p style={{
+            fontSize: '1.02rem', color: 'var(--text-muted)',
+            maxWidth: '640px', margin: '0 auto 40px auto', lineHeight: 1.6
+          }}>
+            Discover how PaperBuddy Fintech simplifies school fee collections, automates bank reconciliation, and delivers instant real-time parent-admin updates.
+          </p>
+
+          {/* Responsive 16:9 Video Container */}
+          <div className="video-player-container" style={{
+            position: 'relative',
+            width: '100%',
+            paddingBottom: '56.25%',
+            height: 0,
+            overflow: 'hidden',
+            borderRadius: '24px',
+            boxShadow: theme === 'dark' 
+              ? '0 25px 60px -15px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.1)'
+              : '0 25px 60px -15px rgba(0, 0, 0, 0.18), 0 0 0 1px var(--border-color)',
+            background: '#000'
+          }}>
+            <iframe
+              src="https://www.youtube.com/embed/5FhrPB4zIxs?rel=0"
+              title="PaperBuddy Fintech Product Demo Walkthrough"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                border: 0,
+                borderRadius: '24px'
+              }}
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════════════════════════
           3. FEATURES SECTION
       ══════════════════════════════════════════════════════════════════════ */}
       <section id="features" style={{

@@ -3701,5 +3701,25 @@ html {
     gap: 16px !important;
     text-align: center !important;
   }
+
+  .video-player-container {
+    border-radius: 16px !important;
+  }
 }
+
+/* Video Player Container Responsive Polish */
+.video-player-container iframe {
+  transition: transform 0.3s ease;
+}
+
+@media (max-width: 480px) {
+  #demo-video {
+    padding: 48px 16px !important;
+  }
+
+  .video-player-container {
+    border-radius: 14px !important;
+  }
+}
+
 
