@@ -24,6 +24,7 @@ import {
   File
 } from 'lucide-react';
 import { INITIAL_STUDENTS } from '../data/mockData';
+import LoadingScreen from './LoadingScreen';
 
 export default function QuickActionsModal({ 
   mode, 
@@ -192,39 +193,57 @@ export default function QuickActionsModal({
     }
   };
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const handleFinalSubmit = (e) => {
     e && e.preventDefault();
-    if (mode === 'recordPayment') {
-      let refNo = receiptNo;
-      if (paymentMethod === 'Cheque') refNo = chequeNo;
-      if (paymentMethod === 'Bank Transfer') refNo = utrNo;
-      if (paymentMethod === 'Demand Draft') refNo = ddNo;
+    setIsSubmitting(true);
+    setTimeout(() => {
+      if (mode === 'recordPayment') {
+        let refNo = receiptNo;
+        if (paymentMethod === 'Cheque') refNo = chequeNo;
+        if (paymentMethod === 'Bank Transfer') refNo = utrNo;
+        if (paymentMethod === 'Demand Draft') refNo = ddNo;
 
-      onSubmitPayment({
-        studentId: selectedStudent?.id || 'STU-101',
-        studentName: selectedStudent?.name || 'Aarav Sharma',
-        classGrade: selectedStudent?.classGrade || 'Grade 10-A',
-        amount: parseFloat(amount),
-        paymentMethod: paymentMethod,
-        feeType: feeType || 'Tuition Fee (Q2)',
-        chequeNo: paymentMethod === 'Cheque' ? chequeNo : null,
-        utrNo: paymentMethod === 'Bank Transfer' ? utrNo : null,
-        ddNo: paymentMethod === 'Demand Draft' ? ddNo : null,
-        bankName: bankName || null,
-        branchName: branchName || null,
-        receiptNo: receiptNo,
-        receivedBy: receivedBy,
-        paymentDateTime: paymentDateTime,
-        remarks: remarks || null,
-        fileName: uploadedFile ? uploadedFile.name : null
-      });
-    } else if (mode === 'reminder') {
-      onSendReminder(student, reminderNote);
-    } else if (mode === 'bulkPenalty') {
-      onBulkPenalty(penaltyAmount);
-    }
-    onClose();
+        onSubmitPayment({
+          studentId: selectedStudent?.id || 'STU-101',
+          studentName: selectedStudent?.name || 'Aarav Sharma',
+          classGrade: selectedStudent?.classGrade || 'Grade 10-A',
+          amount: parseFloat(amount),
+          paymentMethod: paymentMethod,
+          feeType: feeType || 'Tuition Fee (Q2)',
+          chequeNo: paymentMethod === 'Cheque' ? chequeNo : null,
+          utrNo: paymentMethod === 'Bank Transfer' ? utrNo : null,
+          ddNo: paymentMethod === 'Demand Draft' ? ddNo : null,
+          bankName: bankName || null,
+          branchName: branchName || null,
+          receiptNo: receiptNo,
+          receivedBy: receivedBy,
+          paymentDateTime: paymentDateTime,
+          remarks: remarks || null,
+          fileName: uploadedFile ? uploadedFile.name : null
+        });
+      } else if (mode === 'reminder') {
+        onSendReminder(student, reminderNote);
+      } else if (mode === 'bulkPenalty') {
+        onBulkPenalty(penaltyAmount);
+      }
+      setIsSubmitting(false);
+      onClose();
+    }, 450);
   };
+
+  if (isSubmitting) {
+    return (
+      <div className="wizard-overlay fade-in" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <LoadingScreen 
+          fullScreen={false} 
+          message="Recording Payment & Generating Official Receipt..." 
+          subtext="Broadcasting real-time WebSocket updates to parent ledger" 
+        />
+      </div>
+    );
+  }
 
   // RENDER 4-STEP WIZARD FOR RECORD PAYMENT
   if (mode === 'recordPayment') {

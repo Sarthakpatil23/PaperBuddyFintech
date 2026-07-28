@@ -3,7 +3,6 @@
 
 # 💳 PaperBuddy Fintech — Comprehensive School Fee Management & Bank Reconciliation Platform
 
-[![Node.js](https://img.shields.io/badge/Node.js-v18%2B-green.svg)](https://nodejs.org/)
 [![Express](https://img.shields.io/badge/Express-v5.2-black.svg)](https://expressjs.com/)
 [![React](https://img.shields.io/badge/React-v18.2-blue.svg)](https://reactjs.org/)
 [![Vite](https://img.shields.io/badge/Vite-v5.1-646CFF.svg)](https://vitejs.dev/)

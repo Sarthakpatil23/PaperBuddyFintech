@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Download, FileText, Calendar, Layers, GraduationCap, FileSpreadsheet, Sparkles, X } from 'lucide-react';
 import CustomSelect from './CustomSelect';
 import { downloadReportFile } from '../utils/reportGenerator';
+import LoadingScreen from './LoadingScreen';
 
 export default function ReportGeneratorModal({ 
   onClose, 
@@ -74,6 +75,18 @@ export default function ReportGeneratorModal({
 
   const selectedTemplateLabel = reportTypeOptions.find(o => o.value === reportType)?.label || 'Report';
   const selectedRangeLabel = dateRangeOptions.find(o => o.value === dateRange)?.label || 'Date Range';
+
+  if (isGenerating) {
+    return (
+      <div className="modal-overlay fade-in" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(6px)', background: 'rgba(15, 23, 42, 0.65)' }}>
+        <LoadingScreen 
+          fullScreen={false} 
+          message={`Compiling & Exporting ${format.toUpperCase()} Audit Report...`} 
+          subtext="Formatting ledgers & triggering browser file download" 
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="modal-overlay fade-in" onClick={onClose} style={{ backdropFilter: 'blur(6px)', background: 'rgba(15, 23, 42, 0.65)' }}>

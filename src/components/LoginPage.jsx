@@ -9,6 +9,8 @@ import {
 } from 'lucide-react';
 
 import BrandLogo from './BrandLogo';
+import LoadingScreen from './LoadingScreen';
+import ShapeGrid from './ShapeGrid';
 
 export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
   const [role, setRole] = useState('admin');
@@ -191,6 +193,12 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
 
   return (
     <div className="finlyt-landing" style={{ fontFamily: "'Inter', 'Plus Jakarta Sans', sans-serif", background: 'var(--bg-canvas)', color: 'var(--text-main)', minHeight: '100vh', overflowX: 'hidden' }}>
+      {isLoading && (
+        <LoadingScreen 
+          message="Authenticating Credentials with Finlyt Security..." 
+          subtext="Verifying role permissions & initializing workspace..." 
+        />
+      )}
 
       {/* ── TOAST ─────────────────────────────────────────────────────────── */}
       {toastMessage && (
@@ -318,24 +326,44 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
         padding: '64px 6% 88px',
         position: 'relative', overflow: 'hidden'
       }}>
-        {/* Background decoration */}
+        {/* Interactive ShapeGrid Animated Canvas Background */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          opacity: theme === 'dark' ? 0.85 : 0.65,
+          zIndex: 0,
+          pointerEvents: 'auto'
+        }}>
+          <ShapeGrid 
+            speed={0.5} 
+            squareSize={44}
+            direction="diagonal"
+            borderColor={theme === 'dark' ? 'rgba(108, 140, 224, 0.16)' : 'rgba(46, 58, 158, 0.12)'}
+            hoverFillColor={theme === 'dark' ? 'rgba(108, 140, 224, 0.38)' : 'rgba(46, 58, 158, 0.22)'}
+            shape="square"
+            hoverTrailAmount={6}
+          />
+        </div>
+
+        {/* Radial Ambient Glow Overlays */}
         <div style={{
           position: 'absolute', top: '-180px', right: '-180px',
           width: '720px', height: '720px', borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(113,75,103,0.08) 0%, transparent 70%)',
-          pointerEvents: 'none'
+          background: 'radial-gradient(circle, rgba(108,140,224,0.12) 0%, transparent 70%)',
+          pointerEvents: 'none', zIndex: 1
         }} />
         <div style={{
           position: 'absolute', bottom: '-120px', left: '-120px',
           width: '560px', height: '560px', borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(2,132,199,0.06) 0%, transparent 70%)',
-          pointerEvents: 'none'
+          background: 'radial-gradient(circle, rgba(46,58,158,0.08) 0%, transparent 70%)',
+          pointerEvents: 'none', zIndex: 1
         }} />
 
         <div style={{
           maxWidth: '1360px', margin: '0 auto', width: '100%',
           display: 'grid', gridTemplateColumns: 'minmax(0, 1.05fr) 500px',
-          gap: '56px', alignItems: 'center'
+          gap: '56px', alignItems: 'center',
+          position: 'relative', zIndex: 2
         }} className="hero-grid">
 
           {/* Left — Tagline & CTAs */}

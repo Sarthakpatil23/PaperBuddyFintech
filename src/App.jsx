@@ -27,6 +27,7 @@ import ReceiptPDFModal from './components/parent/ReceiptPDFModal';
 import ReportGeneratorModal from './components/ReportGeneratorModal';
 import QuickActionsModal from './components/QuickActionsModal';
 import ChatbotWidget from './components/ChatbotWidget';
+import LoadingScreen from './components/LoadingScreen';
 
 // Initialize Socket.IO Client
 const socket = io('/', { autoConnect: true });
@@ -115,6 +116,7 @@ export default function App() {
   const [selectedStudentForLedger, setSelectedStudentForLedger] = useState('STU-101');
 
   // Modal Dialog States
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [showReportModal, setShowReportModal] = useState(false);
   const [quickActionModal, setQuickActionModal] = useState(null);
   const [toastMessage, setToastMessage] = useState(null);
@@ -265,7 +267,10 @@ export default function App() {
 
   // Initial data fetch on mount
   useEffect(() => {
-    fetchAllData();
+    setIsInitialLoading(true);
+    Promise.resolve(fetchAllData()).finally(() => {
+      setTimeout(() => setIsInitialLoading(false), 550);
+    });
   }, [fetchAllData]);
 
   // Socket.IO listeners — registered once on mount, never re-registered
@@ -686,6 +691,15 @@ export default function App() {
   const handleBulkDefaulterAction = (type, ids) => {
     showToast(`Executed bulk ${type} action on ${ids.length} defaulter student(s).`);
   };
+
+  if (isInitialLoading) {
+    return (
+      <LoadingScreen 
+        message="Synchronizing Finlyt Financial Workspace..." 
+        subtext="Secure bank-grade encryption • Connecting to database" 
+      />
+    );
+  }
 
   return (
     <>
