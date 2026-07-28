@@ -3681,9 +3681,33 @@ html {
     max-height: 560px !important;
   }
 
-  .finlyt-landing .odoo-card {
-    padding: 24px 18px !important;
-    border-radius: 18px !important;
+  .login-form-panel {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    padding: 0 !important;
+  }
+
+  .finlyt-landing .odoo-card,
+  .odoo-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    padding: 28px 20px !important;
+    border-radius: 20px !important;
+  }
+
+  .role-tabs-container {
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .role-tab-btn {
+    flex: 1 1 0% !important;
+    padding: 10px 6px !important;
+    font-size: 0.8rem !important;
+    justify-content: center !important;
+    text-align: center !important;
   }
 
   .hero-cta-group {
@@ -3713,6 +3737,43 @@ html {
 }
 
 @media (max-width: 480px) {
+  .login-form-panel {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+  }
+
+  .finlyt-landing .odoo-card,
+  .odoo-card {
+    padding: 20px 14px !important;
+    border-radius: 16px !important;
+  }
+
+  .card-heading {
+    font-size: 1.45rem !important;
+  }
+
+  .card-subtext {
+    font-size: 0.82rem !important;
+  }
+
+  .role-tab-btn {
+    padding: 9px 4px !important;
+    font-size: 0.76rem !important;
+    gap: 4px !important;
+  }
+
+  .role-tab-btn svg {
+    width: 14px !important;
+    height: 14px !important;
+  }
+
+  .btn-submit-primary,
+  .google-sso-btn {
+    font-size: 0.86rem !important;
+    padding: 0 12px !important;
+  }
+
   #demo-video {
     padding: 48px 16px !important;
   }
@@ -3721,5 +3782,6 @@ html {
     border-radius: 14px !important;
   }
 }
+
 
 
