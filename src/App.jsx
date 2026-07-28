@@ -28,11 +28,11 @@ import ReportGeneratorModal from './components/ReportGeneratorModal';
 import QuickActionsModal from './components/QuickActionsModal';
 import ChatbotWidget from './components/ChatbotWidget';
 import LoadingScreen from './components/LoadingScreen';
-import { API_BASE_URL, getApiUrl } from './config/api';
+import { SOCKET_URL, getApiUrl } from './config/api';
 
-// Initialize Socket.IO Client with deployment-ready URL
-const SOCKET_URL = API_BASE_URL || '/';
-const socket = io(SOCKET_URL, { 
+// Initialize Socket.IO Client — connects directly to Render backend
+// (Vercel cannot proxy WebSocket connections, so we bypass the Vercel proxy here)
+const socket = io(SOCKET_URL, {
   autoConnect: true,
   transports: ['websocket', 'polling']
 });
