@@ -1,4 +1,4 @@
-// Mock Data Layer for PaperBuddy Fintech School Fee Management System
+// Mock Data Layer for Finlyt School Finance Management System
 
 export const INITIAL_OVERVIEW = {
   totalCollected: 1485000,

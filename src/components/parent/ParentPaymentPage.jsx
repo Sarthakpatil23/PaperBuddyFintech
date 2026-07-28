@@ -578,7 +578,7 @@ export default function ParentPaymentPage({
       classGrade: selectedChild?.classGrade || selectedChild?.grade || 'Grade Level',
       parentName: selectedChild?.parentName || 'Parent Account',
       phone: selectedChild?.phone || '+91 98765 43210',
-      email: selectedChild?.email || 'parent@paperbuddy.edu',
+      email: selectedChild?.email || 'parent@finlyt.edu',
       feeType: payableItems.length === 1 ? payableItems[0].title : `Bulk School Dues (${payableItems.length} items)`,
       amount: finalAmountToPay,
       paymentMethod: methodLabel,
@@ -1193,7 +1193,7 @@ export default function ParentPaymentPage({
                 <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#0284C7', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900 }}>R</div>
                 <div>
                   <div style={{ fontWeight: 800, fontSize: '0.88rem', color: 'white' }}>Razorpay Checkout</div>
-                  <div style={{ fontSize: '0.72rem', color: '#94A3B8' }}>PaperBuddy International School</div>
+                  <div style={{ fontSize: '0.72rem', color: '#94A3B8' }}>Finlyt International School</div>
                 </div>
               </div>
               <button type="button" onClick={() => setShowRazorpayModal(false)} style={{ background: 'none', border: 'none', color: '#94A3B8', cursor: 'pointer', padding: '4px' }}>

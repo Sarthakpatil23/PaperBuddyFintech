@@ -105,7 +105,7 @@ export default function ParentLayout({
               {!isSidebarCollapsed && (
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
                   <span style={{ fontWeight: 800, fontSize: '1.05rem', color: 'var(--text-main)', lineHeight: 1.1 }}>
-                    PaperBuddy <span style={{ color: 'var(--odoo-purple)' }}>Parent</span>
+                    Finlyt <span style={{ color: 'var(--odoo-purple)' }}>Parent</span>
                   </span>
                   <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>School Fee Portal</span>
                 </div>
@@ -297,7 +297,7 @@ export default function ParentLayout({
               <Building2 size={18} />
             </div>
             <span style={{ fontWeight: 800, fontSize: '0.98rem', color: 'var(--text-main)', letterSpacing: '-0.02em' }}>
-              PaperBuddy
+              Finlyt
             </span>
           </div>
 

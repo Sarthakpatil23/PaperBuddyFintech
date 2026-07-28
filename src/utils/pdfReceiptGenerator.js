@@ -44,7 +44,7 @@ export function generateReceiptPdfBlob(receipt, student) {
   streams.push('/F2 16 Tf');
   streams.push('0.282 0.180 0.258 rg');
   streams.push('54 772 Td');
-  streams.push(`(${escapePdfText('PAPERBUDDY INTERNATIONAL SCHOOL')}) Tj`);
+  streams.push(`(${escapePdfText('FINLYT INTERNATIONAL SCHOOL')}) Tj`);
   streams.push('ET');
 
   streams.push('BT');
@@ -58,7 +58,7 @@ export function generateReceiptPdfBlob(receipt, student) {
   streams.push('/F1 8 Tf');
   streams.push('0.45 0.45 0.45 rg');
   streams.push('54 738 Td');
-  streams.push(`(${escapePdfText('Knowledge Park II, Tech City • Support: fees@paperbuddy.edu')}) Tj`);
+  streams.push(`(${escapePdfText('Knowledge Park II, Tech City • Support: fees@finlyt.edu')}) Tj`);
   streams.push('ET');
 
   // "PAID RECEIPT" Badge
@@ -267,14 +267,14 @@ export function generateReceiptPdfBlob(receipt, student) {
   streams.push('/F1 8 Tf');
   streams.push('0.45 0.5 0.55 rg');
   streams.push(`114 ${bottomY + 6} Td`);
-  streams.push(`(${escapePdfText('Generated automatically by PaperBuddy Fintech Ledger System.')}) Tj`);
+  streams.push(`(${escapePdfText('Generated automatically by Finlyt Finance Management System.')}) Tj`);
   streams.push('ET');
 
   streams.push('BT');
   streams.push('/F2 9 Tf');
   streams.push('0.443 0.294 0.404 rg');
   streams.push(`360 ${bottomY + 28} Td`);
-  streams.push(`(${escapePdfText('For PaperBuddy International School')}) Tj`);
+  streams.push(`(${escapePdfText('For Finlyt International School')}) Tj`);
   streams.push('ET');
 
   streams.push('BT');

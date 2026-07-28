@@ -37,7 +37,7 @@ export default function App() {
   // Active View State: 'login' | 'admin' | 'parent'
   // On refresh: restore from localStorage so the correct portal stays open
   const [currentView, setCurrentView] = useState(() => {
-    const saved = localStorage.getItem('paperbuddy_session');
+    const saved = localStorage.getItem('finlyt_session');
     if (saved) {
       try {
         const session = JSON.parse(saved);
@@ -53,17 +53,17 @@ export default function App() {
 
   const [authUser, setAuthUser] = useState(() => {
     try {
-      const saved = localStorage.getItem('paperbuddy_session');
+      const saved = localStorage.getItem('finlyt_session');
       return saved ? JSON.parse(saved) : null;
     } catch { return null; }
   });
 
   // Theme State (Dark / Light Mode)
-  const [theme, setTheme] = useState(() => localStorage.getItem('paperbuddy_theme') || 'light');
+  const [theme, setTheme] = useState(() => localStorage.getItem('finlyt_theme') || 'light');
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('paperbuddy_theme', theme);
+    localStorage.setItem('finlyt_theme', theme);
   }, [theme]);
 
   const toggleTheme = () => {
@@ -97,7 +97,7 @@ export default function App() {
   // Restore selectedChildId from saved session on refresh
   const [selectedChildId, setSelectedChildId] = useState(() => {
     try {
-      const saved = localStorage.getItem('paperbuddy_session');
+      const saved = localStorage.getItem('finlyt_session');
       if (saved) {
         const session = JSON.parse(saved);
         return session.studentId || '';
@@ -291,7 +291,7 @@ export default function App() {
       socket.emit('join_admin');
       // Re-join parent room if a student session is active (handles page refresh)
       try {
-        const saved = localStorage.getItem('paperbuddy_session');
+        const saved = localStorage.getItem('finlyt_session');
         if (saved) {
           const session = JSON.parse(saved);
           if (session.role === 'parent' && session.studentId) {
@@ -327,7 +327,7 @@ export default function App() {
 
   const handleLoginSuccess = async (userObj) => {
     // Persist session to localStorage — survives page refresh
-    localStorage.setItem('paperbuddy_session', JSON.stringify(userObj));
+    localStorage.setItem('finlyt_session', JSON.stringify(userObj));
     setAuthUser(userObj);
     if (userObj.role === 'parent') {
       setCurrentView('parent');
@@ -424,7 +424,7 @@ export default function App() {
 
   const handleSignOut = () => {
     // Clear persisted session so login page is shown on next visit
-    localStorage.removeItem('paperbuddy_session');
+    localStorage.removeItem('finlyt_session');
     setAuthUser(null);
     setActiveParent(null);
     setSelectedChildId('');
@@ -432,7 +432,7 @@ export default function App() {
     setParentNotifications([]);
     setCurrentView('login');
     navigate('/login');
-    showToast('Signed out of PaperBuddy portal.');
+    showToast('Signed out of Finlyt portal.');
   };
 
   const handleSwitchToAdmin = () => {

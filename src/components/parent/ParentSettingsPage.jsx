@@ -158,7 +158,7 @@ export default function ParentSettingsPage({ parentAccount, selectedChild, onSav
             </h3>
 
             <div style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-              Your payment credentials and UPI VPAs are processed strictly through RBI-authorized payment aggregators (Razorpay / PhonePe). No card details or banking passwords are stored on PaperBuddy servers.
+              Your payment credentials and UPI VPAs are processed strictly through RBI-authorized payment aggregators (Razorpay / PhonePe). No card details or banking passwords are stored on Finlyt servers.
             </div>
           </div>
 

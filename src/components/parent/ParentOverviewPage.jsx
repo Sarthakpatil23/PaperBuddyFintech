@@ -405,7 +405,7 @@ export default function ParentOverviewPage({
             <div style={{ padding: '12px 14px', background: 'var(--bg-canvas)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', fontSize: '0.8rem', display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ color: 'var(--text-muted)' }}>Campus:</span>
-                <strong style={{ color: 'var(--text-main)' }}>PaperBuddy Main Branch</strong>
+                <strong style={{ color: 'var(--text-main)' }}>Finlyt Main Branch</strong>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ color: 'var(--text-muted)' }}>Board:</span>
@@ -485,7 +485,7 @@ export default function ParentOverviewPage({
             </div>
             <div>
               <div style={{ fontWeight: 700, fontSize: '0.84rem', color: 'var(--text-main)' }}>School Accounts Desk</div>
-              <div style={{ fontSize: '0.76rem', color: 'var(--text-muted)', marginTop: '1px' }}>fees@paperbuddy.edu • +91 (080) 4567-8900</div>
+              <div style={{ fontSize: '0.76rem', color: 'var(--text-muted)', marginTop: '1px' }}>fees@finlyt.edu • +91 (080) 4567-8900</div>
             </div>
           </div>
 

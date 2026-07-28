@@ -63,7 +63,7 @@ export default function AppLayout({
 
   const currentMeta = ROUTE_META[location.pathname] || {
     title: 'School Fee Operations Portal',
-    subtitle: 'Welcome to PaperBuddy Admin Operations'
+    subtitle: 'Welcome to Finlyt Admin Operations'
   };
 
   return (
@@ -75,7 +75,7 @@ export default function AppLayout({
             <Building2 size={20} />
           </div>
           <span className="brand-title">
-            PaperBuddy <span>Admin</span>
+            Finlyt <span>Admin</span>
           </span>
         </div>
 
@@ -141,7 +141,7 @@ export default function AppLayout({
         </nav>
 
         <div className="sidebar-footer">
-          <div>User: <strong>{authUser?.email || 'admin@paperbuddy.edu'}</strong></div>
+          <div>User: <strong>{authUser?.email || 'admin@finlyt.edu'}</strong></div>
           <div style={{ color: 'var(--accent-blue-text)', fontWeight: 600 }}>Role: {authUser?.roleLabel || 'School Admin'}</div>
 
           {/* Theme Toggle Switch */}

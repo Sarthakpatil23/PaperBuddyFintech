@@ -1,4 +1,4 @@
-/* PaperBuddy Fintech Complete Design System — Odoo Palette (No Green) */
+/* Finlyt — School Finance Management Platform — Complete Design System — Odoo Palette */
 :root {
   --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-heading: 'Plus Jakarta Sans', 'Inter', sans-serif;
@@ -34,6 +34,7 @@
   /* Canvas & Surfaces */
   --bg-canvas: #F8F9FA;
   --surface-card: #FFFFFF;
+  --bg-card: #FFFFFF;
   --surface-hover: #F1F5F9;
   --border-color: #E2E8F0;
   --border-focus: #714B67;
@@ -61,6 +62,7 @@
 [data-theme="dark"] {
   --bg-canvas: #0F172A;
   --surface-card: #1E293B;
+  --bg-card: #1E293B;
   --surface-hover: #334155;
   --border-color: #334155;
   --border-focus: #C07FA8;
@@ -3158,3 +3160,230 @@ body {
 }
 
 
+/* ══════════════════════════════════════════════════════════════════════════
+   FINLYT SAAS LANDING PAGE — Complete CSS
+══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Keyframes ─────────────────────────────────────────────────────────── */
+@keyframes slideInRight {
+  from { transform: translateX(100px); opacity: 0; }
+  to   { transform: translateX(0);     opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from { transform: translateY(24px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+@keyframes pulse-ring {
+  0%   { box-shadow: 0 0 0 0 rgba(113, 75, 103, 0.4); }
+  70%  { box-shadow: 0 0 0 16px rgba(113, 75, 103, 0);  }
+  100% { box-shadow: 0 0 0 0 rgba(113, 75, 103, 0);     }
+}
+
+.finlyt-landing {
+  animation: fadeInUp 0.5s ease;
+}
+
+/* ── Desktop-only nav / mobile-only toggle ─────────────────────────────── */
+.landing-desktop-nav {
+  display: flex !important;
+}
+
+.landing-mobile-only {
+  display: none !important;
+}
+
+/* ── Hero Grid ─────────────────────────────────────────────────────────── */
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1fr 440px;
+  gap: 80px;
+  align-items: center;
+}
+
+/* ── Hero Stats Grid ───────────────────────────────────────────────────── */
+.hero-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+
+/* ── AI Section Grid ───────────────────────────────────────────────────── */
+.ai-section-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+
+/* ── Workflow Timeline ─────────────────────────────────────────────────── */
+.workflow-timeline {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0;
+  position: relative;
+}
+
+.workflow-connector {
+  position: absolute;
+  top: 36px;
+  left: 8.33%;
+  right: 8.33%;
+  height: 2px;
+  background: linear-gradient(90deg, #714B67, #0284C7);
+  z-index: 0;
+}
+
+/* ── Footer Grid ───────────────────────────────────────────────────────── */
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+  gap: 48px;
+  margin-bottom: 56px;
+}
+
+/* ── Smooth scroll ─────────────────────────────────────────────────────── */
+html {
+  scroll-behavior: smooth;
+}
+
+/* ── Responsive: Tablet ≤ 1100px ──────────────────────────────────────── */
+@media (max-width: 1100px) {
+  .hero-grid {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+
+  .hero-grid .login-form-panel {
+    max-width: 520px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .hero-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  .ai-section-grid {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+
+  .ai-section-grid > div:first-child {
+    order: 2;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 32px;
+  }
+
+  .footer-grid > div:first-child {
+    grid-column: 1 / -1;
+  }
+}
+
+/* ── Responsive: ≤ 900px ──────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .workflow-timeline {
+    grid-template-columns: 1fr 1fr 1fr;
+    row-gap: 40px;
+  }
+
+  .workflow-connector {
+    display: none;
+  }
+}
+
+/* ── Responsive: Mobile ≤ 768px ───────────────────────────────────────── */
+@media (max-width: 768px) {
+  .landing-desktop-nav {
+    display: none !important;
+  }
+
+  .landing-mobile-only {
+    display: flex !important;
+  }
+
+  .hero-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    padding: 0;
+  }
+
+  .hero-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .workflow-timeline {
+    grid-template-columns: 1fr 1fr;
+    row-gap: 36px;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+  }
+
+  .footer-grid > div:first-child {
+    grid-column: 1 / -1;
+  }
+}
+
+/* ── Responsive: Small Mobile ≤ 480px ─────────────────────────────────── */
+@media (max-width: 480px) {
+  .hero-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .workflow-timeline {
+    grid-template-columns: 1fr;
+    row-gap: 28px;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+
+/* ── Dark theme landing overrides ──────────────────────────────────────── */
+[data-theme="dark"] .finlyt-landing section {
+  background-color: transparent;
+}
+
+[data-theme="dark"] .finlyt-landing footer {
+  background: rgba(15, 23, 42, 0.95) !important;
+}
+
+/* ── Login card within landing hero ───────────────────────────────────── */
+.finlyt-landing .odoo-card {
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12), 0 0 0 1px var(--border-color);
+}
+
+/* ── Nav link hover polish ─────────────────────────────────────────────── */
+.finlyt-landing nav a:hover {
+  color: var(--text-main) !important;
+  background: var(--bg-card) !important;
+}
+
+/* ── Feature card hover state ──────────────────────────────────────────── */
+.finlyt-feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.1);
+}
+
+/* ── Workflow step circle hover ────────────────────────────────────────── */
+.workflow-step-circle:hover {
+  background: linear-gradient(135deg, #714B67, #0284C7) !important;
+  border-color: #714B67 !important;
+}
+
+.workflow-step-circle:hover svg {
+  color: white !important;
+}

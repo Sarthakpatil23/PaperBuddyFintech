@@ -102,7 +102,7 @@ export default function DefaulterTracking({
 
   const openReminderModal = (def) => {
     setReminderModalDef(def);
-    setReminderMessage(`Dear ${def.parentName || 'Parent'}, this is an urgent reminder to clear the overdue fee amount of ₹${def.amountOwed.toLocaleString('en-IN')} for ${def.studentName} (${def.classGrade}). Please pay via the PaperBuddy Parent Portal.`);
+    setReminderMessage(`Dear ${def.parentName || 'Parent'}, this is an urgent reminder to clear the overdue fee amount of ₹${def.amountOwed.toLocaleString('en-IN')} for ${def.studentName} (${def.classGrade}). Please pay via the Finlyt Parent Portal.`);
   };
 
   const handleSendReminderSubmit = async (e) => {

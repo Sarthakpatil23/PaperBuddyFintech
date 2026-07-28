@@ -134,9 +134,9 @@ export default function ReceiptPDFModal({ receipt, student, onClose, onDownload 
                   <Building2 size={26} />
                 </div>
                 <div>
-                  <h3 style={{ fontSize: '1.25rem', fontWeight: '800', color: '#0F172A', margin: 0, letterSpacing: '-0.02em' }}>PaperBuddy International School</h3>
+                  <h3 style={{ fontSize: '1.25rem', fontWeight: '800', color: '#0F172A', margin: 0, letterSpacing: '-0.02em' }}>Finlyt International School</h3>
                   <p style={{ fontSize: '0.8rem', color: '#64748B', margin: '2px 0 0 0' }}>Affiliated to CBSE Board • School Code: PB-89210</p>
-                  <p style={{ fontSize: '0.78rem', color: '#94A3B8', margin: '1px 0 0 0' }}>Campus Road, Knowledge Park II, Tech City • Support: fees@paperbuddy.edu</p>
+                  <p style={{ fontSize: '0.78rem', color: '#94A3B8', margin: '1px 0 0 0' }}>Campus Road, Knowledge Park II, Tech City • Support: fees@finlyt.edu</p>
                 </div>
               </div>
 
@@ -215,7 +215,7 @@ export default function ReceiptPDFModal({ receipt, student, onClose, onDownload 
 
               <div style={{ textAlign: 'right' }}>
                 <div style={{ fontSize: '0.78rem', fontStyle: 'italic', color: '#64748B' }}>Computer Generated Receipt</div>
-                <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#714B67', marginTop: '2px' }}>PaperBuddy Fee System</div>
+                <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#714B67', marginTop: '2px' }}>Finlyt Fee System</div>
               </div>
             </div>
 

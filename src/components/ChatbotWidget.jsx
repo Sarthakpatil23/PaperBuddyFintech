@@ -39,15 +39,15 @@ export default function ChatbotWidget({ role = 'parent', studentId = null, onAct
 
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState(() => {
-    const saved = sessionStorage.getItem(`paperbuddy_chat_${role}`);
+    const saved = sessionStorage.getItem(`finlyt_chat_${role}`);
     if (saved) {
       try { return JSON.parse(saved); } catch (e) {}
     }
     return [
       {
-        id: 'init-1',
+        id: 'welcome-msg',
         sender: 'assistant',
-        text: `Hello! I am **PaperBuddy AI**, your grounded assistant for the ${role === 'admin' ? 'School Admin Portal' : 'Parent Fee Portal'}. How can I help you today?`,
+        text: `Hello! I am **Finlyt AI**, your grounded assistant for the ${role === 'admin' ? 'School Admin Portal' : 'Parent Fee Portal'}. How can I help you today?`,
         type: 'text',
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       }
@@ -61,7 +61,7 @@ export default function ChatbotWidget({ role = 'parent', studentId = null, onAct
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
-    sessionStorage.setItem(`paperbuddy_chat_${role}`, JSON.stringify(messages));
+    sessionStorage.setItem(`finlyt_chat_${role}`, JSON.stringify(messages));
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, role]);
 
@@ -115,8 +115,8 @@ export default function ChatbotWidget({ role = 'parent', studentId = null, onAct
           type: 'escalation',
           payload: {
             adminContact: {
-              name: 'PaperBuddy Accounts & Support Office',
-              email: 'fees@paperbuddy.edu',
+              name: 'Finlyt Accounts & Support Office',
+              email: 'fees@finlyt.edu',
               phone: '+91 (080) 4567-8900'
             }
           },
@@ -175,13 +175,13 @@ export default function ChatbotWidget({ role = 'parent', studentId = null, onAct
       {
         id: 'init-1',
         sender: 'assistant',
-        text: `Chat reset. I am **PaperBuddy AI**, your grounded assistant. How can I help you today?`,
+        text: `Chat reset. I am **Finlyt AI**, your grounded assistant. How can I help you today?`,
         type: 'text',
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       }
     ];
     setMessages(initial);
-    sessionStorage.removeItem(`paperbuddy_chat_${role}`);
+    sessionStorage.removeItem(`finlyt_chat_${role}`);
   };
 
   return (
@@ -192,7 +192,7 @@ export default function ChatbotWidget({ role = 'parent', studentId = null, onAct
           type="button"
           className="chatbot-trigger-btn fade-in"
           onClick={() => setIsOpen(true)}
-          title="Open PaperBuddy AI Assistant"
+          title="Open Finlyt AI Assistant"
           style={{
             position: 'fixed',
             bottom: '24px',
@@ -274,7 +274,7 @@ export default function ChatbotWidget({ role = 'parent', studentId = null, onAct
               </div>
               <div>
                 <div style={{ fontWeight: 800, fontSize: '0.95rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <span>PaperBuddy AI</span>
+                  <span>Finlyt AI</span>
                   <span style={{ fontSize: '0.68rem', padding: '1px 6px', background: 'rgba(56, 189, 248, 0.2)', color: '#38BDF8', borderRadius: '99px', fontWeight: 700 }}>
                     Llama 3.3
                   </span>
@@ -502,7 +502,7 @@ export default function ChatbotWidget({ role = 'parent', studentId = null, onAct
             {isLoading && (
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 14px', background: '#ffffff', borderRadius: '14px', width: 'fit-content', border: '1px solid #E2E8F0' }}>
                 <Sparkles size={16} className="animate-spin" style={{ color: '#714B67' }} />
-                <span style={{ fontSize: '0.8rem', color: '#64748B', fontWeight: 600 }}>PaperBuddy AI is retrieving data...</span>
+                <span style={{ fontSize: '0.8rem', color: '#64748B', fontWeight: 600 }}>Finlyt AI is retrieving data...</span>
               </div>
             )}
 
@@ -549,7 +549,7 @@ export default function ChatbotWidget({ role = 'parent', studentId = null, onAct
           >
             <textarea
               className="form-input"
-              placeholder={`Ask PaperBuddy AI (${role === 'admin' ? 'Admin' : 'Parent'} mode)...`}
+              placeholder={`Ask Finlyt AI (${role === 'admin' ? 'Admin' : 'Parent'} mode)...`}
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
               onKeyDown={(e) => {
