@@ -4,6 +4,7 @@
 # 💳 PaperBuddy Fintech — Comprehensive School Fee Management & Bank Reconciliation Platform
 
 [![Live Demo](https://img.shields.io/badge/Live_Demo-paper--buddy--fintech.vercel.app-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://paper-buddy-fintech.vercel.app/login)
+[![YouTube Video](https://img.shields.io/badge/YouTube-Video_Walkthrough-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/watch?v=5FhrPB4zIxs)
 [![Express](https://img.shields.io/badge/Express-v5.2-black.svg)](https://expressjs.com/)
 [![React](https://img.shields.io/badge/React-v18.2-blue.svg)](https://reactjs.org/)
 [![Vite](https://img.shields.io/badge/Vite-v5.1-646CFF.svg)](https://vitejs.dev/)
@@ -12,7 +13,10 @@
 [![Socket.IO](https://img.shields.io/badge/Socket.IO-v4.8-010101.svg)](https://socket.io/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-> 🚀 **LIVE DEMO APPLICATION**: **[https://paper-buddy-fintech.vercel.app/login](https://paper-buddy-fintech.vercel.app/login)**
+> 🚀 **LIVE DEMO APPLICATION**: **[https://paper-buddy-fintech.vercel.app/login](https://paper-buddy-fintech.vercel.app/login)**  
+> 📺 **VIDEO DEMO & WALKTHROUGH**: **[Watch Video on YouTube (https://www.youtube.com/watch?v=5FhrPB4zIxs)](https://www.youtube.com/watch?v=5FhrPB4zIxs)**
+
+[![PaperBuddy Fintech Video Walkthrough](https://img.youtube.com/vi/5FhrPB4zIxs/hqdefault.jpg)](https://www.youtube.com/watch?v=5FhrPB4zIxs)
 
 > **PaperBuddy Fintech** is a production-ready, full-stack financial management platform designed specifically for educational institutions. It digitizes the entire school fee lifecycle — transforming fragmented spreadsheets, offline cash counters, and manual cheque tracking into a unified, audit-grade single source of truth with automated late fee calculation, real-time bank reconciliation, and live parent alerts.
 
