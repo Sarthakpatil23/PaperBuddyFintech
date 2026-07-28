@@ -12,8 +12,7 @@
 [![Socket.IO](https://img.shields.io/badge/Socket.IO-v4.8-010101.svg)](https://socket.io/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-> 🚀 **LIVE DEMO APPLICATION**: **[https://paper-buddy-fintech.vercel.app/login](https://paper-buddy-fintech.vercel.app/login)**  
-> 📡 **LIVE BACKEND SERVICE (Render)**: **[https://paperbuddyfintech-backend.onrender.com/health](https://paperbuddyfintech-backend.onrender.com/health)**
+> 🚀 **LIVE DEMO APPLICATION**: **[https://paper-buddy-fintech.vercel.app/login](https://paper-buddy-fintech.vercel.app/login)**
 
 > **PaperBuddy Fintech** is a production-ready, full-stack financial management platform designed specifically for educational institutions. It digitizes the entire school fee lifecycle — transforming fragmented spreadsheets, offline cash counters, and manual cheque tracking into a unified, audit-grade single source of truth with automated late fee calculation, real-time bank reconciliation, and live parent alerts.
 
