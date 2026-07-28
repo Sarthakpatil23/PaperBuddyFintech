@@ -9,6 +9,7 @@ import {
   XCircle, 
   Loader2, 
   ArrowLeft, 
+  ArrowRight,
   Download, 
   Receipt, 
   Sparkles, 
@@ -26,7 +27,9 @@ import {
   Eye,
   Home,
   Clock,
-  Search
+  Search,
+  FileText,
+  BadgeCheck
 } from 'lucide-react';
 import { downloadReceiptPDF } from '../../utils/pdfReceiptGenerator';
 
@@ -34,7 +37,6 @@ import { downloadReceiptPDF } from '../../utils/pdfReceiptGenerator';
 // CUSTOM VECTOR SVG LOGOS (NO EMOJIS)
 // ==========================================
 
-// UPI Provider Logos
 const PhonePeIcon = ({ size = 28 }) => (
   <svg width={size} height={size} viewBox="0 0 32 32" fill="none">
     <rect width="32" height="32" rx="8" fill="#5F259F" />
@@ -75,7 +77,6 @@ const CredIcon = ({ size = 28 }) => (
   </svg>
 );
 
-// Bank Logos Vector Components
 const HdfcLogo = ({ size = 26 }) => (
   <svg width={size} height={size} viewBox="0 0 32 32" fill="none">
     <rect width="32" height="32" rx="6" fill="#004B8D" />
@@ -185,7 +186,6 @@ const GenericBankLogo = ({ size = 26, color = "#0F172A" }) => (
   </svg>
 );
 
-// Wallet Vector Logos
 const AmazonPayLogo = ({ size = 28 }) => (
   <svg width={size} height={size} viewBox="0 0 32 32" fill="none">
     <rect width="32" height="32" rx="8" fill="#232F3E" />
@@ -216,7 +216,6 @@ const SimplLogo = ({ size = 28 }) => (
   </svg>
 );
 
-// Comprehensive List of 42 Indian Commercial & Scheduled Banks
 const INDIAN_BANKS_LIST = [
   { id: 'HDFC', name: 'HDFC Bank', code: 'HDFC0000001', category: 'Popular', logoComponent: HdfcLogo },
   { id: 'ICICI', name: 'ICICI Bank', code: 'ICIC0000001', category: 'Popular', logoComponent: IciciLogo },
@@ -258,6 +257,170 @@ const INDIAN_BANKS_LIST = [
   { id: 'DEUTSCHE', name: 'Deutsche Bank India', code: 'DEUT0000001', category: 'Foreign Bank', logoComponent: GenericBankLogo }
 ];
 
+// ==========================================
+// STEP CONFIG
+// ==========================================
+const STEPS = [
+  { id: 1, label: 'Review Fees',      icon: FileText    },
+  { id: 2, label: 'Payment Method',   icon: CreditCard  },
+  { id: 3, label: 'Complete Payment', icon: Lock        },
+  { id: 4, label: 'Verification',     icon: ShieldCheck },
+  { id: 5, label: 'Receipt',          icon: BadgeCheck  },
+];
+
+// ==========================================
+// HORIZONTAL PROGRESS STEPPER
+// ==========================================
+function CheckoutStepper({ currentStep }) {
+  return (
+    <div className="checkout-stepper-container">
+      {STEPS.map((step, idx) => {
+        const done   = currentStep > step.id;
+        const active = currentStep === step.id;
+        const Icon   = step.icon;
+        return (
+          <React.Fragment key={step.id}>
+            <div className="stepper-step-item">
+              {/* Circle */}
+              <div className={`stepper-circle ${done ? 'done' : active ? 'active' : ''}`}>
+                {done ? <Check size={18} /> : <Icon size={16} />}
+              </div>
+              {/* Label */}
+              <span className={`stepper-label ${active ? 'active' : done ? 'done' : ''}`}>
+                {step.label}
+              </span>
+            </div>
+            {/* Connector line */}
+            {idx < STEPS.length - 1 && (
+              <div className={`stepper-connector ${currentStep > step.id ? 'active' : ''}`} />
+            )}
+          </React.Fragment>
+        );
+      })}
+    </div>
+  );
+}
+
+// ==========================================
+// STICKY ORDER SUMMARY SIDEBAR
+// ==========================================
+function OrderSummary({ payableItems, finalAmountToPay, selectedChild, isCustomMode, setIsCustomMode, customAmount, setCustomAmount, defaultTotal }) {
+  return (
+    <div className="checkout-order-summary">
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', paddingBottom: '12px', borderBottom: '1px solid var(--border-color)' }}>
+        <Building2 size={17} style={{ color: 'var(--odoo-purple)' }} />
+        <span style={{ fontWeight: 800, fontSize: '0.92rem', color: 'var(--text-main)' }}>Order Summary</span>
+      </div>
+
+      {/* Student Chip */}
+      {selectedChild && (
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: '10px',
+          padding: '10px 12px', borderRadius: '10px',
+          background: 'var(--odoo-purple-light)',
+          border: '1px solid rgba(113,75,103,0.2)',
+        }}>
+          <div style={{
+            width: '32px', height: '32px', borderRadius: '50%',
+            background: 'var(--odoo-purple)', color: 'white',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontWeight: 800, fontSize: '0.9rem', flexShrink: 0,
+          }}>
+            {selectedChild.name?.charAt(0) || 'S'}
+          </div>
+          <div>
+            <div style={{ fontWeight: 700, fontSize: '0.84rem', color: 'var(--text-main)' }}>{selectedChild.name}</div>
+            <div style={{ fontSize: '0.74rem', color: 'var(--odoo-purple)', fontWeight: 600 }}>{selectedChild.classGrade}</div>
+          </div>
+        </div>
+      )}
+
+      {/* Line Items */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '200px', overflowY: 'auto' }}>
+        {payableItems.length === 0 ? (
+          <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', padding: '8px 0' }}>
+            Clearing full outstanding balance
+          </div>
+        ) : (
+          payableItems.map((item) => (
+            <div key={item.id} style={{
+              display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start',
+              padding: '8px 0', borderBottom: '1px dashed var(--border-color)',
+              fontSize: '0.82rem',
+            }}>
+              <div>
+                <div style={{ fontWeight: 700, color: 'var(--text-main)' }}>{item.title}</div>
+                {item.lateFee > 0 && (
+                  <span style={{ fontSize: '0.72rem', color: 'var(--status-danger-text)' }}>+₹{item.lateFee} late fee</span>
+                )}
+              </div>
+              <span style={{ fontWeight: 800, color: 'var(--text-main)', flexShrink: 0 }}>
+                ₹{(item.amount + (item.lateFee || 0)).toLocaleString('en-IN')}
+              </span>
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* Total */}
+      <div style={{
+        padding: '16px', borderRadius: '12px',
+        background: 'linear-gradient(135deg, rgba(113,75,103,0.08) 0%, rgba(2,132,199,0.08) 100%)',
+        border: '1px solid rgba(113,75,103,0.2)',
+      }}>
+        <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)', fontWeight: 700 }}>
+          Total Payable
+        </div>
+        <div style={{ fontSize: '2rem', fontWeight: 900, color: 'var(--odoo-purple)', letterSpacing: '-0.03em', marginTop: '2px' }}>
+          ₹{finalAmountToPay.toLocaleString('en-IN')}
+        </div>
+        <div style={{ marginTop: '6px' }}>
+          <button
+            type="button"
+            onClick={() => setIsCustomMode(!isCustomMode)}
+            style={{ background: 'none', border: 'none', color: 'var(--accent-blue-text)', fontSize: '0.78rem', fontWeight: 700, cursor: 'pointer', padding: 0 }}
+          >
+            {isCustomMode ? '← Reset to Full Amount' : 'Pay Partial Amount'}
+          </button>
+        </div>
+        {isCustomMode && (
+          <div style={{ marginTop: '8px' }}>
+            <input
+              type="number"
+              className="form-input"
+              value={customAmount}
+              onChange={(e) => setCustomAmount(e.target.value)}
+              min="1"
+              max={defaultTotal}
+              style={{ height: '38px', fontSize: '0.9rem', fontWeight: 700 }}
+            />
+          </div>
+        )}
+      </div>
+
+      {/* Trust Badges */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.74rem', color: 'var(--text-muted)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--status-paid-text)', fontWeight: 700 }}>
+          <ShieldCheck size={14} />
+          <span>RBI & Razorpay Certified Gateway</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <Lock size={13} />
+          <span>256-bit SSL Encrypted</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <Zap size={13} />
+          <span>Zero Platform Fee</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ==========================================
+// MAIN COMPONENT
+// ==========================================
 export default function ParentPaymentPage({
   selectedChild,
   selectedFeeItems,
@@ -266,39 +429,34 @@ export default function ParentPaymentPage({
 }) {
   const navigate = useNavigate();
 
-  const payableItems = selectedFeeItems && selectedFeeItems.length > 0
-    ? selectedFeeItems
-    : [];
-
+  const payableItems = selectedFeeItems && selectedFeeItems.length > 0 ? selectedFeeItems : [];
   const defaultTotal = payableItems.reduce((sum, item) => sum + item.amount + (item.lateFee || 0), 0) || 25000;
   const [customAmount, setCustomAmount] = useState(defaultTotal);
   const [isCustomMode, setIsCustomMode] = useState(false);
   const finalAmountToPay = isCustomMode ? Number(customAmount) : defaultTotal;
 
-  // Active Main Payment Method: 'upi' | 'card' | 'netbanking' | 'wallet'
-  const [activeTab, setActiveTab] = useState('upi');
+  // Multi-step checkout state: 1=Review, 2=Method, 3=Pay, 4=Processing/OTP, 5=Receipt
+  const [checkoutStep, setCheckoutStep] = useState(1);
 
-  // Sub-method states
+  // Payment method state
+  const [activeTab, setActiveTab] = useState('upi');
   const [upiSubOption, setUpiSubOption] = useState('qr');
   const [selectedUpiApp, setSelectedUpiApp] = useState('PhonePe');
   const [vpaInput, setVpaInput] = useState('parent@upi');
 
-  // Card details state
   const [cardNumber, setCardNumber] = useState('4532 8921 0041 4242');
   const [cardHolder, setCardHolder] = useState(selectedChild?.parentName || 'RAJESH SHARMA');
   const [cardExpiry, setCardExpiry] = useState('12/28');
   const [cardCvv, setCardCvv] = useState('892');
   const [saveCard, setSaveCard] = useState(true);
 
-  // Net banking state & custom searchable modal dropdown
   const [selectedBankId, setSelectedBankId] = useState('HDFC');
   const [showBankSelectorModal, setShowBankSelectorModal] = useState(false);
   const [bankSearchTerm, setBankSearchTerm] = useState('');
 
-  // Filtered banks for custom dropdown modal
   const filteredBanks = useMemo(() => {
     if (!bankSearchTerm.trim()) return INDIAN_BANKS_LIST;
-    return INDIAN_BANKS_LIST.filter(b => 
+    return INDIAN_BANKS_LIST.filter(b =>
       b.name.toLowerCase().includes(bankSearchTerm.toLowerCase()) ||
       b.id.toLowerCase().includes(bankSearchTerm.toLowerCase()) ||
       b.code.toLowerCase().includes(bankSearchTerm.toLowerCase())
@@ -309,21 +467,17 @@ export default function ParentPaymentPage({
     return INDIAN_BANKS_LIST.find(b => b.id === selectedBankId) || INDIAN_BANKS_LIST[0];
   }, [selectedBankId]);
 
-  // Wallet state
   const [selectedWallet, setSelectedWallet] = useState('Paytm Wallet');
-
-  // Simulation settings
   const [simulateFailure, setSimulateFailure] = useState(false);
   const [showRazorpayModal, setShowRazorpayModal] = useState(false);
 
-  // Step state: 'checkout' | 'processing' | 'otp_modal' | 'success' | 'failed'
-  const [step, setStep] = useState('checkout');
-  const [processingMsg, setProcessingMsg] = useState('Connecting to Razorpay Secure Gateway...');
+  // Gateway step: 'idle' | 'processing' | 'otp_modal' | 'success' | 'failed'
+  const [gwStep, setGwStep] = useState('idle');
+  const [processingMsg, setProcessingMsg] = useState('');
   const [otpInput, setOtpInput] = useState('');
   const [otpError, setOtpError] = useState('');
   const [createdTxn, setCreatedTxn] = useState(null);
 
-  // Countdown timer for QR code (4 mins 59 secs)
   const [qrTimer, setQrTimer] = useState(299);
   useEffect(() => {
     if (activeTab === 'upi' && upiSubOption === 'qr' && qrTimer > 0) {
@@ -338,7 +492,6 @@ export default function ParentPaymentPage({
     return `0${m}:${s < 10 ? '0' : ''}${s}`;
   };
 
-  // Detect Card Brand from card number
   const getCardBrand = (num) => {
     const clean = num.replace(/\s+/g, '');
     if (clean.startsWith('4')) return { name: 'VISA', color: '#1A1F71', bg: '#E8EFFE' };
@@ -349,72 +502,57 @@ export default function ParentPaymentPage({
   };
   const cardBrand = getCardBrand(cardNumber);
 
-  // Format Card Number input
   const handleCardNumberChange = (e) => {
     let val = e.target.value.replace(/\D/g, '').slice(0, 16);
     let formatted = val.match(/.{1,4}/g)?.join(' ') || val;
     setCardNumber(formatted);
   };
 
-  // Format Expiry input
   const handleExpiryChange = (e) => {
     let val = e.target.value.replace(/\D/g, '').slice(0, 4);
-    if (val.length >= 2) {
-      val = val.slice(0, 2) + '/' + val.slice(2);
-    }
+    if (val.length >= 2) val = val.slice(0, 2) + '/' + val.slice(2);
     setCardExpiry(val);
   };
 
-  // Initiate Payment Submission
   const handleInitiatePayment = (e) => {
     e && e.preventDefault();
     if (finalAmountToPay <= 0) return;
-
     if (activeTab === 'card') {
-      setStep('otp_modal');
+      setGwStep('otp_modal');
       setOtpInput('');
       setOtpError('');
+      setCheckoutStep(4);
       return;
     }
-
     startGatewayProcessing();
   };
 
   const startGatewayProcessing = () => {
-    setStep('processing');
+    setCheckoutStep(4);
+    setGwStep('processing');
     setProcessingMsg(`Initiating ${activeTab.toUpperCase()} transaction via Razorpay Rail...`);
-
-    setTimeout(() => {
-      setProcessingMsg('Verifying mandate with Core Bank PSP & NPCI...');
-    }, 1200);
-
-    setTimeout(() => {
-      setProcessingMsg('Awaiting real-time settlement response...');
-    }, 2400);
-
+    setTimeout(() => setProcessingMsg('Verifying mandate with Core Bank PSP & NPCI...'), 1200);
+    setTimeout(() => setProcessingMsg('Awaiting real-time settlement response...'), 2400);
     setTimeout(() => {
       if (simulateFailure) {
-        setStep('failed');
+        setGwStep('failed');
       } else {
         completeSuccessfulPayment();
       }
     }, 3600);
   };
 
-  // Handle OTP Submission for Card 3D-Secure
   const handleVerifyOtp = (e) => {
     e.preventDefault();
     if (!otpInput || otpInput.trim().length < 4) {
-      setOtpError('Please enter a valid 6-digit Bank OTP (or click Auto-fill Test OTP)');
+      setOtpError('Please enter a valid 6-digit Bank OTP');
       return;
     }
-
-    setStep('processing');
+    setGwStep('processing');
     setProcessingMsg('Verifying 3D-Secure Bank OTP Authentication...');
-
     setTimeout(() => {
       if (simulateFailure) {
-        setStep('failed');
+        setGwStep('failed');
       } else {
         completeSuccessfulPayment();
       }
@@ -450,7 +588,7 @@ export default function ParentPaymentPage({
       reconciled: true,
       utrNo: newUtr,
       paymentId: paymentId,
-      payerVPA: activeTab === 'upi' ? (upiSubOption === 'vpa' ? vpaInput : `${selectedChild?.name.toLowerCase().replace(' ', '')}@upi`) : 'N/A',
+      payerVPA: activeTab === 'upi' ? (upiSubOption === 'vpa' ? vpaInput : `${selectedChild?.name?.toLowerCase().replace(' ', '')}@upi`) : 'N/A',
       gateway: `Razorpay Standard (${activeTab.toUpperCase()})`,
       items: payableItems.length > 0 ? payableItems.map(i => ({ name: i.title, amount: i.amount + (i.lateFee || 0) })) : [{ name: 'School Fee Settlement', amount: finalAmountToPay }],
       history: [
@@ -463,668 +601,543 @@ export default function ParentPaymentPage({
     if (onCompletePayment) {
       onCompletePayment(newTxnObj, payableItems.map(i => i.id));
     }
-    setStep('success');
+    setGwStep('success');
+    setCheckoutStep(5);
   };
 
-  return (
-    <div className="parent-payment-page fade-in" style={{ maxWidth: '1140px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '24px' }}>
-      
-      {/* Top Header Bar */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-          <button 
-            type="button" 
-            className="icon-btn-ghost"
-            onClick={() => navigate('/parent/fees')}
-            style={{ border: '1px solid var(--border-color)', background: 'var(--surface-card)', borderRadius: 'var(--radius-md)', padding: '10px' }}
-          >
-            <ArrowLeft size={18} />
-          </button>
-          <div>
-            <h1 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-main)', margin: 0, letterSpacing: '-0.02em', display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <span>Official Fee Checkout</span>
-              <span style={{ fontSize: '0.75rem', padding: '4px 10px', background: '#E0F2FE', color: '#0369A1', borderRadius: 'var(--radius-pill)', fontWeight: 700 }}>
-                Razorpay & NPCI Certified
-              </span>
-            </h1>
-            <p style={{ fontSize: '0.86rem', color: 'var(--text-secondary)', marginTop: '2px' }}>
-              Student: <strong style={{ color: 'var(--odoo-purple)' }}>{selectedChild?.name}</strong> ({selectedChild?.classGrade || selectedChild?.grade || 'Grade'}) • Single Source Settlement
-            </p>
-          </div>
-        </div>
+  // Shared layout wrapper for steps 1–3
+  const sharedSummaryProps = { payableItems, finalAmountToPay, selectedChild, isCustomMode, setIsCustomMode, customAmount, setCustomAmount, defaultTotal };
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <button 
-            type="button"
-            className="action-btn-secondary"
-            onClick={() => setShowRazorpayModal(true)}
-            style={{ fontSize: '0.82rem', height: '38px', borderColor: 'var(--odoo-purple)', color: 'var(--odoo-purple)', fontWeight: 700 }}
-          >
-            <Sparkles size={14} />
-            <span>Open Razorpay Modal Checkout</span>
-          </button>
+  return (
+    <div className="parent-payment-page fade-in" style={{ maxWidth: '1200px', margin: '0 auto' }}>
+
+      {/* Back button row */}
+      {/* Back button row */}
+      <div className="checkout-header-row">
+        <button
+          type="button"
+          className="icon-btn-ghost"
+          onClick={() => checkoutStep > 1 && checkoutStep < 4 ? setCheckoutStep(s => s - 1) : navigate('/parent/fees')}
+          style={{ border: '1px solid var(--border-color)', background: 'var(--surface-card)', borderRadius: 'var(--radius-md)', padding: '9px', flexShrink: 0 }}
+        >
+          <ArrowLeft size={17} />
+        </button>
+        <div>
+          <h1 className="checkout-title">
+            Secure Fee Checkout
+            <span className="checkout-badge">
+              Razorpay · NPCI Certified
+            </span>
+          </h1>
+          <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', margin: 0, marginTop: '2px' }}>
+            Student: <strong style={{ color: 'var(--odoo-purple)' }}>{selectedChild?.name}</strong> &nbsp;·&nbsp; {selectedChild?.classGrade}
+          </p>
         </div>
       </div>
 
-      {/* MAIN CHECKOUT STEP */}
-      {step === 'checkout' && (
-        <form onSubmit={handleInitiatePayment}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: '24px' }}>
-            
-            {/* LEFT COLUMN: Order Summary & Item Breakdown (5 Cols) */}
-            <div style={{ gridColumn: 'span 5', display: 'flex', flexDirection: 'column', gap: '20px' }} className="grid-left-col">
-              
-              <div className="odoo-card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '18px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-color)', paddingBottom: '12px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <Building2 size={18} style={{ color: 'var(--odoo-purple)' }} />
-                    <span style={{ fontWeight: 800, fontSize: '0.95rem', color: 'var(--text-main)' }}>Fee Order Breakdown</span>
-                  </div>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{payableItems.length} Fee Items</span>
-                </div>
+      {/* Horizontal Stepper */}
+      <CheckoutStepper currentStep={checkoutStep} />
 
-                {/* Payable Items List */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxHeight: '220px', overflowY: 'auto' }}>
-                  {payableItems.length === 0 ? (
-                    <div style={{ padding: '14px', background: 'var(--bg-canvas)', borderRadius: 'var(--radius-md)', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                      Clearing total current outstanding balance for <strong>{selectedChild?.name}</strong>.
-                    </div>
-                  ) : (
-                    payableItems.map((item) => (
-                      <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', background: 'var(--bg-canvas)', borderRadius: 'var(--radius-md)', fontSize: '0.86rem' }}>
-                        <div>
-                          <div style={{ fontWeight: 700, color: 'var(--text-main)' }}>{item.title}</div>
-                          {item.lateFee > 0 && (
-                            <span style={{ fontSize: '0.74rem', color: 'var(--status-danger-text)', display: 'block' }}>Includes +₹{item.lateFee} Late Penalty</span>
-                          )}
+      {/* ===== STEP 1: REVIEW FEES ===== */}
+      {checkoutStep === 1 && (
+        <div className="checkout-grid">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <div style={{ background: 'var(--surface-card)', border: '1px solid var(--border-color)', borderRadius: '16px', padding: '28px' }}>
+              <h2 style={{ margin: '0 0 6px 0', fontSize: '1.1rem', fontWeight: 800, color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <FileText size={18} style={{ color: 'var(--odoo-purple)' }} />
+                Review Your Fee Items
+              </h2>
+              <p style={{ margin: '0 0 24px 0', fontSize: '0.82rem', color: 'var(--text-muted)' }}>
+                Confirm the fee items below before proceeding to payment.
+              </p>
+
+              {payableItems.length === 0 ? (
+                <div style={{ padding: '24px', background: 'var(--bg-canvas)', borderRadius: '12px', border: '1px solid var(--border-color)', textAlign: 'center', color: 'var(--text-secondary)', fontSize: '0.88rem' }}>
+                  Clearing full outstanding balance for <strong>{selectedChild?.name}</strong>.
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  {payableItems.map((item) => (
+                    <div key={item.id} style={{
+                      display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                      padding: '16px 20px', background: 'var(--bg-canvas)',
+                      borderRadius: '12px', border: '1px solid var(--border-color)',
+                    }}>
+                      <div>
+                        <div style={{ fontWeight: 700, fontSize: '0.92rem', color: 'var(--text-main)' }}>{item.title}</div>
+                        <div style={{ fontSize: '0.76rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+                          Due: {item.dueDate}
+                          {item.lateFee > 0 && <span style={{ color: 'var(--status-danger-text)', marginLeft: '8px' }}>+₹{item.lateFee} late penalty</span>}
                         </div>
-                        <span style={{ fontWeight: 800, color: 'var(--text-main)' }}>₹{(item.amount + (item.lateFee || 0)).toLocaleString('en-IN')}</span>
                       </div>
-                    ))
-                  )}
-                </div>
-
-                {/* Amount Box */}
-                <div style={{ padding: '20px', background: 'linear-gradient(135deg, rgba(113, 75, 103, 0.08) 0%, rgba(2, 132, 199, 0.08) 100%)', borderRadius: 'var(--radius-md)', border: '1px solid rgba(113, 75, 103, 0.2)' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-                    <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Final Settlement Amount</span>
-                    <span style={{ fontSize: '0.74rem', background: '#DCFCE7', color: '#15803D', fontWeight: 800, padding: '2px 8px', borderRadius: 'var(--radius-pill)' }}>
-                      Zero Platform Fee
-                    </span>
-                  </div>
-
-                  <div style={{ fontSize: '2.4rem', fontWeight: 900, color: 'var(--odoo-purple)', letterSpacing: '-0.03em' }}>
-                    ₹{finalAmountToPay.toLocaleString('en-IN')}
-                  </div>
-
-                  <div style={{ marginTop: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <button 
-                      type="button" 
-                      onClick={() => setIsCustomMode(!isCustomMode)}
-                      style={{ background: 'none', border: 'none', color: 'var(--accent-blue-text)', fontSize: '0.82rem', fontWeight: 700, cursor: 'pointer', padding: 0 }}
-                    >
-                      {isCustomMode ? '← Reset to Full Amount' : 'Pay Custom / Partial Amount'}
-                    </button>
-                  </div>
-
-                  {isCustomMode && (
-                    <div style={{ marginTop: '10px' }}>
-                      <label style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-secondary)' }}>Enter Amount (₹)</label>
-                      <input 
-                        type="number"
-                        className="form-input"
-                        value={customAmount}
-                        onChange={(e) => setCustomAmount(e.target.value)}
-                        min="1"
-                        max={defaultTotal}
-                        style={{ height: '40px', marginTop: '4px', fontSize: '0.9rem', fontWeight: 700 }}
-                      />
+                      <div style={{ textAlign: 'right' }}>
+                        <div style={{ fontWeight: 800, fontSize: '1rem', color: 'var(--text-main)' }}>
+                          ₹{(item.amount + (item.lateFee || 0)).toLocaleString('en-IN')}
+                        </div>
+                        <span style={{
+                          fontSize: '0.7rem', fontWeight: 700, padding: '2px 8px', borderRadius: '99px',
+                          background: item.status === 'Overdue' ? 'var(--status-danger-bg)' : 'var(--status-pending-bg)',
+                          color: item.status === 'Overdue' ? 'var(--status-danger-text)' : 'var(--status-pending-text)',
+                        }}>
+                          {item.status}
+                        </span>
+                      </div>
                     </div>
-                  )}
+                  ))}
                 </div>
+              )}
 
-                {/* Security Trust Badges */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.78rem', color: 'var(--text-muted)', background: 'var(--bg-canvas)', padding: '12px 14px', borderRadius: 'var(--radius-md)' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--status-paid-text)', fontWeight: 700 }}>
-                    <ShieldCheck size={16} />
-                    <span>Razorpay & RBI Compliant Payment Gateway</span>
-                  </div>
-                  <div>• Instant automated ledger update & digital receipt generation</div>
-                  <div>• Encrypted end-to-end via 256-Bit SSL RSA Rail</div>
-                </div>
-
-                {/* Developer / Test Mode Options */}
-                <div style={{ paddingTop: '10px', borderTop: '1px dashed var(--border-color)', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-                  <input 
-                    type="checkbox" 
-                    id="sim-failure" 
-                    checked={simulateFailure}
-                    onChange={(e) => setSimulateFailure(e.target.checked)}
-                  />
-                  <label htmlFor="sim-failure" style={{ cursor: 'pointer' }}>
-                    Simulate Gateway Failure (Test Error Recovery)
-                  </label>
-                </div>
-
+              {/* Test mode toggle */}
+              <div style={{ marginTop: '20px', paddingTop: '16px', borderTop: '1px dashed var(--border-color)', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+                <input type="checkbox" id="sim-failure" checked={simulateFailure} onChange={(e) => setSimulateFailure(e.target.checked)} />
+                <label htmlFor="sim-failure" style={{ cursor: 'pointer' }}>Simulate Gateway Failure (Test Error Recovery)</label>
               </div>
             </div>
 
-            {/* RIGHT COLUMN: Modern Multi-Method Payment Suite (7 Cols) */}
-            <div style={{ gridColumn: 'span 7', display: 'flex', flexDirection: 'column', gap: '20px' }} className="grid-right-col">
-              
-              <div className="odoo-card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                
-                {/* Payment Option Tabs */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px', background: 'var(--bg-canvas)', padding: '6px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)' }}>
-                  <button 
+            <button
+              type="button"
+              className="btn-submit-primary"
+              onClick={() => setCheckoutStep(2)}
+              style={{ height: '54px', fontSize: '1rem', fontWeight: 800, background: 'linear-gradient(135deg, #714B67 0%, #0284C7 100%)', boxShadow: '0 8px 20px rgba(113,75,103,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
+            >
+              <span>Continue to Payment Method</span>
+              <ArrowRight size={18} />
+            </button>
+          </div>
+
+          <OrderSummary {...sharedSummaryProps} />
+        </div>
+      )}
+
+      {/* ===== STEP 2: CHOOSE PAYMENT METHOD ===== */}
+      {checkoutStep === 2 && (
+        <div className="checkout-grid">
+          <form onSubmit={handleInitiatePayment} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <div style={{ background: 'var(--surface-card)', border: '1px solid var(--border-color)', borderRadius: '16px', padding: '28px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              <div>
+                <h2 style={{ margin: '0 0 4px 0', fontSize: '1.1rem', fontWeight: 800, color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <CreditCard size={18} style={{ color: 'var(--odoo-purple)' }} />
+                  Choose Payment Method
+                </h2>
+                <p style={{ margin: 0, fontSize: '0.82rem', color: 'var(--text-muted)' }}>Select how you'd like to pay ₹{finalAmountToPay.toLocaleString('en-IN')}</p>
+              </div>
+
+              {/* Method Tabs */}
+              <div className="checkout-method-tabs">
+                {[
+                  { id: 'upi',        label: 'UPI',          Icon: QrCode     },
+                  { id: 'card',       label: 'Cards',        Icon: CreditCard  },
+                  { id: 'netbanking', label: 'Net Banking',  Icon: Landmark    },
+                  { id: 'wallet',     label: 'Wallets / EMI',Icon: Wallet      },
+                ].map(({ id, label, Icon }) => (
+                  <button
+                    key={id}
                     type="button"
-                    onClick={() => setActiveTab('upi')}
+                    onClick={() => setActiveTab(id)}
                     style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      gap: '4px',
-                      padding: '10px 4px',
-                      borderRadius: 'var(--radius-sm)',
-                      border: 'none',
-                      background: activeTab === 'upi' ? 'var(--surface-card)' : 'transparent',
-                      color: activeTab === 'upi' ? 'var(--odoo-purple)' : 'var(--text-secondary)',
-                      fontWeight: activeTab === 'upi' ? 800 : 600,
-                      boxShadow: activeTab === 'upi' ? 'var(--shadow-sm)' : 'none',
-                      cursor: 'pointer',
-                      fontSize: '0.78rem',
-                      transition: 'var(--transition-fast)'
+                      display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px',
+                      padding: '12px 4px', borderRadius: '99px', border: 'none', cursor: 'pointer',
+                      fontSize: '0.76rem', fontWeight: activeTab === id ? 800 : 600,
+                      background: activeTab === id ? 'var(--surface-card)' : 'transparent',
+                      color: activeTab === id ? 'var(--odoo-purple)' : 'var(--text-secondary)',
+                      boxShadow: activeTab === id ? 'var(--shadow-sm)' : 'none',
+                      transition: 'all 0.15s ease',
                     }}
                   >
-                    <QrCode size={18} />
-                    <span>UPI (Instant)</span>
+                    <Icon size={19} />
+                    <span>{label}</span>
                   </button>
+                ))}
+              </div>
 
-                  <button 
-                    type="button"
-                    onClick={() => setActiveTab('card')}
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      gap: '4px',
-                      padding: '10px 4px',
-                      borderRadius: 'var(--radius-sm)',
-                      border: 'none',
-                      background: activeTab === 'card' ? 'var(--surface-card)' : 'transparent',
-                      color: activeTab === 'card' ? 'var(--odoo-purple)' : 'var(--text-secondary)',
-                      fontWeight: activeTab === 'card' ? 800 : 600,
-                      boxShadow: activeTab === 'card' ? 'var(--shadow-sm)' : 'none',
-                      cursor: 'pointer',
-                      fontSize: '0.78rem',
-                      transition: 'var(--transition-fast)'
-                    }}
-                  >
-                    <CreditCard size={18} />
-                    <span>Cards</span>
-                  </button>
-
-                  <button 
-                    type="button"
-                    onClick={() => setActiveTab('netbanking')}
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      gap: '4px',
-                      padding: '10px 4px',
-                      borderRadius: 'var(--radius-sm)',
-                      border: 'none',
-                      background: activeTab === 'netbanking' ? 'var(--surface-card)' : 'transparent',
-                      color: activeTab === 'netbanking' ? 'var(--odoo-purple)' : 'var(--text-secondary)',
-                      fontWeight: activeTab === 'netbanking' ? 800 : 600,
-                      boxShadow: activeTab === 'netbanking' ? 'var(--shadow-sm)' : 'none',
-                      cursor: 'pointer',
-                      fontSize: '0.78rem',
-                      transition: 'var(--transition-fast)'
-                    }}
-                  >
-                    <Landmark size={18} />
-                    <span>Net Banking</span>
-                  </button>
-
-                  <button 
-                    type="button"
-                    onClick={() => setActiveTab('wallet')}
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      gap: '4px',
-                      padding: '10px 4px',
-                      borderRadius: 'var(--radius-sm)',
-                      border: 'none',
-                      background: activeTab === 'wallet' ? 'var(--surface-card)' : 'transparent',
-                      color: activeTab === 'wallet' ? 'var(--odoo-purple)' : 'var(--text-secondary)',
-                      fontWeight: activeTab === 'wallet' ? 800 : 600,
-                      boxShadow: activeTab === 'wallet' ? 'var(--shadow-sm)' : 'none',
-                      cursor: 'pointer',
-                      fontSize: '0.78rem',
-                      transition: 'var(--transition-fast)'
-                    }}
-                  >
-                    <Wallet size={18} />
-                    <span>Wallets / EMI</span>
-                  </button>
-                </div>
-
-                {/* TAB 1: INSTANT UPI SIMULATION */}
-                {activeTab === 'upi' && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }} className="fade-in">
-                    
-                    {/* UPI Sub-option Pills */}
-                    <div style={{ display: 'flex', gap: '8px' }}>
-                      <button 
-                        type="button" 
-                        onClick={() => setUpiSubOption('qr')}
-                        style={{
-                          flex: 1,
-                          padding: '8px',
-                          borderRadius: 'var(--radius-sm)',
-                          border: upiSubOption === 'qr' ? '1px solid var(--odoo-purple)' : '1px solid var(--border-color)',
-                          background: upiSubOption === 'qr' ? 'var(--odoo-purple-light)' : 'var(--surface-card)',
-                          color: upiSubOption === 'qr' ? 'var(--odoo-purple)' : 'var(--text-main)',
-                          fontWeight: 700,
-                          fontSize: '0.8rem',
-                          cursor: 'pointer'
-                        }}
-                      >
-                        Scan QR Code
+              {/* ---- UPI PANEL ---- */}
+              {activeTab === 'upi' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }} className="fade-in">
+                  <div className="checkout-upi-suboptions">
+                    {[
+                      { key: 'qr',   label: 'Scan QR Code' },
+                      { key: 'apps', label: 'UPI Apps'      },
+                      { key: 'vpa',  label: 'UPI ID / VPA'  },
+                    ].map(({ key, label }) => (
+                      <button key={key} type="button" onClick={() => setUpiSubOption(key)} style={{
+                        flex: 1, padding: '9px 6px', borderRadius: '9px', cursor: 'pointer', fontWeight: 700, fontSize: '0.78rem',
+                        border: upiSubOption === key ? '1.5px solid var(--odoo-purple)' : '1px solid var(--border-color)',
+                        background: upiSubOption === key ? 'var(--odoo-purple-light)' : 'var(--surface-card)',
+                        color: upiSubOption === key ? 'var(--odoo-purple)' : 'var(--text-main)',
+                        transition: 'all 0.15s ease',
+                      }}>
+                        {label}
                       </button>
-
-                      <button 
-                        type="button" 
-                        onClick={() => setUpiSubOption('apps')}
-                        style={{
-                          flex: 1,
-                          padding: '8px',
-                          borderRadius: 'var(--radius-sm)',
-                          border: upiSubOption === 'apps' ? '1px solid var(--odoo-purple)' : '1px solid var(--border-color)',
-                          background: upiSubOption === 'apps' ? 'var(--odoo-purple-light)' : 'var(--surface-card)',
-                          color: upiSubOption === 'apps' ? 'var(--odoo-purple)' : 'var(--text-main)',
-                          fontWeight: 700,
-                          fontSize: '0.8rem',
-                          cursor: 'pointer'
-                        }}
-                      >
-                        UPI Apps
-                      </button>
-
-                      <button 
-                        type="button" 
-                        onClick={() => setUpiSubOption('vpa')}
-                        style={{
-                          flex: 1,
-                          padding: '8px',
-                          borderRadius: 'var(--radius-sm)',
-                          border: upiSubOption === 'vpa' ? '1px solid var(--odoo-purple)' : '1px solid var(--border-color)',
-                          background: upiSubOption === 'vpa' ? 'var(--odoo-purple-light)' : 'var(--surface-card)',
-                          color: upiSubOption === 'vpa' ? 'var(--odoo-purple)' : 'var(--text-main)',
-                          fontWeight: 700,
-                          fontSize: '0.8rem',
-                          cursor: 'pointer'
-                        }}
-                      >
-                        UPI ID / VPA
-                      </button>
-                    </div>
-
-                    {/* QR Code Option */}
-                    {upiSubOption === 'qr' && (
-                      <div style={{ padding: '20px', background: 'var(--bg-canvas)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '14px', textAlign: 'center' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.78rem', color: 'var(--accent-blue-text)', fontWeight: 700 }}>
-                          <Clock size={14} />
-                          <span>QR expires in {formatTimer(qrTimer)}</span>
-                        </div>
-
-                        {/* Interactive QR Card Visual */}
-                        <div style={{ padding: '16px', background: 'white', borderRadius: '16px', boxShadow: '0 10px 25px rgba(0,0,0,0.08)', border: '2px solid var(--odoo-purple)' }}>
-                          <QrCode size={160} style={{ color: '#0F172A' }} />
-                          <div style={{ marginTop: '8px', fontSize: '0.78rem', fontWeight: 800, color: 'var(--odoo-purple)' }}>
-                            PAY ₹{finalAmountToPay.toLocaleString('en-IN')}
-                          </div>
-                        </div>
-
-                        <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', margin: 0 }}>
-                          Scan with <strong>Google Pay, PhonePe, Paytm, BHIM</strong>, or any bank UPI app.
-                        </p>
-
-                        <button 
-                          type="button" 
-                          className="action-btn-secondary"
-                          onClick={() => startGatewayProcessing()}
-                          style={{ fontSize: '0.82rem', height: '36px', width: '100%', justifyContent: 'center' }}
-                        >
-                          <Zap size={14} style={{ color: 'var(--odoo-purple)' }} />
-                          <span>Click to Simulate Instant Mobile QR Scan</span>
-                        </button>
-                      </div>
-                    )}
-
-                    {/* UPI Apps Intent Option */}
-                    {upiSubOption === 'apps' && (
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
-                        {[
-                          { name: 'PhonePe', icon: <PhonePeIcon />, desc: 'Direct Intent' },
-                          { name: 'Google Pay', icon: <GPayIcon />, desc: 'GPay PSP' },
-                          { name: 'Paytm UPI', icon: <PaytmIcon />, desc: 'Instant UPI' },
-                          { name: 'BHIM UPI', icon: <BhimIcon />, desc: 'NPCI Official' },
-                          { name: 'CRED UPI', icon: <CredIcon />, desc: 'Cred Pay' }
-                        ].map((app) => (
-                          <div 
-                            key={app.name}
-                            onClick={() => setSelectedUpiApp(app.name)}
-                            style={{
-                              padding: '12px 14px',
-                              borderRadius: 'var(--radius-md)',
-                              border: selectedUpiApp === app.name ? '2px solid var(--odoo-purple)' : '1px solid var(--border-color)',
-                              background: selectedUpiApp === app.name ? 'var(--odoo-purple-light)' : 'var(--surface-card)',
-                              cursor: 'pointer',
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '12px',
-                              transition: 'var(--transition-fast)'
-                            }}
-                          >
-                            {app.icon}
-                            <div>
-                              <div style={{ fontWeight: 800, fontSize: '0.88rem', color: 'var(--text-main)' }}>{app.name}</div>
-                              <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)' }}>{app.desc}</div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-
-                    {/* VPA / UPI ID Input Option */}
-                    {upiSubOption === 'vpa' && (
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                        <label style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-main)' }}>
-                          Virtual Payment Address (UPI ID)
-                        </label>
-                        <div style={{ position: 'relative' }}>
-                          <input 
-                            type="text" 
-                            className="form-input"
-                            value={vpaInput}
-                            onChange={(e) => setVpaInput(e.target.value)}
-                            placeholder="e.g. 9876543210@upi or parent@okicici"
-                            style={{ height: '46px', paddingRight: '40px', fontSize: '0.9rem', fontWeight: 600 }}
-                          />
-                          <Check size={18} style={{ position: 'absolute', right: '14px', top: '14px', color: 'var(--status-paid-text)' }} />
-                        </div>
-                        <span style={{ fontSize: '0.76rem', color: 'var(--text-muted)' }}>
-                          A payment collect mandate will be pushed to your UPI app.
-                        </span>
-                      </div>
-                    )}
-
+                    ))}
                   </div>
-                )}
 
-                {/* TAB 2: CREDIT / DEBIT CARD SIMULATION */}
-                {activeTab === 'card' && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }} className="fade-in">
-                    
-                    {/* Live Realistic Credit Card Preview Widget */}
-                    <div style={{
-                      padding: '22px 26px',
-                      borderRadius: '16px',
-                      background: 'linear-gradient(135deg, #1E1B4B 0%, #312E81 50%, #4338CA 100%)',
-                      color: 'white',
-                      boxShadow: '0 12px 30px rgba(49, 46, 129, 0.35)',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      justify: 'space-between',
-                      minHeight: '160px',
-                      position: 'relative',
-                      overflow: 'hidden'
-                    }}>
-                      <div style={{ position: 'absolute', right: '-20px', top: '-20px', width: '120px', height: '120px', borderRadius: '50%', background: 'rgba(255,255,255,0.08)' }} />
-                      
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ fontSize: '0.78rem', letterSpacing: '0.08em', fontWeight: 800, textTransform: 'uppercase', opacity: 0.8 }}>
-                          School Fee Platinum Debit/Credit
-                        </span>
-                        <span style={{ padding: '4px 10px', background: cardBrand.bg, color: cardBrand.color, borderRadius: '6px', fontWeight: 900, fontSize: '0.75rem' }}>
-                          {cardBrand.name}
-                        </span>
+                  {upiSubOption === 'qr' && (
+                    <div style={{ padding: '24px', background: 'var(--bg-canvas)', borderRadius: '14px', border: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', textAlign: 'center' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.78rem', color: 'var(--accent-blue-text)', fontWeight: 700 }}>
+                        <Clock size={14} />
+                        <span>QR expires in {formatTimer(qrTimer)}</span>
                       </div>
-
-                      <div style={{ fontSize: '1.3rem', letterSpacing: '0.18em', fontFamily: 'monospace', fontWeight: 700, margin: '14px 0 8px 0' }}>
-                        {cardNumber || '•••• •••• •••• ••••'}
-                      </div>
-
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', fontSize: '0.8rem' }}>
-                        <div>
-                          <div style={{ fontSize: '0.65rem', opacity: 0.7, textTransform: 'uppercase' }}>CARDHOLDER NAME</div>
-                          <div style={{ fontWeight: 800, letterSpacing: '0.04em' }}>{cardHolder.toUpperCase() || 'PARENT NAME'}</div>
-                        </div>
-
-                        <div>
-                          <div style={{ fontSize: '0.65rem', opacity: 0.7, textTransform: 'uppercase' }}>EXPIRES</div>
-                          <div style={{ fontWeight: 800, fontFamily: 'monospace' }}>{cardExpiry || 'MM/YY'}</div>
+                      <div style={{ padding: '16px', background: 'white', borderRadius: '16px', boxShadow: '0 10px 25px rgba(0,0,0,0.08)', border: '2px solid var(--odoo-purple)' }}>
+                        <QrCode size={150} style={{ color: '#0F172A' }} />
+                        <div style={{ marginTop: '8px', fontSize: '0.78rem', fontWeight: 800, color: 'var(--odoo-purple)' }}>
+                          PAY ₹{finalAmountToPay.toLocaleString('en-IN')}
                         </div>
                       </div>
-                    </div>
-
-                    {/* Card Form Inputs */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                      <div>
-                        <label style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-main)' }}>Card Number</label>
-                        <input 
-                          type="text" 
-                          className="form-input"
-                          value={cardNumber}
-                          onChange={handleCardNumberChange}
-                          placeholder="4532 8921 0041 4242"
-                          maxLength={19}
-                          style={{ height: '44px', fontSize: '0.92rem', fontWeight: 700, fontFamily: 'monospace' }}
-                        />
-                      </div>
-
-                      <div>
-                        <label style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-main)' }}>Cardholder Name</label>
-                        <input 
-                          type="text" 
-                          className="form-input"
-                          value={cardHolder}
-                          onChange={(e) => setCardHolder(e.target.value)}
-                          placeholder="Full Name as on Card"
-                          style={{ height: '44px', fontSize: '0.88rem', fontWeight: 600 }}
-                        />
-                      </div>
-
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                        <div>
-                          <label style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-main)' }}>Expiry (MM/YY)</label>
-                          <input 
-                            type="text" 
-                            className="form-input"
-                            value={cardExpiry}
-                            onChange={handleExpiryChange}
-                            placeholder="12/28"
-                            maxLength={5}
-                            style={{ height: '44px', fontSize: '0.9rem', fontWeight: 700, fontFamily: 'monospace' }}
-                          />
-                        </div>
-
-                        <div>
-                          <label style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-main)' }}>CVV / CVC</label>
-                          <input 
-                            type="password" 
-                            className="form-input"
-                            value={cardCvv}
-                            onChange={(e) => setCardCvv(e.target.value.slice(0, 4))}
-                            placeholder="•••"
-                            maxLength={4}
-                            style={{ height: '44px', fontSize: '0.9rem', fontWeight: 700, fontFamily: 'monospace' }}
-                          />
-                        </div>
-                      </div>
-
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-                        <input 
-                          type="checkbox" 
-                          id="save-card-chk" 
-                          checked={saveCard}
-                          onChange={(e) => setSaveCard(e.target.checked)}
-                        />
-                        <label htmlFor="save-card-chk" style={{ cursor: 'pointer' }}>
-                          Save card securely for future school fee installments (Tokenized)
-                        </label>
-                      </div>
-                    </div>
-
-                  </div>
-                )}
-
-                {/* TAB 3: NET BANKING SIMULATION WITH LOGOS & SEARCHABLE 40+ BANKS SELECTOR */}
-                {activeTab === 'netbanking' && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }} className="fade-in">
-                    <label style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-main)' }}>Select Popular Indian Bank</label>
-                    
-                    {/* Top Banks Selector Grid with Vector Logos */}
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
-                      {INDIAN_BANKS_LIST.slice(0, 6).map((bank) => {
-                        const Logo = bank.logoComponent;
-                        const isSelected = selectedBankId === bank.id;
-                        return (
-                          <div 
-                            key={bank.id}
-                            onClick={() => setSelectedBankId(bank.id)}
-                            style={{
-                              padding: '12px 10px',
-                              borderRadius: 'var(--radius-md)',
-                              border: isSelected ? '2px solid var(--odoo-purple)' : '1px solid var(--border-color)',
-                              background: isSelected ? 'var(--odoo-purple-light)' : 'var(--surface-card)',
-                              cursor: 'pointer',
-                              display: 'flex',
-                              flexDirection: 'column',
-                              alignItems: 'center',
-                              gap: '8px',
-                              textAlign: 'center',
-                              fontWeight: 700,
-                              fontSize: '0.8rem',
-                              color: 'var(--text-main)',
-                              transition: 'var(--transition-fast)'
-                            }}
-                          >
-                            <Logo size={28} />
-                            <span>{bank.name.split(' ')[0]} Bank</span>
-                          </div>
-                        );
-                      })}
-                    </div>
-
-                    {/* Custom Searchable 40+ Banks Select Trigger */}
-                    <div style={{ marginTop: '8px' }}>
-                      <label style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 600 }}>
-                        Or Choose From 40+ Indian Commercial & Scheduled Banks
-                      </label>
-                      
-                      <button 
-                        type="button"
-                        onClick={() => setShowBankSelectorModal(true)}
-                        style={{
-                          width: '100%',
-                          marginTop: '6px',
-                          padding: '12px 16px',
-                          borderRadius: 'var(--radius-md)',
-                          border: '1px solid var(--border-color)',
-                          background: 'var(--surface-card)',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justify: 'space-between',
-                          cursor: 'pointer',
-                          fontSize: '0.88rem',
-                          fontWeight: 700,
-                          color: 'var(--text-main)'
-                        }}
-                      >
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                          {React.createElement(currentSelectedBankObj.logoComponent, { size: 24 })}
-                          <span>{currentSelectedBankObj.name}</span>
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--odoo-purple)' }}>
-                          <span style={{ fontSize: '0.76rem', fontWeight: 700, background: 'var(--odoo-purple-light)', padding: '2px 8px', borderRadius: 'var(--radius-pill)' }}>Browse 40+ Banks</span>
-                          <ChevronDown size={18} />
-                        </div>
+                      <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', margin: 0 }}>
+                        Scan with <strong>Google Pay, PhonePe, Paytm, BHIM</strong>, or any UPI app.
+                      </p>
+                      <button type="button" className="action-btn-secondary" onClick={() => startGatewayProcessing()} style={{ fontSize: '0.82rem', height: '38px', width: '100%', justifyContent: 'center' }}>
+                        <Zap size={14} style={{ color: 'var(--odoo-purple)' }} />
+                        <span>Simulate Instant QR Scan</span>
                       </button>
                     </div>
-                  </div>
-                )}
+                  )}
 
-                {/* TAB 4: WALLETS & EMI WITH ACTUAL BRAND LOGOS */}
-                {activeTab === 'wallet' && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }} className="fade-in">
-                    <label style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-main)' }}>Select Digital Wallet / Fee Installment Plan</label>
-                    
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  {upiSubOption === 'apps' && (
+                    <div className="checkout-upi-apps">
                       {[
-                        { name: 'Paytm Wallet', icon: <PaytmIcon size={28} />, desc: 'Instant balance & cashback settlement' },
-                        { name: 'Amazon Pay', icon: <AmazonPayLogo size={28} />, desc: 'Amazon Pay Balance & ICICI Pay' },
-                        { name: 'MobiKwik Wallet', icon: <MobikwikLogo size={28} />, desc: 'ZIP Pay Later available' },
-                        { name: 'LazyPay 3-Month EMI', icon: <LazyPayLogo size={28} />, desc: '0% Interest Student Fee EMI' },
-                        { name: 'Simpl Pay Later', icon: <SimplLogo size={28} />, desc: 'Pay in 3 easy fee installments' }
-                      ].map((w) => (
-                        <div 
-                          key={w.name}
-                          onClick={() => setSelectedWallet(w.name)}
-                          style={{
-                            padding: '12px 16px',
-                            borderRadius: 'var(--radius-md)',
-                            border: selectedWallet === w.name ? '2px solid var(--odoo-purple)' : '1px solid var(--border-color)',
-                            background: selectedWallet === w.name ? 'var(--odoo-purple-light)' : 'var(--surface-card)',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            justify: 'space-between',
-                            alignItems: 'center',
-                            transition: 'var(--transition-fast)'
-                          }}
-                        >
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                            {w.icon}
-                            <div>
-                              <div style={{ fontWeight: 800, fontSize: '0.88rem', color: 'var(--text-main)' }}>{w.name}</div>
-                              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{w.desc}</div>
-                            </div>
+                        { name: 'PhonePe',   icon: <PhonePeIcon />, desc: 'Direct Intent'  },
+                        { name: 'Google Pay',icon: <GPayIcon />,    desc: 'GPay PSP'        },
+                        { name: 'Paytm UPI', icon: <PaytmIcon />,   desc: 'Instant UPI'    },
+                        { name: 'BHIM UPI',  icon: <BhimIcon />,    desc: 'NPCI Official'  },
+                        { name: 'CRED UPI',  icon: <CredIcon />,    desc: 'Cred Pay'       },
+                      ].map((app) => (
+                        <div key={app.name} onClick={() => setSelectedUpiApp(app.name)} style={{
+                          padding: '14px 16px', borderRadius: '12px', cursor: 'pointer',
+                          border: selectedUpiApp === app.name ? '2px solid var(--odoo-purple)' : '1px solid var(--border-color)',
+                          background: selectedUpiApp === app.name ? 'var(--odoo-purple-light)' : 'var(--surface-card)',
+                          display: 'flex', alignItems: 'center', gap: '12px',
+                          transition: 'all 0.15s ease',
+                        }}>
+                          {app.icon}
+                          <div>
+                            <div style={{ fontWeight: 800, fontSize: '0.88rem', color: 'var(--text-main)' }}>{app.name}</div>
+                            <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)' }}>{app.desc}</div>
                           </div>
-                          {selectedWallet === w.name && <Check size={18} style={{ color: 'var(--odoo-purple)' }} />}
                         </div>
                       ))}
                     </div>
+                  )}
+
+                  {upiSubOption === 'vpa' && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                      <label style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-main)' }}>Virtual Payment Address (UPI ID)</label>
+                      <div style={{ position: 'relative' }}>
+                        <input type="text" className="form-input" value={vpaInput} onChange={(e) => setVpaInput(e.target.value)}
+                          placeholder="e.g. 9876543210@upi or parent@okicici"
+                          style={{ height: '46px', paddingRight: '40px', fontSize: '0.9rem', fontWeight: 600 }}
+                        />
+                        <Check size={18} style={{ position: 'absolute', right: '14px', top: '14px', color: 'var(--status-paid-text)' }} />
+                      </div>
+                      <span style={{ fontSize: '0.76rem', color: 'var(--text-muted)' }}>A payment collect mandate will be pushed to your UPI app.</span>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* ---- CARD PANEL ---- */}
+              {activeTab === 'card' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }} className="fade-in">
+                  {/* Card Preview */}
+                  <div className="checkout-card-preview">
+                    <div style={{ position: 'absolute', right: '-20px', top: '-20px', width: '120px', height: '120px', borderRadius: '50%', background: 'rgba(255,255,255,0.08)' }} />
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontSize: '0.78rem', letterSpacing: '0.08em', fontWeight: 800, textTransform: 'uppercase', opacity: 0.8 }}>School Fee Platinum</span>
+                      <span style={{ padding: '4px 10px', background: cardBrand.bg, color: cardBrand.color, borderRadius: '6px', fontWeight: 900, fontSize: '0.75rem' }}>{cardBrand.name}</span>
+                    </div>
+                    <div className="checkout-card-number">
+                      {cardNumber || '•••• •••• •••• ••••'}
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', fontSize: '0.8rem' }}>
+                      <div>
+                        <div style={{ fontSize: '0.65rem', opacity: 0.7, textTransform: 'uppercase' }}>CARDHOLDER</div>
+                        <div style={{ fontWeight: 800 }}>{cardHolder.toUpperCase() || 'PARENT NAME'}</div>
+                      </div>
+                      <div>
+                        <div style={{ fontSize: '0.65rem', opacity: 0.7, textTransform: 'uppercase' }}>EXPIRES</div>
+                        <div style={{ fontWeight: 800, fontFamily: 'monospace' }}>{cardExpiry || 'MM/YY'}</div>
+                      </div>
+                    </div>
                   </div>
-                )}
 
-                {/* Primary Submit Button */}
-                <button 
-                  type="submit" 
-                  className="btn-submit-primary" 
-                  style={{ height: '54px', fontSize: '1.05rem', fontWeight: 800, marginTop: '8px', background: 'linear-gradient(135deg, #714B67 0%, #0284C7 100%)', boxShadow: '0 8px 20px rgba(113, 75, 103, 0.3)' }}
-                >
-                  <Lock size={18} />
-                  <span>Pay ₹{finalAmountToPay.toLocaleString('en-IN')} via {activeTab.toUpperCase()}</span>
-                </button>
+                  {/* Card Inputs */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                    <div>
+                      <label style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-main)' }}>Card Number</label>
+                      <input type="text" className="form-input" value={cardNumber} onChange={handleCardNumberChange}
+                        placeholder="4532 8921 0041 4242" maxLength={19}
+                        style={{ height: '44px', fontSize: '0.92rem', fontWeight: 700, fontFamily: 'monospace', marginTop: '6px' }}
+                      />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-main)' }}>Cardholder Name</label>
+                      <input type="text" className="form-input" value={cardHolder} onChange={(e) => setCardHolder(e.target.value)}
+                        placeholder="Full Name as on Card" style={{ height: '44px', fontSize: '0.88rem', fontWeight: 600, marginTop: '6px' }}
+                      />
+                    </div>
+                    <div className="checkout-card-expiry-row">
+                      <div>
+                        <label style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-main)' }}>Expiry (MM/YY)</label>
+                        <input type="text" className="form-input" value={cardExpiry} onChange={handleExpiryChange}
+                          placeholder="12/28" maxLength={5} style={{ height: '44px', fontSize: '0.9rem', fontWeight: 700, fontFamily: 'monospace', marginTop: '6px' }}
+                        />
+                      </div>
+                      <div>
+                        <label style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-main)' }}>CVV / CVC</label>
+                        <input type="password" className="form-input" value={cardCvv} onChange={(e) => setCardCvv(e.target.value.slice(0, 4))}
+                          placeholder="•••" maxLength={4} style={{ height: '44px', fontSize: '0.9rem', fontWeight: 700, fontFamily: 'monospace', marginTop: '6px' }}
+                        />
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+                      <input type="checkbox" id="save-card-chk" checked={saveCard} onChange={(e) => setSaveCard(e.target.checked)} />
+                      <label htmlFor="save-card-chk" style={{ cursor: 'pointer' }}>Save card securely for future installments (Tokenized)</label>
+                    </div>
+                  </div>
+                </div>
+              )}
 
-              </div>
+              {/* ---- NET BANKING PANEL ---- */}
+              {activeTab === 'netbanking' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }} className="fade-in">
+                  <label style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-main)' }}>Select Popular Indian Bank</label>
+                  <div className="checkout-popular-banks">
+                    {INDIAN_BANKS_LIST.slice(0, 6).map((bank) => {
+                      const Logo = bank.logoComponent;
+                      const isSelected = selectedBankId === bank.id;
+                      return (
+                        <div key={bank.id} onClick={() => setSelectedBankId(bank.id)} style={{
+                          padding: '14px 10px', borderRadius: '12px', cursor: 'pointer',
+                          border: isSelected ? '2px solid var(--odoo-purple)' : '1px solid var(--border-color)',
+                          background: isSelected ? 'var(--odoo-purple-light)' : 'var(--surface-card)',
+                          display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px',
+                          textAlign: 'center', fontWeight: 700, fontSize: '0.8rem', color: 'var(--text-main)',
+                          transition: 'all 0.15s ease',
+                        }}>
+                          <Logo size={28} />
+                          <span>{bank.name.split(' ')[0]} Bank</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <button type="button" onClick={() => setShowBankSelectorModal(true)} style={{
+                    width: '100%', padding: '12px 16px', borderRadius: '12px',
+                    border: '1px solid var(--border-color)', background: 'var(--surface-card)',
+                    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                    cursor: 'pointer', fontSize: '0.88rem', fontWeight: 700, color: 'var(--text-main)',
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      {React.createElement(currentSelectedBankObj.logoComponent, { size: 24 })}
+                      <span>{currentSelectedBankObj.name}</span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--odoo-purple)' }}>
+                      <span style={{ fontSize: '0.76rem', fontWeight: 700, background: 'var(--odoo-purple-light)', padding: '2px 8px', borderRadius: 'var(--radius-pill)' }}>Browse 40+ Banks</span>
+                      <ChevronDown size={18} />
+                    </div>
+                  </button>
+                </div>
+              )}
+
+              {/* ---- WALLET PANEL ---- */}
+              {activeTab === 'wallet' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }} className="fade-in">
+                  <label style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-main)' }}>Select Digital Wallet / Fee Installment Plan</label>
+                  {[
+                    { name: 'Paytm Wallet',        icon: <PaytmIcon size={28} />,     desc: 'Instant balance & cashback settlement' },
+                    { name: 'Amazon Pay',           icon: <AmazonPayLogo size={28} />, desc: 'Amazon Pay Balance & ICICI Pay' },
+                    { name: 'MobiKwik Wallet',      icon: <MobikwikLogo size={28} />,  desc: 'ZIP Pay Later available' },
+                    { name: 'LazyPay 3-Month EMI',  icon: <LazyPayLogo size={28} />,   desc: '0% Interest Student Fee EMI' },
+                    { name: 'Simpl Pay Later',      icon: <SimplLogo size={28} />,     desc: 'Pay in 3 easy fee installments' },
+                  ].map((w) => (
+                    <div key={w.name} onClick={() => setSelectedWallet(w.name)} style={{
+                      padding: '14px 16px', borderRadius: '12px', cursor: 'pointer',
+                      border: selectedWallet === w.name ? '2px solid var(--odoo-purple)' : '1px solid var(--border-color)',
+                      background: selectedWallet === w.name ? 'var(--odoo-purple-light)' : 'var(--surface-card)',
+                      display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                      transition: 'all 0.15s ease',
+                    }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                        {w.icon}
+                        <div>
+                          <div style={{ fontWeight: 800, fontSize: '0.88rem', color: 'var(--text-main)' }}>{w.name}</div>
+                          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{w.desc}</div>
+                        </div>
+                      </div>
+                      {selectedWallet === w.name && <Check size={18} style={{ color: 'var(--odoo-purple)' }} />}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
-          </div>
-        </form>
+            {/* CTA */}
+            <button
+              type="submit"
+              className="btn-submit-primary"
+              style={{ height: '56px', fontSize: '1.05rem', fontWeight: 800, background: 'linear-gradient(135deg, #714B67 0%, #0284C7 100%)', boxShadow: '0 8px 20px rgba(113,75,103,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
+            >
+              <Lock size={18} />
+              <span>Pay ₹{finalAmountToPay.toLocaleString('en-IN')} via {activeTab === 'upi' ? 'UPI' : activeTab === 'card' ? 'Card' : activeTab === 'netbanking' ? 'Net Banking' : 'Wallet'}</span>
+              <ArrowRight size={18} />
+            </button>
+          </form>
+
+          <OrderSummary {...sharedSummaryProps} />
+        </div>
       )}
 
-      {/* SEARCHABLE 40+ INDIAN BANKS MODAL SELECTOR */}
+      {/* ===== STEP 3: COMPLETE PAYMENT (Razorpay button) — same as step 2's submit, skipped to step 4 directly ===== */}
+
+      {/* ===== STEP 4: PROCESSING / OTP ===== */}
+      {checkoutStep === 4 && (
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-start', minHeight: '400px', paddingTop: '24px' }}>
+          {/* OTP Modal */}
+          {gwStep === 'otp_modal' && (
+            <div className="checkout-status-card" style={{ maxWidth: '460px' }}>
+              <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'var(--odoo-purple-light)', color: 'var(--odoo-purple)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <ShieldCheck size={32} />
+              </div>
+              <div>
+                <h2 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-main)', margin: '0 0 6px 0' }}>3D-Secure Bank Verification</h2>
+                <p style={{ fontSize: '0.84rem', color: 'var(--text-secondary)', margin: 0 }}>
+                  An OTP has been sent to your registered mobile ending in <strong>••••9210</strong> for payment of <strong>₹{finalAmountToPay.toLocaleString('en-IN')}</strong>.
+                </p>
+              </div>
+              <form onSubmit={handleVerifyOtp} style={{ display: 'flex', flexDirection: 'column', gap: '14px', width: '100%' }}>
+                <input
+                  type="text" className="form-input"
+                  placeholder="Enter 6-Digit OTP"
+                  value={otpInput}
+                  onChange={(e) => setOtpInput(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                  style={{ height: '52px', fontSize: '1.4rem', fontWeight: 800, textAlign: 'center', letterSpacing: '0.35em' }}
+                  autoFocus
+                />
+                {otpError && <div style={{ fontSize: '0.78rem', color: 'var(--status-danger-text)' }}>{otpError}</div>}
+                <button type="button" className="action-btn-secondary" onClick={() => { setOtpInput('892104'); setOtpError(''); }} style={{ fontSize: '0.8rem', height: '36px', justifyContent: 'center' }}>
+                  <Sparkles size={14} />
+                  <span>Auto-Fill Test OTP (892104)</span>
+                </button>
+                <div className="checkout-action-row">
+                  <button type="button" className="action-btn-secondary" onClick={() => { setCheckoutStep(2); setGwStep('idle'); }} style={{ flex: 1, justifyContent: 'center' }}>Cancel</button>
+                  <button type="submit" className="action-btn-primary" style={{ flex: 2, background: 'var(--odoo-purple)', justifyContent: 'center', height: '44px', fontSize: '0.95rem', fontWeight: 800 }}>Verify & Pay</button>
+                </div>
+              </form>
+            </div>
+          )}
+
+          {/* Processing Spinner */}
+          {gwStep === 'processing' && (
+            <div className="checkout-status-card" style={{ maxWidth: '480px' }}>
+              <div style={{ position: 'relative', width: '80px', height: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Loader2 className="animate-spin" size={72} style={{ color: 'var(--odoo-purple)' }} />
+                <ShieldCheck size={28} style={{ position: 'absolute', color: 'var(--accent-blue-text)' }} />
+              </div>
+              <div>
+                <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-main)', margin: '0 0 8px 0' }}>Authenticating Payment...</h2>
+                <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', margin: 0 }}>{processingMsg}</p>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.76rem', color: 'var(--text-muted)', background: 'var(--bg-canvas)', padding: '10px 18px', borderRadius: 'var(--radius-pill)', border: '1px solid var(--border-color)' }}>
+                <Lock size={13} />
+                <span>Bank-grade encrypted connection. Do not refresh.</span>
+              </div>
+            </div>
+          )}
+
+          {/* Failed State */}
+          {gwStep === 'failed' && (
+            <div className="checkout-status-card" style={{ maxWidth: '480px' }}>
+              <div style={{ width: '72px', height: '72px', borderRadius: '50%', background: '#FEE2E2', color: '#DC2626', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <XCircle size={44} />
+              </div>
+              <div>
+                <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-main)', margin: '0 0 6px 0' }}>Payment Gateway Timeout</h2>
+                <p style={{ fontSize: '0.86rem', color: 'var(--status-danger-text)', margin: 0 }}>
+                  Bank PSP server timed out during authorization. No amount was debited.
+                </p>
+              </div>
+              <div className="checkout-action-row">
+                <button type="button" className="btn-submit-primary" onClick={() => { setCheckoutStep(2); setGwStep('idle'); }} style={{ flex: 1, height: '46px', justifyContent: 'center' }}>
+                  <RefreshCw size={16} />
+                  <span>Try Again</span>
+                </button>
+                <button type="button" className="action-btn-secondary" onClick={() => navigate('/parent/overview')} style={{ flex: 1, justifyContent: 'center', height: '46px' }}>
+                  <Home size={16} />
+                  <span>Dashboard</span>
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ===== STEP 5: RECEIPT ===== */}
+      {checkoutStep === 5 && createdTxn && (
+        <div style={{ display: 'flex', justifyContent: 'center', paddingTop: '12px' }}>
+          <div className="checkout-receipt-card">
+            {/* Success Icon */}
+            <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: '#DCFCE7', color: '#15803D', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 0 12px rgba(220,252,231,0.4)' }}>
+              <CheckCircle2 size={48} />
+            </div>
+
+            <div>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '4px 14px', background: '#DCFCE7', color: '#15803D', borderRadius: 'var(--radius-pill)', fontSize: '0.8rem', fontWeight: 800, marginBottom: '10px' }}>
+                <Sparkles size={14} />
+                <span>PAYMENT SETTLED & VERIFIED</span>
+              </div>
+              <h2 style={{ fontSize: '2.4rem', fontWeight: 900, color: 'var(--text-main)', margin: 0, letterSpacing: '-0.03em' }}>
+                ₹{createdTxn.amount.toLocaleString('en-IN')}
+              </h2>
+              <p style={{ fontSize: '0.84rem', color: 'var(--text-secondary)', marginTop: '6px' }}>
+                Receipt #{createdTxn.receiptNo} &nbsp;·&nbsp; Ref: {createdTxn.paymentId}
+              </p>
+            </div>
+
+            {/* Details table */}
+            <div style={{ width: '100%', padding: '18px 22px', background: 'var(--bg-canvas)', borderRadius: '14px', border: '1px solid var(--border-color)', textAlign: 'left', fontSize: '0.85rem', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              {[
+                { label: 'Student',          value: `${createdTxn.studentName} (${createdTxn.classGrade})`, mono: false },
+                { label: 'Fee Description',  value: createdTxn.feeType,           mono: false },
+                { label: 'Payment Channel',  value: createdTxn.paymentMethod,     mono: false, purple: true },
+                { label: 'Settlement UTR',   value: createdTxn.utrNo,             mono: true  },
+                { label: 'Date & Time',      value: createdTxn.dateTime,          mono: false },
+              ].map(({ label, value, mono, purple }) => (
+                <div key={label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ color: 'var(--text-muted)', fontWeight: 500 }}>{label}:</span>
+                  <strong style={{ color: purple ? 'var(--odoo-purple)' : 'var(--text-main)', fontFamily: mono ? 'monospace' : 'inherit', textAlign: 'right', maxWidth: '60%' }}>{value}</strong>
+                </div>
+              ))}
+            </div>
+
+            {/* Actions */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%' }}>
+              <button
+                type="button"
+                className="btn-submit-primary"
+                onClick={() => { downloadReceiptPDF(createdTxn, selectedChild); onOpenReceipt && onOpenReceipt(createdTxn); }}
+                style={{ height: '52px', fontSize: '0.98rem', fontWeight: 800, background: 'linear-gradient(135deg, #714B67 0%, #0284C7 100%)', justifyContent: 'center', gap: '10px' }}
+              >
+                <Download size={18} />
+                <span>Download Official PDF Receipt</span>
+              </button>
+              <div className="checkout-action-row">
+                <button type="button" className="action-btn-secondary" onClick={() => onOpenReceipt && onOpenReceipt(createdTxn)} style={{ flex: 1, justifyContent: 'center', height: '42px' }}>
+                  <Eye size={16} />
+                  <span>Preview Receipt</span>
+                </button>
+                <button type="button" className="action-btn-secondary" onClick={() => navigate('/parent/overview')} style={{ flex: 1, justifyContent: 'center', height: '42px' }}>
+                  <Home size={16} />
+                  <span>Back to Home</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ===== BANK SELECTOR MODAL ===== */}
       {showBankSelectorModal && (
         <div className="modal-backdrop fade-in" style={{ zIndex: 99999 }} onClick={() => setShowBankSelectorModal(false)}>
           <div className="modal-card" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '640px', padding: '24px', borderRadius: '16px', maxHeight: '85vh', display: 'flex', flexDirection: 'column' }}>
-            
-            {/* Modal Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-color)', paddingBottom: '14px', marginBottom: '16px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <Landmark size={22} style={{ color: 'var(--odoo-purple)' }} />
@@ -1133,388 +1146,83 @@ export default function ParentPaymentPage({
                   <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Supported across 42 Indian Commercial & Scheduled Banks</div>
                 </div>
               </div>
-
-              <button 
-                type="button" 
-                onClick={() => setShowBankSelectorModal(false)}
-                style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '4px' }}
-              >
+              <button type="button" onClick={() => setShowBankSelectorModal(false)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '4px' }}>
                 <X size={20} />
               </button>
             </div>
-
-            {/* Live Search Bar */}
             <div style={{ position: 'relative', marginBottom: '16px' }}>
-              <input 
-                type="text"
-                className="form-input"
-                placeholder="Search bank by name or IFSC prefix (e.g. HDFC, Canara, SBI, Baroda)..."
-                value={bankSearchTerm}
-                onChange={(e) => setBankSearchTerm(e.target.value)}
-                style={{ height: '44px', paddingLeft: '38px', fontSize: '0.88rem' }}
-                autoFocus
-              />
+              <input type="text" className="form-input" placeholder="Search by bank name or IFSC prefix..." value={bankSearchTerm} onChange={(e) => setBankSearchTerm(e.target.value)} style={{ height: '44px', paddingLeft: '38px', fontSize: '0.88rem' }} autoFocus />
               <Search size={16} style={{ position: 'absolute', left: '14px', top: '14px', color: 'var(--text-muted)' }} />
             </div>
-
-            {/* Bank Grid List */}
-            <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '12px', paddingRight: '4px' }}>
+            <div className="checkout-bank-modal-grid">
               {filteredBanks.length === 0 ? (
-                <div style={{ padding: '30px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.88rem' }}>
+                <div style={{ gridColumn: 'span 2', padding: '30px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.88rem' }}>
                   No matching bank found for "{bankSearchTerm}".
                 </div>
-              ) : (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
-                  {filteredBanks.map((bank) => {
-                    const Logo = bank.logoComponent;
-                    const isSelected = selectedBankId === bank.id;
-                    return (
-                      <div 
-                        key={bank.id}
-                        onClick={() => {
-                          setSelectedBankId(bank.id);
-                          setShowBankSelectorModal(false);
-                        }}
-                        style={{
-                          padding: '12px 14px',
-                          borderRadius: 'var(--radius-md)',
-                          border: isSelected ? '2px solid var(--odoo-purple)' : '1px solid var(--border-color)',
-                          background: isSelected ? 'var(--odoo-purple-light)' : 'var(--bg-canvas)',
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '12px',
-                          transition: 'var(--transition-fast)'
-                        }}
-                        className="hover-card-row"
-                      >
-                        <Logo size={30} />
-                        <div style={{ overflow: 'hidden' }}>
-                          <div style={{ fontWeight: 800, fontSize: '0.85rem', color: 'var(--text-main)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                            {bank.name}
-                          </div>
-                          <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
-                            {bank.category} • {bank.id}
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-
-          </div>
-        </div>
-      )}
-
-      {/* STEP 2: 3D-SECURE BANK OTP MODAL FOR CARDS */}
-      {step === 'otp_modal' && (
-        <div className="modal-backdrop fade-in" style={{ zIndex: 9999 }}>
-          <div className="modal-card" style={{ maxWidth: '460px', padding: '32px', textAlign: 'center' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-color)', paddingBottom: '12px', marginBottom: '20px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <ShieldCheck size={22} style={{ color: 'var(--odoo-purple)' }} />
-                <span style={{ fontWeight: 800, fontSize: '1rem', color: 'var(--text-main)' }}>3D-Secure 2.0 Bank Verification</span>
-              </div>
-              <span style={{ fontSize: '0.75rem', fontWeight: 800, padding: '2px 8px', borderRadius: 'var(--radius-pill)', background: cardBrand.bg, color: cardBrand.color }}>
-                {cardBrand.name} Secure
-              </span>
-            </div>
-
-            <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '18px' }}>
-              An OTP has been sent to your registered mobile number ending in <strong>••••9210</strong> for payment of <strong>₹{finalAmountToPay.toLocaleString('en-IN')}</strong>.
-            </p>
-
-            <form onSubmit={handleVerifyOtp} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <div>
-                <input 
-                  type="text"
-                  className="form-input"
-                  placeholder="Enter 6-Digit OTP (e.g. 892104)"
-                  value={otpInput}
-                  onChange={(e) => setOtpInput(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                  style={{ height: '48px', fontSize: '1.2rem', fontWeight: 800, textAlign: 'center', letterSpacing: '0.3em' }}
-                  autoFocus
-                />
-                {otpError && <div style={{ fontSize: '0.78rem', color: 'var(--status-danger-text)', marginTop: '6px' }}>{otpError}</div>}
-              </div>
-
-              {/* Auto-fill Test OTP helper button */}
-              <button 
-                type="button"
-                className="action-btn-secondary"
-                onClick={() => { setOtpInput('892104'); setOtpError(''); }}
-                style={{ fontSize: '0.8rem', height: '34px', justifyContent: 'center' }}
-              >
-                <Sparkles size={14} />
-                <span>Auto-Fill Test OTP (892104)</span>
-              </button>
-
-              <div style={{ display: 'flex', gap: '10px', marginTop: '6px' }}>
-                <button 
-                  type="button" 
-                  className="action-btn-secondary" 
-                  onClick={() => setStep('checkout')}
-                  style={{ flex: 1 }}
-                >
-                  Cancel
-                </button>
-                <button 
-                  type="submit" 
-                  className="action-btn-primary" 
-                  style={{ flex: 1, background: 'var(--odoo-purple)', justifyContent: 'center' }}
-                >
-                  Submit OTP
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* STEP 3: REAL-TIME GATEWAY PROCESSING MODAL */}
-      {step === 'processing' && (
-        <div className="modal-backdrop fade-in" style={{ zIndex: 9999 }}>
-          <div className="modal-card" style={{ maxWidth: '520px', padding: '44px 32px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px' }}>
-            <div style={{ position: 'relative', width: '80px', height: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Loader2 className="animate-spin" size={72} style={{ color: 'var(--odoo-purple)' }} />
-              <ShieldCheck size={28} style={{ position: 'absolute', color: 'var(--accent-blue-text)' }} />
-            </div>
-
-            <div>
-              <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-main)', margin: 0 }}>
-                Authenticating Payment...
-              </h2>
-              <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginTop: '8px' }}>
-                {processingMsg}
-              </p>
-            </div>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.78rem', color: 'var(--text-muted)', background: 'var(--bg-canvas)', padding: '10px 18px', borderRadius: 'var(--radius-pill)', border: '1px solid var(--border-color)' }}>
-              <Lock size={13} />
-              <span>Bank-grade encrypted webhook connection in progress. Do not refresh.</span>
+              ) : filteredBanks.map((bank) => {
+                const Logo = bank.logoComponent;
+                const isSelected = selectedBankId === bank.id;
+                return (
+                  <div key={bank.id} onClick={() => { setSelectedBankId(bank.id); setShowBankSelectorModal(false); }}
+                    className="hover-card-row"
+                    style={{
+                      padding: '12px 14px', borderRadius: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '12px',
+                      border: isSelected ? '2px solid var(--odoo-purple)' : '1px solid var(--border-color)',
+                      background: isSelected ? 'var(--odoo-purple-light)' : 'var(--bg-canvas)',
+                      transition: 'all 0.15s ease',
+                    }}>
+                    <Logo size={30} />
+                    <div style={{ overflow: 'hidden' }}>
+                      <div style={{ fontWeight: 800, fontSize: '0.85rem', color: 'var(--text-main)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{bank.name}</div>
+                      <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>{bank.category} · {bank.id}</div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
       )}
 
-      {/* STEP 4: STUNNING PAYMENT SUCCESS POPUP MODAL */}
-      {step === 'success' && createdTxn && (
-        <div className="modal-backdrop fade-in" style={{ zIndex: 9999 }}>
-          <div className="modal-card" style={{ maxWidth: '560px', padding: '36px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px' }}>
-            
-            {/* Animated Green Badge */}
-            <div style={{
-              width: '76px',
-              height: '76px',
-              borderRadius: '50%',
-              background: '#DCFCE7',
-              color: '#15803D',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: '0 0 0 10px rgba(220, 252, 231, 0.5)'
-            }}>
-              <CheckCircle2 size={46} />
-            </div>
-
-            <div>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '4px 12px', background: '#DCFCE7', color: '#15803D', borderRadius: 'var(--radius-pill)', fontSize: '0.8rem', fontWeight: 800, marginBottom: '8px' }}>
-                <Sparkles size={14} />
-                <span>PAYMENT SETTLED & VERIFIED</span>
-              </div>
-
-              <h2 style={{ fontSize: '2rem', fontWeight: 900, color: 'var(--text-main)', margin: 0, letterSpacing: '-0.02em' }}>
-                ₹{createdTxn.amount.toLocaleString('en-IN')}
-              </h2>
-              <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
-                Receipt #{createdTxn.receiptNo} generated • Ref: {createdTxn.paymentId || 'pay_Razorpay'}
-              </p>
-            </div>
-
-            {/* Itemized Detail Spec Table */}
-            <div style={{ width: '100%', padding: '16px 20px', background: 'var(--bg-canvas)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', textAlign: 'left', fontSize: '0.85rem', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Student Name:</span>
-                <strong style={{ color: 'var(--text-main)' }}>{createdTxn.studentName} ({createdTxn.classGrade})</strong>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Fee Description:</span>
-                <strong style={{ color: 'var(--text-main)' }}>{createdTxn.feeType}</strong>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Payment Channel:</span>
-                <strong style={{ color: 'var(--odoo-purple)' }}>{createdTxn.paymentMethod}</strong>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Settlement UTR #:</span>
-                <strong style={{ fontFamily: 'monospace', color: 'var(--text-main)' }}>{createdTxn.utrNo}</strong>
-              </div>
-            </div>
-
-            {/* Action Buttons */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%' }}>
-              <button 
-                type="button" 
-                className="btn-submit-primary"
-                onClick={() => {
-                  downloadReceiptPDF(createdTxn, selectedChild);
-                  onOpenReceipt && onOpenReceipt(createdTxn);
-                }}
-                style={{ height: '48px', fontSize: '0.95rem', background: 'linear-gradient(135deg, #714B67 0%, #0284C7 100%)' }}
-              >
-                <Download size={18} />
-                <span>Download Official PDF Receipt</span>
-              </button>
-
-              <div style={{ display: 'flex', gap: '10px', width: '100%' }}>
-                <button 
-                  type="button" 
-                  className="action-btn-secondary"
-                  onClick={() => onOpenReceipt && onOpenReceipt(createdTxn)}
-                  style={{ flex: 1, justifyContent: 'center', height: '40px' }}
-                >
-                  <Eye size={16} />
-                  <span>Preview Receipt</span>
-                </button>
-
-                <button 
-                  type="button" 
-                  className="action-btn-secondary"
-                  onClick={() => navigate('/parent/overview')}
-                  style={{ flex: 1, justifyContent: 'center', height: '40px' }}
-                >
-                  <Home size={16} />
-                  <span>Back to Home</span>
-                </button>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      )}
-
-      {/* STEP 5: FAILURE SCREEN */}
-      {step === 'failed' && (
-        <div className="modal-backdrop fade-in" style={{ zIndex: 9999 }}>
-          <div className="modal-card" style={{ maxWidth: '520px', padding: '36px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px' }}>
-            <div style={{ width: '70px', height: '70px', borderRadius: '50%', background: '#FEE2E2', color: '#DC2626', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <XCircle size={44} />
-            </div>
-
-            <div>
-              <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-main)', margin: 0 }}>
-                Payment Gateway Timeout
-              </h2>
-              <p style={{ fontSize: '0.88rem', color: 'var(--status-danger-text)', marginTop: '6px' }}>
-                Bank PSP server timed out during authorization. No amount was debited from your account.
-              </p>
-            </div>
-
-            <div style={{ display: 'flex', gap: '12px', width: '100%' }}>
-              <button 
-                type="button" 
-                className="btn-submit-primary"
-                onClick={() => setStep('checkout')}
-                style={{ flex: 1, height: '44px' }}
-              >
-                <RefreshCw size={16} />
-                <span>Try Again</span>
-              </button>
-
-              <button 
-                type="button" 
-                className="action-btn-secondary"
-                onClick={() => navigate('/parent/overview')}
-                style={{ flex: 1, justifyContent: 'center', height: '44px' }}
-              >
-                <Home size={16} />
-                <span>Back to Dashboard</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* FLOATING RAZORPAY MODAL SIMULATION OVERLAY */}
+      {/* ===== RAZORPAY MODAL ===== */}
       {showRazorpayModal && (
         <div className="modal-backdrop fade-in" style={{ zIndex: 99999 }}>
           <div className="modal-card" style={{ maxWidth: '420px', padding: '0', overflow: 'hidden', borderRadius: '16px', border: '1px solid #1E293B', background: '#0F172A', color: 'white' }}>
-            
-            {/* Razorpay Standard Modal Header */}
             <div style={{ background: '#1E293B', padding: '16px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #334155' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#0284C7', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900 }}>
-                  R
-                </div>
+                <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#0284C7', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900 }}>R</div>
                 <div>
                   <div style={{ fontWeight: 800, fontSize: '0.88rem', color: 'white' }}>Razorpay Checkout</div>
                   <div style={{ fontSize: '0.72rem', color: '#94A3B8' }}>PaperBuddy International School</div>
                 </div>
               </div>
-
-              <button 
-                type="button" 
-                onClick={() => setShowRazorpayModal(false)}
-                style={{ background: 'none', border: 'none', color: '#94A3B8', cursor: 'pointer', padding: '4px' }}
-              >
+              <button type="button" onClick={() => setShowRazorpayModal(false)} style={{ background: 'none', border: 'none', color: '#94A3B8', cursor: 'pointer', padding: '4px' }}>
                 <X size={18} />
               </button>
             </div>
-
-            {/* Amount Banner */}
             <div style={{ padding: '20px', background: '#0F172A', textAlign: 'center', borderBottom: '1px solid #1E293B' }}>
               <div style={{ fontSize: '0.75rem', color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>AMOUNT TO PAY</div>
-              <div style={{ fontSize: '2.2rem', fontWeight: 900, color: '#38BDF8', margin: '4px 0 0 0' }}>
-                ₹{finalAmountToPay.toLocaleString('en-IN')}
-              </div>
+              <div style={{ fontSize: '2.2rem', fontWeight: 900, color: '#38BDF8', margin: '4px 0 0 0' }}>₹{finalAmountToPay.toLocaleString('en-IN')}</div>
             </div>
-
-            {/* Options list inside Razorpay modal */}
             <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
               <div style={{ fontSize: '0.78rem', color: '#94A3B8', fontWeight: 700 }}>SELECT PAYMENT METHOD</div>
-              
-              <button 
-                type="button"
-                onClick={() => { setShowRazorpayModal(false); setActiveTab('upi'); startGatewayProcessing(); }}
-                style={{ padding: '12px 16px', background: '#1E293B', border: '1px solid #334155', borderRadius: '8px', color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <QrCode size={18} style={{ color: '#38BDF8' }} />
-                  <span style={{ fontSize: '0.85rem', fontWeight: 700 }}>UPI (Google Pay, PhonePe, QR)</span>
-                </div>
-                <ChevronRight size={16} style={{ color: '#64748B' }} />
-              </button>
-
-              <button 
-                type="button"
-                onClick={() => { setShowRazorpayModal(false); setActiveTab('card'); setStep('otp_modal'); }}
-                style={{ padding: '12px 16px', background: '#1E293B', border: '1px solid #334155', borderRadius: '8px', color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <CreditCard size={18} style={{ color: '#818CF8' }} />
-                  <span style={{ fontSize: '0.85rem', fontWeight: 700 }}>Card (Credit / Debit)</span>
-                </div>
-                <ChevronRight size={16} style={{ color: '#64748B' }} />
-              </button>
-
-              <button 
-                type="button"
-                onClick={() => { setShowRazorpayModal(false); setActiveTab('netbanking'); startGatewayProcessing(); }}
-                style={{ padding: '12px 16px', background: '#1E293B', border: '1px solid #334155', borderRadius: '8px', color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <Landmark size={18} style={{ color: '#34D399' }} />
-                  <span style={{ fontSize: '0.85rem', fontWeight: 700 }}>Net Banking (HDFC, ICICI, SBI)</span>
-                </div>
-                <ChevronRight size={16} style={{ color: '#64748B' }} />
-              </button>
+              {[
+                { label: 'UPI (Google Pay, PhonePe, QR)', tab: 'upi',        icon: <QrCode size={18} style={{ color: '#38BDF8' }} />,    action: () => { setShowRazorpayModal(false); setActiveTab('upi'); startGatewayProcessing(); } },
+                { label: 'Card (Credit / Debit)',          tab: 'card',       icon: <CreditCard size={18} style={{ color: '#818CF8' }} />, action: () => { setShowRazorpayModal(false); setActiveTab('card'); setGwStep('otp_modal'); setCheckoutStep(4); } },
+                { label: 'Net Banking (HDFC, ICICI, SBI)',tab: 'netbanking', icon: <Landmark size={18} style={{ color: '#34D399' }} />,   action: () => { setShowRazorpayModal(false); setActiveTab('netbanking'); startGatewayProcessing(); } },
+              ].map(({ label, icon, action }) => (
+                <button key={label} type="button" onClick={action} style={{ padding: '12px 16px', background: '#1E293B', border: '1px solid #334155', borderRadius: '8px', color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    {icon}
+                    <span style={{ fontSize: '0.85rem', fontWeight: 700 }}>{label}</span>
+                  </div>
+                  <ChevronRight size={16} style={{ color: '#64748B' }} />
+                </button>
+              ))}
             </div>
-
             <div style={{ padding: '12px 20px', background: '#1E293B', fontSize: '0.72rem', color: '#94A3B8', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
               <Lock size={12} />
-              <span>Secured by Razorpay • 256-bit Encryption</span>
+              <span>Secured by Razorpay · 256-bit Encryption</span>
             </div>
           </div>
         </div>

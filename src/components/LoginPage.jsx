@@ -277,14 +277,6 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
               </button>
               <button 
                 type="button"
-                className={`role-tab-btn ${role === 'cashier' ? 'active' : ''}`}
-                onClick={() => handleRoleChange('cashier')}
-              >
-                <Receipt size={15} />
-                <span>Finance</span>
-              </button>
-              <button 
-                type="button"
                 className={`role-tab-btn ${role === 'parent' ? 'active' : ''}`}
                 onClick={() => handleRoleChange('parent')}
               >

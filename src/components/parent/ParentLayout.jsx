@@ -23,7 +23,7 @@ import {
 } from 'lucide-react';
 
 const ROUTE_BREADCRUMBS = {
-  '/parent/overview': { title: 'Parent Overview', section: 'Dashboard' },
+  '/parent/overview': { title: 'Dashboard', section: 'Overview' },
   '/parent/fees': { title: 'Fees & Dues Breakdown', section: 'Billing' },
   '/parent/pay': { title: 'Online Fee Payment', section: 'Checkout' },
   '/parent/history': { title: 'Payment History Log', section: 'Records' },
@@ -301,59 +301,31 @@ export default function ParentLayout({
             </span>
           </div>
 
-          {/* DESKTOP BREADCRUMBS & TITLE (Visible ONLY on Desktop ≥ 768px) */}
-          <div className="desktop-header-title-group" style={{ display: 'flex', flexDirection: 'column' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.76rem', color: 'var(--text-muted)', fontWeight: 600 }}>
-              <span>Home</span>
-              <ChevronRight size={12} />
-              <span>{currentMeta.section}</span>
-              <ChevronRight size={12} />
-              <span style={{ color: 'var(--odoo-purple)', fontWeight: 700 }}>{currentMeta.title}</span>
-            </div>
-            <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-main)', margin: '2px 0 0 0', letterSpacing: '-0.02em' }}>
+          {/* DESKTOP TITLE BLOCK (Visible ONLY on Desktop ≥ 768px) */}
+          <div className="desktop-header-title-group topbar-title-block">
+            <h2 className="topbar-page-title">
               {currentMeta.title}
             </h2>
-          </div>
-
-          {/* Right Controls Bar (Child Switcher, Bell, Theme, Admin Button) */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            
-            {/* Logged-In Student Account Badge (Static, no switcher) */}
-            {selectedChild && (
-              <div 
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  padding: '6px 14px',
-                  borderRadius: 'var(--radius-pill)',
-                  background: 'var(--odoo-purple-light)',
-                  border: '1px solid rgba(113, 75, 103, 0.3)',
-                  color: 'var(--odoo-purple)',
-                  fontWeight: 700,
-                  fontSize: '0.84rem'
-                }}
-                title={`Logged in as Student ${selectedChild.name} (ID: ${selectedChild.id})`}
-              >
-                <div style={{
-                  width: '24px',
-                  height: '24px',
-                  borderRadius: '50%',
-                  background: 'var(--odoo-purple)',
-                  color: 'white',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '0.75rem',
-                  fontWeight: 800,
-                  flexShrink: 0
-                }}>
-                  {selectedChild?.name ? selectedChild.name.charAt(0) : 'S'}
-                </div>
-                <span>{selectedChild.name}</span>
-                <span style={{ fontSize: '0.78rem', opacity: 0.85 }}>({selectedChild.classGrade})</span>
+            {(parentAccount?.name || selectedChild) && (
+              <div className="topbar-page-subtitle">
+                {parentAccount?.name && (
+                  <span className="topbar-subtitle-name">{parentAccount.name}</span>
+                )}
+                {parentAccount?.name && selectedChild && (
+                  <span className="topbar-subtitle-sep">·</span>
+                )}
+                {selectedChild && (
+                  <span className="topbar-subtitle-student">
+                    {selectedChild.name}
+                    <span className="topbar-subtitle-grade"> ({selectedChild.classGrade})</span>
+                  </span>
+                )}
               </div>
             )}
+          </div>
+
+          {/* Right Controls Bar (Bell, Theme Toggle) */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
 
             {/* Notification Bell Button */}
             <button 
@@ -420,18 +392,6 @@ export default function ParentLayout({
             >
               {theme === 'dark' ? <Sun size={17} style={{ color: '#F59E0B' }} /> : <Moon size={17} style={{ color: 'var(--odoo-purple)' }} />}
             </button>
-
-            {/* Switch to Admin Mode Button (Hidden on Mobile) */}
-            <button 
-              type="button"
-              className="action-btn-secondary switch-admin-hide-mobile"
-              onClick={onSwitchToAdmin}
-              style={{ fontSize: '0.82rem', height: '36px', padding: '0 14px', borderColor: 'var(--odoo-purple)', color: 'var(--odoo-purple)', fontWeight: 700 }}
-            >
-              <Shield size={14} />
-              <span>Admin Portal</span>
-            </button>
-
           </div>
         </header>
 

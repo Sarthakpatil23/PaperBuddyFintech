@@ -1,6 +1,18 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ShieldAlert, ArrowUpRight, BookOpen, Send, AlertCircle } from 'lucide-react';
+import { 
+  ShieldAlert, 
+  ArrowUpRight, 
+  BookOpen, 
+  Send, 
+  PlusCircle, 
+  BarChart3, 
+  FileText, 
+  Coins, 
+  UserCheck, 
+  Sparkles,
+  Zap
+} from 'lucide-react';
 import OverviewCards from '../components/OverviewCards';
 import RevenueCharts from '../components/RevenueCharts';
 
@@ -9,7 +21,9 @@ export default function OverviewPage({
   defaulters = [], 
   onFilterByFeeType, 
   onSelectStudentForLedger,
-  onSendReminder
+  onSendReminder,
+  onShowReportModal,
+  onRecordPaymentClick
 }) {
   const navigate = useNavigate();
 
@@ -38,7 +52,87 @@ export default function OverviewPage({
   };
 
   return (
-    <div className="overview-page-wrapper" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+    <div className="overview-page-wrapper fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      
+      {/* Admin Quick Actions Strip */}
+      <div className="admin-quick-actions-container">
+        <div className="admin-actions-title-group">
+          <div style={{
+            width: '36px',
+            height: '36px',
+            borderRadius: '10px',
+            background: 'var(--odoo-purple-light)',
+            color: 'var(--odoo-purple)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexShrink: 0
+          }}>
+            <Zap size={18} />
+          </div>
+          <div>
+            <h3>Admin Operations Toolbar</h3>
+            <p>Fast-track fee collection, statement downloads & defaulter auditing</p>
+          </div>
+        </div>
+
+        <div className="admin-actions-button-grid">
+          <button 
+            type="button"
+            className="admin-action-btn primary-highlight"
+            onClick={() => onRecordPaymentClick && onRecordPaymentClick(null)}
+          >
+            <PlusCircle size={15} />
+            <span>Record Payment</span>
+          </button>
+
+          <button 
+            type="button"
+            className="admin-action-btn"
+            onClick={() => navigate('/defaulters')}
+          >
+            <ShieldAlert size={15} style={{ color: '#E11D48' }} />
+            <span>Defaulters ({safeDefaulters.length})</span>
+          </button>
+
+          <button 
+            type="button"
+            className="admin-action-btn"
+            onClick={() => navigate('/reconciliation')}
+          >
+            <BarChart3 size={15} style={{ color: 'var(--accent-blue-text)' }} />
+            <span>Reconciliation</span>
+          </button>
+
+          <button 
+            type="button"
+            className="admin-action-btn"
+            onClick={onShowReportModal}
+          >
+            <FileText size={15} />
+            <span>Export Reports</span>
+          </button>
+
+          <button 
+            type="button"
+            className="admin-action-btn"
+            onClick={() => navigate('/fee-structures')}
+          >
+            <Coins size={15} />
+            <span>Fee Rules</span>
+          </button>
+
+          <button 
+            type="button"
+            className="admin-action-btn"
+            onClick={() => navigate('/student-ledger')}
+          >
+            <UserCheck size={15} />
+            <span>Student Ledger</span>
+          </button>
+        </div>
+      </div>
+
       {/* 1. Stat Cards Row */}
       <OverviewCards 
         data={overview} 
@@ -54,20 +148,20 @@ export default function OverviewPage({
       <div className="dashboard-section-card">
         <div className="section-card-header">
           <div className="section-card-title">
-            <ShieldAlert size={22} style={{ color: '#E11D48' }} />
+            <ShieldAlert size={20} style={{ color: '#E11D48' }} />
             <div>
-              <h2 style={{ fontSize: '1.15rem' }}>Top High-Priority Defaulters</h2>
-              <p>Glanceable overview of student accounts with the highest overdue balances</p>
+              <h2 style={{ fontSize: '1.1rem' }}>Top High-Priority Defaulters</h2>
+              <p>Glanceable overview of student accounts with highest overdue fee balances</p>
             </div>
           </div>
 
           <button 
             className="action-btn-secondary"
             onClick={() => navigate('/defaulters')}
-            style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+            style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.82rem' }}
           >
             <span>View All Defaulters ({safeDefaulters.length})</span>
-            <ArrowUpRight size={16} />
+            <ArrowUpRight size={15} />
           </button>
         </div>
 
@@ -95,7 +189,7 @@ export default function OverviewPage({
                 top5Defaulters.map((def) => (
                   <tr key={def.id}>
                     <td>
-                      <div style={{ fontWeight: 600 }}>{def.studentName}</div>
+                      <div style={{ fontWeight: 700, color: 'var(--text-main)' }}>{def.studentName}</div>
                       <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>{def.classGrade} ({def.studentId})</div>
                     </td>
 
@@ -109,12 +203,12 @@ export default function OverviewPage({
                       </div>
                     </td>
 
-                    <td style={{ fontWeight: 700, color: '#9F1239' }}>
+                    <td style={{ fontWeight: 800, color: '#9F1239' }}>
                       ₹{(def.amountOwed || 0).toLocaleString('en-IN')}
                     </td>
 
                     <td>
-                      <span style={{ fontWeight: 600 }}>{def.daysOverdue} days</span>
+                      <span style={{ fontWeight: 600, fontSize: '0.85rem' }}>{def.daysOverdue} days</span>
                     </td>
 
                     <td>
@@ -124,7 +218,7 @@ export default function OverviewPage({
                     </td>
 
                     <td>
-                      <div style={{ fontSize: '0.85rem', fontWeight: 500 }}>{def.parentName}</div>
+                      <div style={{ fontSize: '0.84rem', fontWeight: 600 }}>{def.parentName}</div>
                       <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{def.phone}</div>
                     </td>
 

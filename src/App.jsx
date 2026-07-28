@@ -475,12 +475,24 @@ export default function App() {
     return { id: 'STU-101', name: 'Student Account', classGrade: 'Grade Level', balanceDue: 0, totalPaid: 0, totalBilled: 0 };
   }, [students, selectedChildId, authUser]);
 
-  const currentParentAccount = activeParent || (authUser?.role === 'parent' ? {
-    id: authUser.id || `PAR-${authUser.studentId}`,
-    name: authUser.name || `Parent of ${authUser.studentName || 'Student'}`,
-    email: authUser.email || '',
-    phone: authUser.phone || 'N/A'
-  } : { name: 'Parent', email: 'parent@example.com' });
+  const currentParentAccount = React.useMemo(() => {
+    if (activeParent && activeParent.name && activeParent.name !== 'Parent Account Not Yet Created') {
+      return activeParent;
+    }
+    if (authUser && authUser.role === 'parent') {
+      let name = authUser.name;
+      if (!name || name === 'Parent Account Not Yet Created') {
+        name = authUser.studentName ? `Parent of ${authUser.studentName}` : 'Parent Account';
+      }
+      return {
+        id: authUser.id || `PAR-${authUser.studentId}`,
+        name,
+        email: authUser.email || '',
+        phone: authUser.phone || 'N/A'
+      };
+    }
+    return { name: 'Parent', email: 'parent@example.com' };
+  }, [activeParent, authUser]);
 
   const childrenList = students.filter((s) => activeParent?.childrenIds?.includes(s.id));
 
@@ -825,6 +837,8 @@ export default function App() {
                 onFilterByFeeType={(feeName) => setActiveFeeFilter(feeName)}
                 onSelectStudentForLedger={(stuId) => setSelectedStudentForLedger(stuId)}
                 onSendReminder={handleSendReminder}
+                onShowReportModal={() => setShowReportModal(true)}
+                onRecordPaymentClick={(stu) => setQuickActionModal({ mode: 'recordPayment', student: stu })}
               />
             } 
           />

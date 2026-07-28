@@ -10,15 +10,16 @@ import {
   ChevronRight, 
   Sparkles, 
   Receipt, 
-  Bell, 
   ShieldCheck, 
   Coins,
-  UserCheck,
-  Building2,
+  History,
+  Download,
   FileText,
   PhoneCall,
-  Download,
-  HelpCircle
+  HelpCircle,
+  TrendingUp,
+  UserCheck,
+  Building2
 } from 'lucide-react';
 
 export default function ParentOverviewPage({
@@ -52,158 +53,165 @@ export default function ParentOverviewPage({
   const totalInstallments = installmentItems.length > 0 ? installmentItems.length : 4;
   const installmentPercent = totalInstallments > 0 ? Math.round((paidInstallments / totalInstallments) * 100) : 100;
   const nextInstallment = installmentItems.find((item) => item.status === 'Due' || item.status === 'Upcoming' || item.status === 'Pending');
+  // Instant Parent Display Name resolution (prevents delay/flicker)
+  const parentDisplayName = (parentAccount?.name && parentAccount.name !== 'Parent Account Not Yet Created')
+    ? parentAccount.name
+    : (selectedChild?.name ? `Parent of ${selectedChild.name}` : 'Parent');
 
   return (
-    <div className="parent-overview-page fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
+    <div className="parent-overview-page fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       
-      {/* Top Welcome Greeting Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
-        <div>
-          <h1 style={{ fontSize: '1.85rem', fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.03em', margin: 0 }}>
-            Welcome back, {parentAccount?.name || 'Parent'} 👋
-          </h1>
-          <p style={{ fontSize: '0.92rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
-            Fee portal summary for <strong style={{ color: 'var(--odoo-purple)' }}>{selectedChild?.name || 'Student'}</strong> ({selectedChild?.classGrade || 'Grade 10'})
-          </p>
+      {/* Unified SaaS Parent Dashboard Hero Card */}
+      <div className={`compact-fee-summary-card ${totalAmountDue === 0 ? 'clear' : ''}`} style={{ padding: '24px 28px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', width: '100%', zIndex: 2 }}>
+          
+          {/* Header Row: Greeting & Student Subtitle & Academic Session Tag */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+            <div>
+              <h1 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'white', letterSpacing: '-0.025em', margin: 0 }}>
+                Welcome back, {parentDisplayName} 👋
+              </h1>
+              <div style={{ fontSize: '0.84rem', opacity: 0.9, marginTop: '3px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span>Student: <strong>{selectedChild?.name || 'Student'}</strong> ({selectedChild?.classGrade || 'Grade Level'})</span>
+              </div>
+            </div>
+
+            <div style={{
+              padding: '6px 14px',
+              borderRadius: 'var(--radius-pill)',
+              background: 'rgba(255, 255, 255, 0.18)',
+              border: '1px solid rgba(255, 255, 255, 0.25)',
+              color: 'white',
+              fontSize: '0.78rem',
+              fontWeight: 700,
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px'
+            }}>
+              <ShieldCheck size={14} />
+              <span>Session 2026-27</span>
+            </div>
+          </div>
+
+          <div style={{ height: '1px', background: 'rgba(255, 255, 255, 0.16)', width: '100%' }} />
+
+          {/* Financial Balance & Action Row */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+            <div>
+              <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.08em', opacity: 0.85, fontWeight: 700 }}>
+                {totalAmountDue > 0 ? 'Total Outstanding Balance' : 'Account Financial Status'}
+              </div>
+              <div style={{ fontSize: '2.1rem', fontWeight: 900, letterSpacing: '-0.03em', marginTop: '2px', lineHeight: 1.1 }}>
+                ₹{totalAmountDue.toLocaleString('en-IN')}
+              </div>
+              <div className="summary-meta-pills" style={{ marginTop: '8px' }}>
+                {totalAmountDue > 0 ? (
+                  <>
+                    <span className="summary-pill-item">
+                      <Clock size={13} />
+                      <span>{overdueItems.length > 0 ? `${overdueItems.length} Fee Overdue` : `Due by ${earliestDueDate}`}</span>
+                    </span>
+                    <span className="summary-pill-item">
+                      <Sparkles size={13} />
+                      <span>{dueItems.length} Pending Item(s)</span>
+                    </span>
+                    <span className="summary-pill-item">
+                      Zero-fee UPI Settlement
+                    </span>
+                  </>
+                ) : (
+                  <span className="summary-pill-item">
+                    <CheckCircle2 size={13} />
+                    <span>All Fee Schedules Settled</span>
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {totalAmountDue > 0 && (
+              <button 
+                type="button"
+                className="summary-action-btn"
+                onClick={() => navigate('/parent/pay')}
+              >
+                <CreditCard size={18} />
+                <span>Pay Dues ₹{totalAmountDue.toLocaleString('en-IN')}</span>
+                <ArrowRight size={16} />
+              </button>
+            )}
+          </div>
+
+        </div>
+      </div>
+
+      {/* Modern Quick Actions Grid */}
+      <div className="quick-actions-section">
+        <div style={{ fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)', fontWeight: 700 }}>
+          Quick Actions
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{
-            padding: '8px 16px',
-            borderRadius: 'var(--radius-pill)',
-            background: 'var(--odoo-purple-light)',
-            color: 'var(--odoo-purple)',
-            fontSize: '0.85rem',
-            fontWeight: 700,
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '8px'
-          }}>
-            <ShieldCheck size={16} />
-            <span>Academic Session 2026-27</span>
+        <div className="quick-actions-grid">
+          <div className="quick-action-card" onClick={() => navigate('/parent/pay')}>
+            <div className="quick-action-icon">
+              <CreditCard size={20} />
+            </div>
+            <div className="quick-action-text">
+              <span className="quick-action-title">Pay Fees Now</span>
+              <span className="quick-action-subtitle">Instant UPI & Netbanking</span>
+            </div>
+            <ChevronRight size={16} style={{ color: 'var(--text-muted)' }} />
+          </div>
+
+          <div className="quick-action-card" onClick={() => navigate('/parent/receipts')}>
+            <div className="quick-action-icon">
+              <Download size={20} />
+            </div>
+            <div className="quick-action-text">
+              <span className="quick-action-title">Tax Receipts (80G)</span>
+              <span className="quick-action-subtitle">Download PDF certificates</span>
+            </div>
+            <ChevronRight size={16} style={{ color: 'var(--text-muted)' }} />
+          </div>
+
+          <div className="quick-action-card" onClick={() => navigate('/parent/fees')}>
+            <div className="quick-action-icon">
+              <Coins size={20} />
+            </div>
+            <div className="quick-action-text">
+              <span className="quick-action-title">Fee Structures</span>
+              <span className="quick-action-subtitle">Tuition, Transport & Waivers</span>
+            </div>
+            <ChevronRight size={16} style={{ color: 'var(--text-muted)' }} />
+          </div>
+
+          <div className="quick-action-card" onClick={() => navigate('/parent/history')}>
+            <div className="quick-action-icon">
+              <History size={20} />
+            </div>
+            <div className="quick-action-text">
+              <span className="quick-action-title">Payment History</span>
+              <span className="quick-action-subtitle">Verified transaction log</span>
+            </div>
+            <ChevronRight size={16} style={{ color: 'var(--text-muted)' }} />
           </div>
         </div>
       </div>
 
-      {/* 2-Column Desktop Widescreen Layout Grid */}
+      {/* 2-Column Responsive Layout Grid */}
       <div className="parent-dashboard-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: '24px' }}>
         
-        {/* LEFT COLUMN: Main Financial Cards & Dues (8 Cols Desktop / 12 Cols Mobile) */}
+        {/* LEFT COLUMN: Pending Fees Breakdown & Recent Receipts (8 Cols Desktop / 12 Cols Mobile) */}
         <div style={{ gridColumn: 'span 8', display: 'flex', flexDirection: 'column', gap: '24px' }} className="grid-left-col">
           
-          {/* Prominent "AMOUNT DUE" Hero Card (Banking Style) */}
-          <div className="amount-due-hero-card" style={{
-            background: totalAmountDue > 0 
-              ? 'linear-gradient(135deg, var(--odoo-purple) 0%, #4A2E44 100%)' 
-              : 'linear-gradient(135deg, #0284C7 0%, #0369A1 100%)',
-            borderRadius: 'var(--radius-lg)',
-            padding: '36px',
-            color: 'white',
-            boxShadow: 'var(--shadow-lg)',
-            position: 'relative',
-            overflow: 'hidden',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '24px'
-          }}>
-            {/* Subtle Background Radial Glow */}
-            <div style={{
-              position: 'absolute',
-              top: '-40px',
-              right: '-40px',
-              width: '260px',
-              height: '260px',
-              borderRadius: '50%',
-              background: 'rgba(255, 255, 255, 0.09)',
-              pointerEvents: 'none'
-            }} />
-
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px', zIndex: 2 }}>
-              <div>
-                <div style={{ fontSize: '0.84rem', textTransform: 'uppercase', letterSpacing: '0.08em', opacity: 0.88, fontWeight: 700 }}>
-                  {totalAmountDue > 0 ? 'Total Outstanding Fee Balance' : 'Current Fee Account Status'}
-                </div>
-                <div style={{ fontSize: '3.2rem', fontWeight: 900, letterSpacing: '-0.03em', marginTop: '6px' }}>
-                  ₹{totalAmountDue.toLocaleString('en-IN')}
-                </div>
-              </div>
-
-              {totalAmountDue > 0 ? (
-                <div style={{
-                  background: overdueItems.length > 0 ? 'rgba(255, 228, 230, 0.25)' : 'rgba(254, 243, 199, 0.25)',
-                  border: overdueItems.length > 0 ? '1px solid rgba(255, 228, 230, 0.4)' : '1px solid rgba(254, 243, 199, 0.4)',
-                  padding: '8px 16px',
-                  borderRadius: 'var(--radius-pill)',
-                  fontSize: '0.85rem',
-                  fontWeight: 700,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px'
-                }}>
-                  {overdueItems.length > 0 ? <AlertTriangle size={16} /> : <Clock size={16} />}
-                  <span>{overdueItems.length > 0 ? `${overdueItems.length} Fee Overdue` : `Due by ${earliestDueDate}`}</span>
-                </div>
-              ) : (
-                <div style={{
-                  background: 'rgba(255, 255, 255, 0.22)',
-                  padding: '8px 16px',
-                  borderRadius: 'var(--radius-pill)',
-                  fontSize: '0.85rem',
-                  fontWeight: 700,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px'
-                }}>
-                  <CheckCircle2 size={16} />
-                  <span>All Dues Up to Date</span>
-                </div>
-              )}
-            </div>
-
-            {/* Action Bar inside Hero Card */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px', zIndex: 2, paddingTop: '12px', borderTop: '1px solid rgba(255, 255, 255, 0.15)' }}>
-              <div style={{ fontSize: '0.88rem', opacity: 0.92, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Sparkles size={16} />
-                <span>{totalAmountDue > 0 ? `${dueItems.length} pending item(s). Instant zero-fee UPI settlement.` : 'No dues pending for this student.'}</span>
-              </div>
-
-              {totalAmountDue > 0 && (
-                <button 
-                  type="button"
-                  onClick={() => navigate('/parent/pay')}
-                  style={{
-                    background: 'white',
-                    color: 'var(--odoo-purple)',
-                    border: 'none',
-                    padding: '14px 28px',
-                    borderRadius: 'var(--radius-md)',
-                    fontWeight: 800,
-                    fontSize: '1rem',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '10px',
-                    boxShadow: '0 6px 20px rgba(0,0,0,0.2)',
-                    transition: 'transform 0.18s ease'
-                  }}
-                >
-                  <CreditCard size={20} />
-                  <span>Pay Now ₹{totalAmountDue.toLocaleString('en-IN')}</span>
-                  <ArrowRight size={18} />
-                </button>
-              )}
-            </div>
-          </div>
-
-          {/* Pending Fee Breakdown (List View) */}
-          <div className="odoo-card" style={{ padding: '28px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          {/* Currently Due & Upcoming Fees List */}
+          <div className="dashboard-section-card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '18px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
-                <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-main)', margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <Coins size={20} style={{ color: 'var(--odoo-purple)' }} />
+                <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--text-main)', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Coins size={18} style={{ color: 'var(--odoo-purple)' }} />
                   <span>Currently Due & Upcoming Fees</span>
                 </h3>
-                <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', margin: '2px 0 0 0' }}>Itemized breakdown of academic tuition, transport & lab dues</p>
+                <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '2px 0 0 0' }}>Itemized breakdown of academic tuition, transport & lab dues</p>
               </div>
 
               <button 
@@ -217,44 +225,44 @@ export default function ParentOverviewPage({
             </div>
 
             {dueItems.length === 0 ? (
-              <div style={{ padding: '32px', textAlign: 'center', background: 'var(--bg-canvas)', borderRadius: 'var(--radius-md)' }}>
-                <CheckCircle2 size={36} style={{ color: 'var(--accent-blue-text)', margin: '0 auto 10px auto' }} />
-                <div style={{ fontWeight: 700, fontSize: '0.95rem' }}>No Pending Fee Line Items</div>
-                <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>All due fee schedules have been cleared.</div>
+              <div style={{ padding: '28px', textAlign: 'center', background: 'var(--bg-canvas)', borderRadius: 'var(--radius-md)', border: '1px dashed var(--border-color)' }}>
+                <CheckCircle2 size={32} style={{ color: 'var(--accent-blue-text)', margin: '0 auto 8px auto' }} />
+                <div style={{ fontWeight: 700, fontSize: '0.92rem' }}>No Pending Fee Line Items</div>
+                <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '2px' }}>All scheduled fee items for {selectedChild?.name || 'this student'} have been cleared.</div>
               </div>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 {dueItems.map((item) => (
                   <div 
                     key={item.id}
                     style={{
                       display: 'flex',
-                      justify: 'space-between',
+                      justifyContent: 'space-between',
                       alignItems: 'center',
-                      padding: '14px 18px',
+                      padding: '12px 16px',
                       borderRadius: 'var(--radius-md)',
                       background: 'var(--bg-canvas)',
-                      border: item.status === 'Overdue' ? '1px solid rgba(244, 63, 94, 0.4)' : '1px solid var(--border-color)',
+                      border: item.status === 'Overdue' ? '1px solid rgba(244, 63, 94, 0.3)' : '1px solid var(--border-color)',
                       transition: 'var(--transition-fast)'
                     }}
                     className="hover-card-row"
                   >
                     <div>
-                      <div style={{ fontWeight: 800, fontSize: '0.95rem', color: 'var(--text-main)' }}>{item.title}</div>
-                      <div style={{ fontSize: '0.8rem', color: item.status === 'Overdue' ? '#9F1239' : 'var(--text-muted)', marginTop: '2px' }}>
+                      <div style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--text-main)' }}>{item.title}</div>
+                      <div style={{ fontSize: '0.78rem', color: item.status === 'Overdue' ? '#9F1239' : 'var(--text-muted)', marginTop: '2px' }}>
                         Due: <strong>{item.dueDate}</strong> {item.lateFee > 0 && `(Includes +₹${item.lateFee} Late Fee)`}
                       </div>
                     </div>
 
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
                       <div style={{ textAlign: 'right' }}>
-                        <div style={{ fontWeight: 900, fontSize: '1.05rem', color: 'var(--text-main)' }}>
+                        <div style={{ fontWeight: 800, fontSize: '1rem', color: 'var(--text-main)' }}>
                           ₹{(item.amount + (item.lateFee || 0)).toLocaleString('en-IN')}
                         </div>
                         <span style={{
                           padding: '2px 8px',
                           borderRadius: 'var(--radius-pill)',
-                          fontSize: '0.72rem',
+                          fontSize: '0.7rem',
                           fontWeight: 700,
                           background: item.status === 'Overdue' ? 'var(--status-danger-bg)' : 'var(--status-pending-bg)',
                           color: item.status === 'Overdue' ? 'var(--status-danger-text)' : 'var(--status-pending-text)'
@@ -265,9 +273,9 @@ export default function ParentOverviewPage({
 
                       <button 
                         type="button" 
-                        className="btn-submit-primary"
+                        className="action-btn-primary"
                         onClick={() => navigate('/parent/pay')}
-                        style={{ height: '36px', padding: '0 14px', fontSize: '0.82rem', width: 'auto' }}
+                        style={{ height: '34px', padding: '0 12px', fontSize: '0.8rem' }}
                       >
                         Pay Item
                       </button>
@@ -278,15 +286,15 @@ export default function ParentOverviewPage({
             )}
           </div>
 
-          {/* Recent Payment Activity & Receipts Preview */}
-          <div className="odoo-card" style={{ padding: '28px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          {/* Recent Payment Receipts Preview */}
+          <div className="dashboard-section-card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '18px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
-                <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-main)', margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <Receipt size={20} style={{ color: 'var(--odoo-purple)' }} />
+                <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--text-main)', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Receipt size={18} style={{ color: 'var(--odoo-purple)' }} />
                   <span>Recent Payment Receipts</span>
                 </h3>
-                <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', margin: '2px 0 0 0' }}>Verified payment transactions & downloadable PDF receipts</p>
+                <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '2px 0 0 0' }}>Verified transactions & downloadable receipts</p>
               </div>
 
               <button 
@@ -300,20 +308,20 @@ export default function ParentOverviewPage({
             </div>
 
             {childTxns.length === 0 ? (
-              <div style={{ padding: '24px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+              <div style={{ padding: '24px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.82rem', background: 'var(--bg-canvas)', borderRadius: 'var(--radius-md)' }}>
                 No recent payment transactions recorded for this child yet.
               </div>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 {childTxns.slice(0, 3).map((txn) => (
                   <div 
                     key={txn.id}
                     onClick={() => onOpenReceipt && onOpenReceipt(txn)}
                     style={{
                       display: 'flex',
-                      justify: 'space-between',
+                      justifyContent: 'space-between',
                       alignItems: 'center',
-                      padding: '14px 18px',
+                      padding: '12px 16px',
                       borderRadius: 'var(--radius-md)',
                       background: 'var(--bg-canvas)',
                       border: '1px solid var(--border-color)',
@@ -322,35 +330,36 @@ export default function ParentOverviewPage({
                     }}
                     className="hover-card-row"
                   >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                       <div style={{
-                        width: '40px',
-                        height: '40px',
-                        borderRadius: '12px',
+                        width: '36px',
+                        height: '36px',
+                        borderRadius: '10px',
                         background: 'var(--status-paid-bg)',
                         color: 'var(--status-paid-text)',
                         display: 'flex',
                         alignItems: 'center',
-                        justifyContent: 'center'
+                        justifyContent: 'center',
+                        flexShrink: 0
                       }}>
-                        <CheckCircle2 size={20} />
+                        <CheckCircle2 size={18} />
                       </div>
                       <div>
-                        <div style={{ fontWeight: 800, fontSize: '0.92rem', color: 'var(--text-main)' }}>{txn.feeType}</div>
-                        <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+                        <div style={{ fontWeight: 700, fontSize: '0.88rem', color: 'var(--text-main)' }}>{txn.feeType}</div>
+                        <div style={{ fontSize: '0.76rem', color: 'var(--text-muted)', marginTop: '1px' }}>
                           {txn.dateTime} • {txn.paymentMethod} • Receipt #{txn.receiptNo}
                         </div>
                       </div>
                     </div>
 
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                       <div style={{ textAlign: 'right' }}>
-                        <div style={{ fontWeight: 900, fontSize: '1.05rem', color: 'var(--accent-blue-text)' }}>
+                        <div style={{ fontWeight: 800, fontSize: '0.98rem', color: 'var(--accent-blue-text)' }}>
                           ₹{txn.amount.toLocaleString('en-IN')}
                         </div>
-                        <span style={{ fontSize: '0.75rem', color: 'var(--status-paid-text)', fontWeight: 700 }}>{txn.status}</span>
+                        <span style={{ fontSize: '0.72rem', color: 'var(--status-paid-text)', fontWeight: 700 }}>{txn.status}</span>
                       </div>
-                      <ChevronRight size={18} style={{ color: 'var(--text-muted)' }} />
+                      <ChevronRight size={16} style={{ color: 'var(--text-muted)' }} />
                     </div>
                   </div>
                 ))}
@@ -360,72 +369,70 @@ export default function ParentOverviewPage({
 
         </div>
 
-        {/* RIGHT COLUMN: Student Profile, Installments & Quick Services (4 Cols Desktop / 12 Cols Mobile) */}
+        {/* RIGHT COLUMN: Student Profile & Installment Timeline (4 Cols Desktop / 12 Cols Mobile) */}
         <div style={{ gridColumn: 'span 4', display: 'flex', flexDirection: 'column', gap: '24px' }} className="grid-right-col">
           
-          {/* Child Student Profile Card */}
-          <div className="odoo-card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+          {/* Well-Aligned Student Profile Card */}
+          <div className="dashboard-section-card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <div style={{
-                width: '54px',
-                height: '54px',
-                borderRadius: '16px',
+                width: '48px',
+                height: '48px',
+                borderRadius: '14px',
                 background: 'linear-gradient(135deg, var(--odoo-purple) 0%, var(--accent-blue) 100%)',
                 color: 'white',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: '1.4rem',
-                fontWeight: 900,
-                boxShadow: 'var(--shadow-md)'
+                fontSize: '1.3rem',
+                fontWeight: 800,
+                boxShadow: 'var(--shadow-xs)'
               }}>
                 {selectedChild?.name ? selectedChild.name.charAt(0) : 'S'}
               </div>
 
               <div>
-                <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-main)', margin: 0 }}>
+                <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--text-main)', margin: 0 }}>
                   {selectedChild?.name}
                 </h3>
-                <div style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--odoo-purple)', marginTop: '2px' }}>
+                <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--odoo-purple)', marginTop: '1px' }}>
                   {selectedChild?.classGrade}
                 </div>
-                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Student ID: {selectedChild?.id}</div>
+                <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)' }}>Student ID: {selectedChild?.id}</div>
               </div>
             </div>
 
-            <div style={{ padding: '14px', background: 'var(--bg-canvas)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', fontSize: '0.82rem', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <div style={{ padding: '12px 14px', background: 'var(--bg-canvas)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', fontSize: '0.8rem', display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: 'var(--text-muted)' }}>School Branch:</span>
-                <strong style={{ color: 'var(--text-main)' }}>PaperBuddy Main Campus</strong>
+                <span style={{ color: 'var(--text-muted)' }}>Campus:</span>
+                <strong style={{ color: 'var(--text-main)' }}>PaperBuddy Main Branch</strong>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ color: 'var(--text-muted)' }}>Board:</span>
                 <strong style={{ color: 'var(--text-main)' }}>CBSE Senior Secondary</strong>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Parent Guardian:</span>
+                <span style={{ color: 'var(--text-muted)' }}>Guardian:</span>
                 <strong style={{ color: 'var(--text-main)' }}>{parentAccount?.name}</strong>
               </div>
             </div>
           </div>
 
-          {/* Installment Timeline Progress Card */}
-          <div className="odoo-card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--text-main)', margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <Calendar size={18} style={{ color: 'var(--accent-blue-text)' }} />
-              <span>Installment Timeline</span>
-            </h3>
+          {/* Installment Progress Card */}
+          <div className="dashboard-section-card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <h3 style={{ fontSize: '0.98rem', fontWeight: 800, color: 'var(--text-main)', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Calendar size={16} style={{ color: 'var(--accent-blue-text)' }} />
+                <span>Installment Progress</span>
+              </h3>
+              <span style={{ fontSize: '0.8rem', fontWeight: 800, color: 'var(--odoo-purple)' }}>
+                {paidInstallments}/{totalInstallments} Paid ({installmentPercent}%)
+              </span>
+            </div>
 
-            <div style={{ background: 'var(--bg-canvas)', padding: '16px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                <span style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-secondary)' }}>Academic Year Progress</span>
-                <span style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--odoo-purple)' }}>
-                  {paidInstallments} of {totalInstallments} Paid ({installmentPercent}%)
-                </span>
-              </div>
-
+            <div style={{ background: 'var(--bg-canvas)', padding: '14px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)' }}>
               {/* Visual Progress Bar */}
-              <div style={{ width: '100%', height: '10px', background: 'var(--border-color)', borderRadius: 'var(--radius-pill)', overflow: 'hidden' }}>
+              <div style={{ width: '100%', height: '8px', background: 'var(--border-color)', borderRadius: 'var(--radius-pill)', overflow: 'hidden' }}>
                 <div style={{
                   width: `${installmentPercent}%`,
                   height: '100%',
@@ -436,30 +443,27 @@ export default function ParentOverviewPage({
               </div>
 
               {nextInstallment && (
-                <div style={{ marginTop: '12px', fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <Clock size={14} style={{ color: 'var(--odoo-purple)' }} />
+                <div style={{ marginTop: '10px', fontSize: '0.78rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <Clock size={13} style={{ color: 'var(--odoo-purple)' }} />
                   <span>Next Due: <strong>{nextInstallment.title}</strong> (₹{nextInstallment.amount.toLocaleString('en-IN')}) on {nextInstallment.dueDate}</span>
                 </div>
               )}
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              <div style={{ fontSize: '0.76rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-muted)', fontWeight: 700 }}>
-                Installment Schedule
-              </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               {installmentItems.slice(0, 4).map((inst, idx) => (
-                <div key={idx} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.82rem' }}>
+                <div key={idx} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.8rem' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <div style={{
-                      width: '22px',
-                      height: '22px',
+                      width: '20px',
+                      height: '20px',
                       borderRadius: '50%',
                       background: inst.status === 'Paid' ? 'var(--status-paid-bg)' : 'var(--border-color)',
                       color: inst.status === 'Paid' ? 'var(--status-paid-text)' : 'var(--text-muted)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      fontSize: '0.72rem',
+                      fontSize: '0.7rem',
                       fontWeight: 800
                     }}>
                       {idx + 1}
@@ -474,43 +478,14 @@ export default function ParentOverviewPage({
             </div>
           </div>
 
-          {/* Quick Parent Services Card */}
-          <div className="odoo-card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
-            <h3 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--text-main)', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <HelpCircle size={18} style={{ color: 'var(--odoo-purple)' }} />
-              <span>Parent Quick Services</span>
-            </h3>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <button 
-                type="button" 
-                className="action-btn-secondary"
-                onClick={() => navigate('/parent/receipts')}
-                style={{ justifyContent: 'flex-start', fontSize: '0.82rem', padding: '10px 14px' }}
-              >
-                <Download size={15} />
-                <span>Annual Fee Tax Certificate (80G)</span>
-              </button>
-
-              <button 
-                type="button" 
-                className="action-btn-secondary"
-                onClick={() => navigate('/parent/fees')}
-                style={{ justifyContent: 'flex-start', fontSize: '0.82rem', padding: '10px 14px' }}
-              >
-                <FileText size={15} />
-                <span>View Full Fee Structure & Waivers</span>
-              </button>
-
-              <button 
-                type="button" 
-                className="action-btn-secondary"
-                onClick={() => alert('School Accounts Support Desk: +91 800 234 5678 or accounts@paperbuddy.edu')}
-                style={{ justifyContent: 'flex-start', fontSize: '0.82rem', padding: '10px 14px' }}
-              >
-                <PhoneCall size={15} />
-                <span>School Accounts Helpdesk</span>
-              </button>
+          {/* Quick Helpdesk Info Box */}
+          <div className="dashboard-section-card" style={{ padding: '18px', display: 'flex', alignItems: 'center', gap: '12px', background: 'var(--bg-canvas)' }}>
+            <div style={{ width: '38px', height: '38px', borderRadius: '10px', background: 'var(--odoo-purple-light)', color: 'var(--odoo-purple)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <HelpCircle size={18} />
+            </div>
+            <div>
+              <div style={{ fontWeight: 700, fontSize: '0.84rem', color: 'var(--text-main)' }}>School Accounts Desk</div>
+              <div style={{ fontSize: '0.76rem', color: 'var(--text-muted)', marginTop: '1px' }}>fees@paperbuddy.edu • +91 (080) 4567-8900</div>
             </div>
           </div>
 

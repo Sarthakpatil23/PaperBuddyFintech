@@ -1203,6 +1203,283 @@ body {
   border-color: rgba(113, 75, 103, 0.3);
 }
 
+/* ==========================================================================
+   PREMIUM SAAS DASHBOARD & QUICK ACTIONS STYLING
+   ========================================================================== */
+
+/* Compact Summary Card */
+.compact-fee-summary-card {
+  background: linear-gradient(135deg, var(--odoo-purple) 0%, #4A2E44 100%);
+  border-radius: var(--radius-lg);
+  padding: 22px 28px;
+  color: white;
+  box-shadow: var(--shadow-md);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  transition: var(--transition-normal);
+}
+
+.compact-fee-summary-card.clear {
+  background: linear-gradient(135deg, #0284C7 0%, #0369A1 100%);
+}
+
+.compact-fee-summary-card::before {
+  content: '';
+  position: absolute;
+  top: -50px;
+  right: -50px;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  pointer-events: none;
+}
+
+.summary-main-group {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  z-index: 2;
+}
+
+.summary-amount-block {
+  display: flex;
+  flex-direction: column;
+}
+
+.summary-label-text {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.85;
+  font-weight: 700;
+}
+
+.summary-value-text {
+  font-family: var(--font-heading);
+  font-size: 2.1rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin-top: 4px;
+}
+
+.summary-meta-pills {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.summary-pill-item {
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(4px);
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
+  font-size: 0.78rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.summary-action-btn {
+  background: white;
+  color: var(--odoo-purple);
+  border: none;
+  padding: 12px 24px;
+  border-radius: var(--radius-md);
+  font-weight: 800;
+  font-size: 0.92rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 2;
+  white-space: nowrap;
+}
+
+.summary-action-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+  background: #FFFFFF;
+}
+
+/* Quick Actions Section Grid */
+.quick-actions-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.quick-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+@media (max-width: 1100px) {
+  .quick-actions-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 580px) {
+  .quick-actions-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.quick-action-card {
+  background: var(--surface-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+  box-shadow: var(--shadow-xs);
+  outline: none;
+}
+
+.quick-action-card:hover {
+  border-color: var(--odoo-purple);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  background: var(--surface-card);
+}
+
+.quick-action-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: var(--odoo-purple-light);
+  color: var(--odoo-purple);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: var(--transition-fast);
+}
+
+.quick-action-card:hover .quick-action-icon {
+  background: var(--odoo-purple);
+  color: white;
+}
+
+.quick-action-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.quick-action-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-main);
+  line-height: 1.25;
+}
+
+.quick-action-subtitle {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Admin Quick Actions Strip */
+.admin-quick-actions-container {
+  background: var(--surface-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 16px 20px;
+  box-shadow: var(--shadow-xs);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.admin-actions-title-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.admin-actions-title-group h3 {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--text-main);
+  margin: 0;
+}
+
+.admin-actions-title-group p {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.admin-actions-button-grid {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.admin-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  background: var(--bg-canvas);
+  color: var(--text-main);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+}
+
+.admin-action-btn:hover {
+  background: var(--odoo-purple-light);
+  border-color: var(--odoo-purple);
+  color: var(--odoo-purple);
+  transform: translateY(-1px);
+}
+
+.admin-action-btn.primary-highlight {
+  background: var(--odoo-purple);
+  border-color: var(--odoo-purple);
+  color: white;
+  font-weight: 700;
+  box-shadow: 0 4px 10px rgba(113, 75, 103, 0.25);
+}
+
+.admin-action-btn.primary-highlight:hover {
+  background: var(--odoo-purple-hover);
+  border-color: var(--odoo-purple-hover);
+  color: white;
+}
+
+
 .stat-card-header {
   display: flex;
   align-items: center;
@@ -2031,6 +2308,74 @@ body {
   display: flex;
 }
 
+/* Desktop sticky topbar layout */
+.parent-topbar {
+  height: 70px;
+  padding: 0 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface-card);
+  border-bottom: 1px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  gap: 16px;
+}
+
+/* ============================================================
+   PARENT PORTAL — TOPBAR TWO-LINE HEADER BLOCK
+   ============================================================ */
+.topbar-title-block {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+}
+
+.topbar-page-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text-main);
+  margin: 0;
+  line-height: 1.2;
+  letter-spacing: -0.022em;
+}
+
+.topbar-page-subtitle {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  line-height: 1;
+  margin-top: 1px;
+}
+
+.topbar-subtitle-name {
+  color: var(--odoo-purple);
+  font-weight: 700;
+}
+
+.topbar-subtitle-sep {
+  color: var(--text-muted);
+  font-weight: 400;
+  opacity: 0.6;
+  font-size: 0.8rem;
+}
+
+.topbar-subtitle-student {
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.topbar-subtitle-grade {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+
 /* Responsive Grid Breakpoints (Desktop: 12-col, Laptop: 10-col, Tablet: 6-col, Mobile: 1-col) */
 @media (min-width: 1200px) {
   .parent-collapsible-sidebar {
@@ -2058,6 +2403,7 @@ body {
 
 @media (max-width: 767px) {
   .desktop-header-title-group,
+  .topbar-title-block,
   .parent-collapsible-sidebar,
   .parent-profile-badge-desktop,
   .brand-hide-mobile,
@@ -2170,3 +2516,344 @@ body {
 .chatbot-starter-chips::-webkit-scrollbar {
   display: none;
 }
+
+/* ============================================================
+   MAKE PAYMENT PAGE — RESPONSIVE STYLES & STEPPER
+   ============================================================ */
+
+/* Checkout Main Container & Header */
+.parent-payment-page {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.checkout-header-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+
+.checkout-title {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--text-main);
+  margin: 0;
+  letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.checkout-badge {
+  font-size: 0.72rem;
+  padding: 3px 9px;
+  background: #E0F2FE;
+  color: #0369A1;
+  border-radius: var(--radius-pill);
+  font-weight: 700;
+}
+
+/* Horizontal Progress Stepper */
+.checkout-stepper-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  padding: 24px 0 28px 0;
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.checkout-stepper-container::-webkit-scrollbar {
+  display: none;
+}
+
+.stepper-step-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  min-width: 80px;
+  flex-shrink: 0;
+}
+
+.stepper-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.85rem;
+  transition: all 0.25s ease;
+  background: var(--bg-canvas);
+  border: 2px solid var(--border-color);
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.stepper-circle.active {
+  background: linear-gradient(135deg, var(--odoo-purple) 0%, var(--accent-blue) 100%);
+  border-color: var(--odoo-purple);
+  color: white;
+  box-shadow: 0 4px 14px rgba(113, 75, 103, 0.3);
+}
+
+.stepper-circle.done {
+  background: linear-gradient(135deg, #15803D 0%, #166534 100%);
+  border-color: #15803D;
+  color: white;
+}
+
+.stepper-label {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-align: center;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.stepper-label.active {
+  font-weight: 800;
+  color: var(--odoo-purple);
+}
+
+.stepper-label.done {
+  font-weight: 700;
+  color: var(--status-paid-text);
+}
+
+.stepper-connector {
+  height: 2px;
+  width: 48px;
+  flex-shrink: 0;
+  margin-bottom: 22px;
+  background: var(--border-color);
+  transition: background 0.3s ease;
+}
+
+.stepper-connector.active {
+  background: linear-gradient(90deg, #15803D, #16a34a);
+}
+
+/* Checkout 2-Column Grid */
+.checkout-grid {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 24px;
+  align-items: start;
+}
+
+/* Order Summary Sticky Container */
+.checkout-order-summary {
+  background: var(--surface-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: sticky;
+  top: 90px;
+  box-sizing: border-box;
+}
+
+/* Payment Methods Grid */
+.checkout-method-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  background: var(--bg-canvas);
+  padding: 6px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+}
+
+/* UPI Suboptions & Apps */
+.checkout-upi-suboptions {
+  display: flex;
+  gap: 8px;
+}
+
+.checkout-upi-apps {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+/* Card Preview & Inputs */
+.checkout-card-preview {
+  padding: 22px 26px;
+  border-radius: 16px;
+  color: white;
+  background: linear-gradient(135deg, #1E1B4B 0%, #312E81 50%, #4338CA 100%);
+  box-shadow: 0 12px 30px rgba(49, 46, 129, 0.35);
+  display: flex;
+  flex-direction: column;
+  min-height: 160px;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.checkout-card-number {
+  font-size: 1.3rem;
+  letter-spacing: 0.18em;
+  font-family: monospace;
+  font-weight: 700;
+  margin: 14px 0 8px 0;
+  word-break: break-all;
+}
+
+.checkout-card-expiry-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* Net Banking Grids */
+.checkout-popular-banks {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.checkout-bank-modal-grid {
+  flex: 1;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  padding-right: 4px;
+}
+
+/* Status Cards & Receipt */
+.checkout-status-card {
+  background: var(--surface-card);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 40px 36px;
+  max-width: 480px;
+  width: 100%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  box-sizing: border-box;
+}
+
+.checkout-receipt-card {
+  background: var(--surface-card);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 44px 40px;
+  max-width: 580px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.checkout-action-row {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+
+/* RESPONSIVE BREAKPOINTS FOR PAYMENT PAGE */
+@media (max-width: 1024px) {
+  .checkout-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .checkout-order-summary {
+    position: static;
+    top: auto;
+  }
+}
+
+@media (max-width: 767px) {
+  .checkout-stepper-container {
+    justify-content: flex-start;
+    padding: 16px 4px 20px 4px;
+  }
+  .stepper-step-item {
+    min-width: 64px;
+    gap: 4px;
+  }
+  .stepper-circle {
+    width: 34px;
+    height: 34px;
+    font-size: 0.78rem;
+  }
+  .stepper-label {
+    font-size: 0.65rem;
+  }
+  .stepper-connector {
+    width: 22px;
+    margin-bottom: 18px;
+  }
+}
+
+@media (max-width: 600px) {
+  .checkout-title {
+    font-size: 1.15rem;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .checkout-method-tabs {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .checkout-status-card,
+  .checkout-receipt-card {
+    padding: 24px 18px;
+    border-radius: 16px;
+  }
+}
+
+@media (max-width: 520px) {
+  .checkout-popular-banks {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .checkout-bank-modal-grid {
+    grid-template-columns: 1fr;
+  }
+  .checkout-upi-suboptions {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  .checkout-card-preview {
+    padding: 16px 18px;
+    min-height: 140px;
+  }
+  .checkout-card-number {
+    font-size: 1.05rem;
+    letter-spacing: 0.1em;
+  }
+  .checkout-upi-apps {
+    grid-template-columns: 1fr;
+  }
+  .checkout-action-row {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 360px) {
+  .checkout-card-expiry-row {
+    grid-template-columns: 1fr;
+  }
+  .checkout-popular-banks {
+    grid-template-columns: 1fr;
+  }
+}
+
