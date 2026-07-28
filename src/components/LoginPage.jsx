@@ -212,27 +212,27 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
       ══════════════════════════════════════════════════════════════════════ */}
       <header style={{
         position: 'fixed', top: 0, left: 0, right: 0, zIndex: 9000,
-        padding: '0 5%',
+        padding: '0 6%',
         background: scrolled
           ? (theme === 'dark' ? 'rgba(15,23,42,0.96)' : 'rgba(255,255,255,0.96)')
           : 'transparent',
         backdropFilter: scrolled ? 'blur(16px)' : 'none',
         borderBottom: scrolled ? '1px solid var(--border-color)' : '1px solid transparent',
         transition: 'all 0.3s ease',
-        height: '68px',
+        height: '74px',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between'
       }}>
         {/* Logo */}
         <a href="#" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
-          <BrandLogo size={36} />
+          <BrandLogo size={38} />
         </a>
 
         {/* Desktop Nav Links */}
-        <nav style={{ display: 'flex', alignItems: 'center', gap: '4px' }} className="landing-desktop-nav">
+        <nav style={{ display: 'flex', alignItems: 'center', gap: '6px' }} className="landing-desktop-nav">
           {['Features', 'Solutions', 'Why Finlyt', 'AI Assistant', 'Resources', 'Contact'].map(item => (
             <a key={item} href={`#${item.toLowerCase().replace(/\s+/g, '-')}`}
               style={{
-                padding: '8px 14px', borderRadius: '8px', fontSize: '0.88rem',
+                padding: '8px 16px', borderRadius: '10px', fontSize: '0.88rem',
                 fontWeight: 500, color: 'var(--text-muted)', textDecoration: 'none',
                 transition: 'all 0.18s ease'
               }}
@@ -243,19 +243,19 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
         </nav>
 
         {/* Right CTA Group */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <button onClick={toggleTheme} title="Toggle theme" style={{
-            padding: '8px', borderRadius: '8px', border: '1px solid var(--border-color)',
+            padding: '9px', borderRadius: '10px', border: '1px solid var(--border-color)',
             background: 'var(--bg-card)', color: 'var(--text-muted)', cursor: 'pointer',
             display: 'flex', alignItems: 'center', transition: 'all 0.18s ease'
           }}>
-            {theme === 'dark' ? <Sun size={16} style={{ color: '#F59E0B' }} /> : <Moon size={16} />}
+            {theme === 'dark' ? <Sun size={17} style={{ color: '#F59E0B' }} /> : <Moon size={17} />}
           </button>
 
           <button onClick={() => showToast('Finlyt Support is ready to help!', 'info')} style={{
-            padding: '8px 14px', borderRadius: '8px', border: '1px solid var(--border-color)',
+            padding: '9px 16px', borderRadius: '10px', border: '1px solid var(--border-color)',
             background: 'transparent', color: 'var(--text-muted)', cursor: 'pointer',
-            fontSize: '0.84rem', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '6px',
+            fontSize: '0.86rem', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '6px',
             transition: 'all 0.18s ease'
           }}
             onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-card)'}
@@ -266,7 +266,7 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
           </button>
 
           <button onClick={scrollToLogin} style={{
-            padding: '9px 20px', borderRadius: '9px',
+            padding: '10px 22px', borderRadius: '10px',
             background: 'linear-gradient(135deg, var(--primary), var(--accent))',
             color: 'white', border: 'none', cursor: 'pointer',
             fontSize: '0.88rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '7px',
@@ -292,15 +292,15 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
       {/* Mobile Menu Drawer */}
       {mobileMenuOpen && (
         <div style={{
-          position: 'fixed', top: '68px', left: 0, right: 0, zIndex: 8999,
+          position: 'fixed', top: '74px', left: 0, right: 0, zIndex: 8999,
           background: 'var(--bg-card)', borderBottom: '1px solid var(--border-color)',
-          padding: '16px 5%', display: 'flex', flexDirection: 'column', gap: '4px'
+          padding: '20px 6%', display: 'flex', flexDirection: 'column', gap: '6px'
         }}>
           {['Features', 'Solutions', 'Why Finlyt', 'AI Assistant', 'Resources', 'Contact'].map(item => (
             <a key={item} href={`#${item.toLowerCase().replace(/\s+/g, '-')}`}
               onClick={() => setMobileMenuOpen(false)}
               style={{
-                padding: '12px 16px', borderRadius: '8px', fontSize: '0.9rem',
+                padding: '12px 16px', borderRadius: '10px', fontSize: '0.92rem',
                 fontWeight: 500, color: 'var(--text-main)', textDecoration: 'none',
                 transition: 'background 0.15s ease'
               }}
@@ -313,29 +313,29 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
           2. HERO SECTION
       ══════════════════════════════════════════════════════════════════════ */}
       <section style={{
-        paddingTop: '68px',
+        paddingTop: '74px',
         display: 'flex', alignItems: 'center',
-        padding: '36px 5% 48px',
+        padding: '64px 6% 88px',
         position: 'relative', overflow: 'hidden'
       }}>
         {/* Background decoration */}
         <div style={{
-          position: 'absolute', top: '-200px', right: '-200px',
-          width: '700px', height: '700px', borderRadius: '50%',
+          position: 'absolute', top: '-180px', right: '-180px',
+          width: '720px', height: '720px', borderRadius: '50%',
           background: 'radial-gradient(circle, rgba(113,75,103,0.08) 0%, transparent 70%)',
           pointerEvents: 'none'
         }} />
         <div style={{
-          position: 'absolute', bottom: '-100px', left: '-100px',
-          width: '500px', height: '500px', borderRadius: '50%',
+          position: 'absolute', bottom: '-120px', left: '-120px',
+          width: '560px', height: '560px', borderRadius: '50%',
           background: 'radial-gradient(circle, rgba(2,132,199,0.06) 0%, transparent 70%)',
           pointerEvents: 'none'
         }} />
 
         <div style={{
-          maxWidth: '1320px', margin: '0 auto', width: '100%',
-          display: 'grid', gridTemplateColumns: '1fr 440px',
-          gap: '48px', alignItems: 'center'
+          maxWidth: '1360px', margin: '0 auto', width: '100%',
+          display: 'grid', gridTemplateColumns: 'minmax(0, 1.05fr) 500px',
+          gap: '56px', alignItems: 'center'
         }} className="hero-grid">
 
           {/* Left — Tagline & CTAs */}
@@ -343,19 +343,20 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
             {/* Badge */}
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: '8px',
-              padding: '6px 14px', borderRadius: '99px',
+              padding: '7px 16px', borderRadius: '99px',
               background: 'var(--primary-light)', border: '1px solid var(--border)',
-              fontSize: '0.8rem', fontWeight: 600, color: 'var(--primary)',
-              marginBottom: '16px'
+              fontSize: '0.8rem', fontWeight: 700, color: 'var(--primary)',
+              letterSpacing: '0.04em', textTransform: 'uppercase',
+              marginBottom: '20px'
             }}>
-              <Sparkles size={13} />
+              <Sparkles size={14} />
               <span>School Finance Management Platform</span>
             </div>
 
             <h1 style={{
-              fontSize: 'clamp(2.2rem, 4.5vw, 3.4rem)',
-              fontWeight: 900, lineHeight: 1.08,
-              letterSpacing: '-0.04em', margin: '0 0 16px 0',
+              fontSize: 'clamp(2.4rem, 4.2vw, 3.6rem)',
+              fontWeight: 900, lineHeight: 1.1,
+              letterSpacing: '-0.035em', margin: '0 0 20px 0',
               color: 'var(--text-main)'
             }}>
               Smart School<br />
@@ -368,101 +369,103 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
             </h1>
 
             <p style={{
-              fontSize: '1.05rem', lineHeight: 1.6,
-              color: 'var(--text-muted)', margin: '0 0 24px 0',
-              maxWidth: '520px'
+              fontSize: '1.08rem', lineHeight: 1.65,
+              color: 'var(--text-muted)', margin: '0 0 32px 0',
+              maxWidth: '560px'
             }}>
               Finlyt digitizes your entire school fee lifecycle — from fee configuration and payment collection to reconciliation, reporting, and AI-powered financial intelligence. Everything connected. Nothing missed.
             </p>
 
             {/* CTA Buttons */}
-            <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', marginBottom: '28px' }}>
+            <div className="hero-cta-group" style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginBottom: '44px' }}>
               <button onClick={scrollToLogin} style={{
-                padding: '14px 28px', borderRadius: '10px',
+                padding: '15px 32px', borderRadius: '12px',
                 background: 'linear-gradient(135deg, var(--primary), var(--accent))',
                 color: 'white', border: 'none', cursor: 'pointer',
-                fontSize: '0.95rem', fontWeight: 700,
-                display: 'flex', alignItems: 'center', gap: '8px',
+                fontSize: '0.96rem', fontWeight: 700,
+                display: 'flex', alignItems: 'center', gap: '9px',
                 boxShadow: 'var(--shadow-primary)',
                 transition: 'all 0.2s ease'
               }}
                 onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = 'var(--shadow-lg)'; }}
                 onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'var(--shadow-primary)'; }}
               >
-                Request Demo <ArrowRight size={17} />
+                Request Demo <ArrowRight size={18} />
               </button>
 
               <button onClick={() => showToast('Product demo video coming soon!', 'info')} style={{
-                padding: '14px 28px', borderRadius: '10px',
+                padding: '15px 28px', borderRadius: '12px',
                 background: 'transparent', border: '1.5px solid var(--border-color)',
                 color: 'var(--text-main)', cursor: 'pointer',
-                fontSize: '0.95rem', fontWeight: 600,
+                fontSize: '0.96rem', fontWeight: 600,
                 display: 'flex', alignItems: 'center', gap: '8px',
                 transition: 'all 0.2s ease'
               }}
                 onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-card)'; e.currentTarget.style.borderColor = 'var(--primary)'; }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'var(--border-color)'; }}
               >
-                <PlayCircle size={17} /> Watch Product Demo
+                <PlayCircle size={18} /> Watch Product Demo
               </button>
             </div>
 
             {/* Statistics */}
             <div style={{
-              display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '24px'
+              display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '32px'
             }} className="hero-stats-grid">
               {stats.map((s, i) => (
                 <div key={i} style={{ textAlign: 'left' }}>
                   <div style={{
-                    fontSize: 'clamp(1.4rem, 3vw, 2rem)', fontWeight: 900,
+                    fontSize: 'clamp(1.6rem, 3.2vw, 2.2rem)', fontWeight: 900,
                     letterSpacing: '-0.03em', color: 'var(--text-main)',
                     background: i % 2 === 0
                       ? 'linear-gradient(135deg, var(--primary), var(--destructive))'
                       : 'linear-gradient(135deg, var(--accent), var(--primary))',
                     WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text'
                   }}>{s.value}</div>
-                  <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 500, marginTop: '2px' }}>{s.label}</div>
+                  <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', fontWeight: 600, marginTop: '4px' }}>{s.label}</div>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Right — Login Card (preserved exactly) */}
-          <div ref={loginCardRef} className="login-form-panel" style={{ width: '100%' }}>
+          {/* Right — Login Card (broader & spacious) */}
+          <div ref={loginCardRef} className="login-form-panel" style={{ width: '100%', maxWidth: '500px', padding: 0 }}>
             <div className="odoo-card">
-              <div className="odoo-card-header">
-                <h2 className="card-heading">Sign in to Finlyt</h2>
-                <p className="card-subtext">Access your school fee portal & financial dashboard</p>
+              <div className="odoo-card-header" style={{ marginBottom: '24px' }}>
+                <h2 className="card-heading" style={{ fontSize: '1.85rem', fontWeight: 800, letterSpacing: '-0.03em', marginBottom: '8px' }}>Sign in to Finlyt</h2>
+                <p className="card-subtext" style={{ fontSize: '0.92rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>Access your school fee portal & financial dashboard</p>
               </div>
 
               {/* Role Selector Tabs */}
-              <div className="role-tabs-container">
+              <div className="role-tabs-container" style={{ padding: '5px', borderRadius: '14px', marginBottom: '24px', gap: '6px' }}>
                 <button
                   type="button"
                   className={`role-tab-btn ${role === 'admin' ? 'active' : ''}`}
                   onClick={() => handleRoleChange('admin')}
+                  style={{ padding: '10px 16px', fontSize: '0.88rem', fontWeight: 600, borderRadius: '10px' }}
                 >
-                  <Building2 size={15} />
+                  <Building2 size={16} />
                   <span>Admin</span>
                 </button>
                 <button
                   type="button"
                   className={`role-tab-btn ${role === 'parent' ? 'active' : ''}`}
                   onClick={() => handleRoleChange('parent')}
+                  style={{ padding: '10px 16px', fontSize: '0.88rem', fontWeight: 600, borderRadius: '10px' }}
                 >
-                  <UserCheck size={15} />
+                  <UserCheck size={16} />
                   <span>Student / Parent</span>
                 </button>
               </div>
 
               {/* Role-Based Quick Credentials Banner */}
               {role === 'admin' || role === 'cashier' ? (
-                <div style={{ background: '#FFF1F2', border: '1px solid #FECDD3', borderRadius: '12px', padding: '12px', marginBottom: '20px' }}>
-                  <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#9F1239', textTransform: 'uppercase', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <div style={{ background: '#FFF1F2', border: '1px solid #FECDD3', borderRadius: '14px', padding: '14px 16px', marginBottom: '24px' }}>
+                  <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#9F1239', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <Building2 size={14} />
                     <span>Admin / Staff Restricted Credentials</span>
                   </div>
-                  <div style={{ fontSize: '0.82rem', color: '#881337', marginBottom: '8px' }}>
+                  <div style={{ fontSize: '0.84rem', color: '#881337', marginBottom: '10px', lineHeight: 1.5 }}>
                     Email: <strong>{rolePresets[role].email}</strong> | Pass: <strong>{rolePresets[role].pass}</strong>
                   </div>
                   <button
@@ -470,37 +473,40 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
                     onClick={() => autofillAdmin(role)}
                     style={{
                       background: '#9F1239', color: 'white', border: 'none',
-                      padding: '4px 10px', borderRadius: '6px',
-                      fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer'
+                      padding: '6px 14px', borderRadius: '8px',
+                      fontSize: '0.78rem', fontWeight: 700, cursor: 'pointer',
+                      transition: 'all 0.18s ease'
                     }}
                   >
                     Autofill {rolePresets[role].label} Credentials
                   </button>
                 </div>
               ) : (
-                <div style={{ background: 'var(--bg-canvas)', border: '1px solid var(--border-color)', borderRadius: '12px', padding: '12px', marginBottom: '20px' }}>
-                  <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--odoo-purple)', textTransform: 'uppercase', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <GraduationCap size={14} />
+                <div style={{ background: 'var(--bg-canvas)', border: '1px solid var(--border-color)', borderRadius: '14px', padding: '14px 16px', marginBottom: '24px' }}>
+                  <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--odoo-purple)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <GraduationCap size={15} />
                     <span>Student Accounts Database Credentials</span>
                   </div>
-                  <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                     {studentAccounts.map((stu) => (
                       <button
                         key={stu.id}
                         type="button"
                         onClick={() => autofillStudent(stu)}
                         style={{
-                          padding: '4px 10px', borderRadius: 'var(--radius-pill)',
+                          padding: '6px 13px', borderRadius: '99px',
                           border: '1px solid var(--border-color)',
-                          background: email.toLowerCase() === stu.email.toLowerCase() ? 'var(--odoo-purple)' : 'white',
+                          background: email.toLowerCase() === stu.email.toLowerCase() ? 'var(--odoo-purple)' : 'var(--surface-card)',
                           color: email.toLowerCase() === stu.email.toLowerCase() ? 'white' : 'var(--text-main)',
-                          fontSize: '0.76rem', fontWeight: 600, cursor: 'pointer',
-                          display: 'flex', alignItems: 'center', gap: '4px'
+                          fontSize: '0.78rem', fontWeight: 600, cursor: 'pointer',
+                          display: 'flex', alignItems: 'center', gap: '5px',
+                          transition: 'all 0.18s ease',
+                          boxShadow: '0 1px 3px rgba(0,0,0,0.03)'
                         }}
                         title={`Email: ${stu.email} | Password: ${stu.pass}`}
                       >
                         <span>{stu.name}</span>
-                        <span style={{ opacity: 0.7, fontSize: '0.7rem' }}>({stu.id})</span>
+                        <span style={{ opacity: 0.75, fontSize: '0.72rem' }}>({stu.id})</span>
                       </button>
                     ))}
                   </div>
@@ -509,8 +515,8 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
 
               {/* Login Form */}
               <form onSubmit={handleSubmit}>
-                <div className="form-group">
-                  <label className="form-label">
+                <div className="form-group" style={{ marginBottom: '20px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <label className="form-label" style={{ fontSize: '0.88rem', fontWeight: 600 }}>
                     {role === 'parent' ? 'Student Email / Student ID' : 'School Email / User ID'}
                   </label>
                   <div className="input-input-wrapper">
@@ -518,16 +524,17 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
                       type="text" className="form-input" value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder={role === 'parent' ? 'e.g. aarav.sharma@finlyt.edu or STU-101' : 'e.g. admin@school.edu'}
+                      style={{ height: '50px', borderRadius: '12px', paddingLeft: '46px', fontSize: '0.95rem' }}
                       required
                     />
-                    <Mail className="input-icon" size={18} />
+                    <Mail className="input-icon" size={18} style={{ left: '16px' }} />
                   </div>
                 </div>
 
-                <div className="form-group">
+                <div className="form-group" style={{ marginBottom: '20px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   <div className="form-label-row">
-                    <label className="form-label">Password</label>
-                    <a href="#forgot" className="forgot-password-link"
+                    <label className="form-label" style={{ fontSize: '0.88rem', fontWeight: 600 }}>Password</label>
+                    <a href="#forgot" className="forgot-password-link" style={{ fontSize: '0.84rem', fontWeight: 600 }}
                       onClick={(e) => { e.preventDefault(); showToast('Password reset instructions sent to your email.', 'info'); }}>
                       Forgot password?
                     </a>
@@ -536,41 +543,45 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
                     <input
                       type={showPassword ? 'text' : 'password'} className="form-input"
                       value={password} onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Enter your password" required
+                      placeholder="Enter your password"
+                      style={{ height: '50px', borderRadius: '12px', paddingLeft: '46px', fontSize: '0.95rem' }}
+                      required
                     />
-                    <Lock className="input-icon" size={18} />
-                    <button type="button" className="toggle-password-btn" onClick={() => setShowPassword(!showPassword)}>
+                    <Lock className="input-icon" size={18} style={{ left: '16px' }} />
+                    <button type="button" className="toggle-password-btn" style={{ right: '14px' }} onClick={() => setShowPassword(!showPassword)}>
                       {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
                   </div>
                 </div>
 
-                <div className={`remember-me-container ${rememberMe ? 'checked' : ''}`} onClick={() => setRememberMe(!rememberMe)}>
-                  <div className="custom-checkbox">
-                    {rememberMe && <Check size={13} strokeWidth={3} />}
+                <div className={`remember-me-container ${rememberMe ? 'checked' : ''}`} onClick={() => setRememberMe(!rememberMe)} style={{ marginBottom: '24px', gap: '10px' }}>
+                  <div className="custom-checkbox" style={{ width: '20px', height: '20px', borderRadius: '6px' }}>
+                    {rememberMe && <Check size={14} strokeWidth={3} />}
                   </div>
-                  <span className="remember-text">Remember this device for 30 days</span>
+                  <span className="remember-text" style={{ fontSize: '0.88rem', fontWeight: 500 }}>Remember this device for 30 days</span>
                 </div>
 
                 <button
                   type="submit" className="btn-submit-primary" disabled={isLoading}
                   style={{
+                    height: '52px', borderRadius: '12px', fontSize: '0.96rem', fontWeight: 700, gap: '10px',
                     background: role === 'admin' || role === 'cashier' ? '#9F1239' : 'var(--odoo-purple)',
                     borderColor: role === 'admin' || role === 'cashier' ? '#9F1239' : 'var(--odoo-purple)',
+                    boxShadow: '0 4px 16px rgba(0,0,0,0.12)'
                   }}
                 >
                   {isLoading ? (
-                    <><Loader2 className="animate-spin" size={18} /><span>Verifying Credentials...</span></>
+                    <><Loader2 className="animate-spin" size={19} /><span>Verifying Credentials...</span></>
                   ) : (
-                    <><span>Sign In to {role === 'parent' ? 'Student Portal' : 'Admin Portal'}</span><ArrowRight size={18} /></>
+                    <><span>Sign In to {role === 'parent' ? 'Student Portal' : 'Admin Portal'}</span><ArrowRight size={19} /></>
                   )}
                 </button>
               </form>
 
-              <div className="divider-or"><span>Or sign in with</span></div>
+              <div className="divider-or" style={{ margin: '24px 0', fontSize: '0.82rem', fontWeight: 600 }}><span>Or sign in with</span></div>
 
-              <button type="button" className="google-sso-btn" onClick={handleGoogleAuth}>
-                <svg width="18" height="18" viewBox="0 0 24 24">
+              <button type="button" className="google-sso-btn" onClick={handleGoogleAuth} style={{ height: '50px', borderRadius: '12px', fontSize: '0.92rem', fontWeight: 600, gap: '12px' }}>
+                <svg width="19" height="19" viewBox="0 0 24 24">
                   <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                   <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
                   <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
@@ -587,26 +598,26 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
           3. FEATURES SECTION
       ══════════════════════════════════════════════════════════════════════ */}
       <section id="features" style={{
-        padding: '56px 5%',
-        background: theme === 'dark' ? 'rgba(255,255,255,0.02)' : 'rgba(113,75,103,0.02)',
+        padding: '96px 6%',
+        background: theme === 'dark' ? 'rgba(255,255,255,0.015)' : 'rgba(113,75,103,0.02)',
         borderTop: '1px solid var(--border-color)',
         borderBottom: '1px solid var(--border-color)'
       }}>
-        <div style={{ maxWidth: '1320px', margin: '0 auto' }}>
+        <div style={{ maxWidth: '1360px', margin: '0 auto' }}>
           {/* Section header */}
-          <div style={{ textAlign: 'center', marginBottom: '36px' }}>
+          <div style={{ textAlign: 'center', marginBottom: '56px' }}>
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: '8px',
-              padding: '6px 16px', borderRadius: '99px', marginBottom: '14px',
+              padding: '7px 16px', borderRadius: '99px', marginBottom: '16px',
               background: 'var(--primary-light)', border: '1px solid var(--border)',
               fontSize: '0.78rem', fontWeight: 700, color: 'var(--primary)', textTransform: 'uppercase', letterSpacing: '0.08em'
             }}>
-              <Zap size={12} /> Platform Capabilities
+              <Zap size={13} /> Platform Capabilities
             </div>
             <h2 style={{
-              fontSize: 'clamp(1.8rem, 4vw, 2.6rem)', fontWeight: 900,
-              letterSpacing: '-0.03em', color: 'var(--text-main)',
-              margin: '0 0 12px 0', lineHeight: 1.15
+              fontSize: 'clamp(2rem, 3.8vw, 2.75rem)', fontWeight: 900,
+              letterSpacing: '-0.035em', color: 'var(--text-main)',
+              margin: '0 0 16px 0', lineHeight: 1.15
             }}>
               Everything You Need.<br />
               <span style={{
@@ -614,45 +625,45 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
                 WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text'
               }}>All in One Platform.</span>
             </h2>
-            <p style={{ fontSize: '1rem', color: 'var(--text-muted)', maxWidth: '540px', margin: '0 auto', lineHeight: 1.6 }}>
+            <p style={{ fontSize: '1.05rem', color: 'var(--text-muted)', maxWidth: '580px', margin: '0 auto', lineHeight: 1.65 }}>
               Built for schools that want precision, transparency, and speed — without juggling multiple tools.
             </p>
           </div>
 
           {/* Feature Cards */}
           <div style={{
-            display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px'
+            display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '28px'
           }}>
             {features.map((f, i) => (
               <div key={i} style={{
-                padding: '24px 28px', borderRadius: '16px',
+                padding: '36px 32px', borderRadius: '20px',
                 background: 'var(--bg-card)', border: '1px solid var(--border-color)',
-                boxShadow: '0 2px 12px rgba(0,0,0,0.04)',
+                boxShadow: '0 4px 20px rgba(0,0,0,0.03)',
                 cursor: 'default', transition: 'all 0.25s ease'
               }}
                 onMouseEnter={e => {
                   e.currentTarget.style.transform = 'translateY(-4px)';
-                  e.currentTarget.style.boxShadow = `0 12px 32px rgba(0,0,0,0.1)`;
+                  e.currentTarget.style.boxShadow = `0 16px 40px rgba(0,0,0,0.08)`;
                   e.currentTarget.style.borderColor = f.color + '44';
                 }}
                 onMouseLeave={e => {
                   e.currentTarget.style.transform = 'none';
-                  e.currentTarget.style.boxShadow = '0 2px 12px rgba(0,0,0,0.04)';
+                  e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.03)';
                   e.currentTarget.style.borderColor = 'var(--border-color)';
                 }}
               >
                 <div style={{
-                  width: '44px', height: '44px', borderRadius: '12px',
+                  width: '48px', height: '48px', borderRadius: '14px',
                   background: f.bg, color: f.color,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  marginBottom: '16px'
+                  marginBottom: '20px'
                 }}>
-                  <f.icon size={22} />
+                  <f.icon size={24} />
                 </div>
-                <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--text-main)', margin: '0 0 8px 0', letterSpacing: '-0.02em' }}>
+                <h3 style={{ fontSize: '1.12rem', fontWeight: 800, color: 'var(--text-main)', margin: '0 0 10px 0', letterSpacing: '-0.02em' }}>
                   {f.title}
                 </h3>
-                <p style={{ fontSize: '0.86rem', color: 'var(--text-muted)', lineHeight: 1.6, margin: 0 }}>
+                <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)', lineHeight: 1.65, margin: 0 }}>
                   {f.desc}
                 </p>
               </div>
@@ -664,37 +675,37 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
       {/* ══════════════════════════════════════════════════════════════════════
           4. HOW IT WORKS
       ══════════════════════════════════════════════════════════════════════ */}
-      <section id="solutions" style={{ padding: '56px 5%' }}>
-        <div style={{ maxWidth: '1320px', margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: '36px' }}>
+      <section id="solutions" style={{ padding: '96px 6%' }}>
+        <div style={{ maxWidth: '1360px', margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: '56px' }}>
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: '8px',
-              padding: '6px 16px', borderRadius: '99px', marginBottom: '14px',
+              padding: '7px 16px', borderRadius: '99px', marginBottom: '16px',
               background: 'rgba(2,132,199,0.08)', border: '1px solid rgba(2,132,199,0.2)',
               fontSize: '0.78rem', fontWeight: 700, color: '#0284C7', textTransform: 'uppercase', letterSpacing: '0.08em'
             }}>
-              <Activity size={12} /> Workflow
+              <Activity size={13} /> Workflow
             </div>
             <h2 style={{
-              fontSize: 'clamp(1.8rem, 4vw, 2.6rem)', fontWeight: 900,
-              letterSpacing: '-0.03em', color: 'var(--text-main)',
-              margin: '0 0 12px 0'
+              fontSize: 'clamp(2rem, 3.8vw, 2.75rem)', fontWeight: 900,
+              letterSpacing: '-0.035em', color: 'var(--text-main)',
+              margin: '0 0 16px 0', lineHeight: 1.15
             }}>How It Works</h2>
-            <p style={{ fontSize: '1rem', color: 'var(--text-muted)', maxWidth: '500px', margin: '0 auto', lineHeight: 1.6 }}>
+            <p style={{ fontSize: '1.05rem', color: 'var(--text-muted)', maxWidth: '540px', margin: '0 auto', lineHeight: 1.65 }}>
               Six seamless steps — from creating a fee structure to auto-updated reports.
             </p>
           </div>
 
-          {/* Timeline — horizontal on desktop, vertical on mobile */}
+          {/* Timeline */}
           <div style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(6, 1fr)',
-            gap: '0',
+            gap: '16px',
             position: 'relative'
           }} className="workflow-timeline">
-            {/* Connector line - positioned behind circles */}
+            {/* Connector line */}
             <div style={{
-              position: 'absolute', top: '36px', left: '8.33%', right: '8.33%',
+              position: 'absolute', top: '40px', left: '8.33%', right: '8.33%',
               height: '3px', background: 'linear-gradient(90deg, var(--primary), var(--accent))',
               zIndex: 1
             }} className="workflow-connector" />
@@ -702,15 +713,14 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
             {workflowSteps.map((step, i) => (
               <div key={i} style={{
                 display: 'flex', flexDirection: 'column', alignItems: 'center',
-                textAlign: 'center', padding: '0 10px', position: 'relative', zIndex: 2
+                textAlign: 'center', padding: '0 8px', position: 'relative', zIndex: 2
               }}>
-                {/* Circle icon - solid background to cover line */}
                 <div style={{
-                  width: '72px', height: '72px', borderRadius: '50%',
+                  width: '80px', height: '80px', borderRadius: '50%',
                   background: 'var(--card)',
                   border: '2px solid var(--border-color)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  marginBottom: '16px',
+                  marginBottom: '20px',
                   boxShadow: 'var(--shadow-sm)',
                   transition: 'all 0.2s ease',
                   position: 'relative',
@@ -727,13 +737,12 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
                     e.currentTarget.querySelectorAll('svg').forEach(s => s.style.color = 'var(--primary)');
                   }}
                 >
-                  <step.icon size={26} style={{ color: 'var(--primary)', transition: 'color 0.2s ease' }} />
-                  {/* Step number badge */}
+                  <step.icon size={28} style={{ color: 'var(--primary)', transition: 'color 0.2s ease' }} />
                   <div style={{
                     position: 'absolute', top: '-6px', right: '-6px',
-                    width: '22px', height: '22px', borderRadius: '50%',
+                    width: '24px', height: '24px', borderRadius: '50%',
                     background: 'linear-gradient(135deg, var(--primary), var(--accent))',
-                    color: 'white', fontSize: '0.65rem', fontWeight: 800,
+                    color: 'white', fontSize: '0.7rem', fontWeight: 800,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     boxShadow: 'var(--shadow-xs)'
                   }}>
@@ -741,10 +750,10 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
                   </div>
                 </div>
 
-                <div style={{ fontSize: '0.84rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: '4px', lineHeight: 1.3 }}>
+                <div style={{ fontSize: '0.9rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: '6px', lineHeight: 1.35 }}>
                   {step.label}
                 </div>
-                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', lineHeight: 1.45 }}>
+                <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>
                   {step.desc}
                 </div>
               </div>
@@ -757,55 +766,53 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
           5. MEET FINLYT AI
       ══════════════════════════════════════════════════════════════════════ */}
       <section id="ai-assistant" style={{
-        padding: '56px 5%',
+        padding: '96px 6%',
         background: theme === 'dark'
           ? 'linear-gradient(135deg, rgba(30,27,75,0.6) 0%, rgba(15,23,42,0.8) 100%)'
           : 'linear-gradient(135deg, rgba(30,27,75,0.04) 0%, rgba(2,132,199,0.04) 100%)',
         borderTop: '1px solid var(--border-color)',
         borderBottom: '1px solid var(--border-color)'
       }}>
-        <div style={{ maxWidth: '1320px', margin: '0 auto' }}>
+        <div style={{ maxWidth: '1360px', margin: '0 auto' }}>
           <div style={{
-            display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '48px', alignItems: 'center'
+            display: 'grid', gridTemplateColumns: '1fr 1.1fr', gap: '64px', alignItems: 'center'
           }} className="ai-section-grid">
 
-            {/* Left — AI Robot Illustration */}
+            {/* Left — AI Visual */}
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
               <div style={{
-                width: '280px', height: '280px', borderRadius: '28px',
+                width: '320px', height: '320px', borderRadius: '32px',
                 background: 'linear-gradient(135deg, #1E1B4B 0%, #312E81 50%, #0284C7 100%)',
                 display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                gap: '14px', position: 'relative', overflow: 'hidden',
-                boxShadow: '0 20px 60px rgba(30,27,75,0.35)'
+                gap: '16px', position: 'relative', overflow: 'hidden',
+                boxShadow: '0 24px 64px rgba(30,27,75,0.35)'
               }}>
-                {/* Decorative glow */}
                 <div style={{
                   position: 'absolute', top: '-60px', right: '-60px',
-                  width: '200px', height: '200px', borderRadius: '50%',
-                  background: 'rgba(56,189,248,0.15)', filter: 'blur(40px)'
+                  width: '220px', height: '220px', borderRadius: '50%',
+                  background: 'rgba(56,189,248,0.18)', filter: 'blur(40px)'
                 }} />
 
                 <div style={{
-                  width: '72px', height: '72px', borderRadius: '18px',
+                  width: '80px', height: '80px', borderRadius: '22px',
                   background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(10px)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   border: '1px solid rgba(255,255,255,0.2)'
                 }}>
-                  <Bot size={36} style={{ color: '#38BDF8' }} />
+                  <Bot size={40} style={{ color: '#38BDF8' }} />
                 </div>
 
                 <div style={{ textAlign: 'center', zIndex: 1 }}>
-                  <div style={{ fontWeight: 900, fontSize: '1.2rem', color: 'white', letterSpacing: '-0.02em' }}>Finlyt AI</div>
-                  <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.6)', marginTop: '2px' }}>Powered by Llama 3.3</div>
+                  <div style={{ fontWeight: 900, fontSize: '1.25rem', color: 'white', letterSpacing: '-0.02em' }}>Finlyt AI</div>
+                  <div style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.65)', marginTop: '3px' }}>Powered by Llama 3.3</div>
                 </div>
 
-                {/* Floating suggestion pills */}
-                <div style={{ display: 'flex', gap: '6px' }}>
+                <div style={{ display: 'flex', gap: '8px' }}>
                   {['Admin', 'Parent', 'Accountant'].map((role, i) => (
                     <div key={i} style={{
-                      padding: '4px 10px', borderRadius: '99px',
-                      background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.15)',
-                      fontSize: '0.72rem', fontWeight: 600, color: 'rgba(255,255,255,0.8)'
+                      padding: '5px 12px', borderRadius: '99px',
+                      background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.18)',
+                      fontSize: '0.75rem', fontWeight: 600, color: 'rgba(255,255,255,0.85)'
                     }}>
                       {role}
                     </div>
@@ -818,17 +825,17 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
             <div>
               <div style={{
                 display: 'inline-flex', alignItems: 'center', gap: '8px',
-                padding: '6px 16px', borderRadius: '99px', marginBottom: '16px',
+                padding: '7px 16px', borderRadius: '99px', marginBottom: '16px',
                 background: 'rgba(30,27,75,0.08)', border: '1px solid rgba(30,27,75,0.15)',
                 fontSize: '0.78rem', fontWeight: 700, color: '#312E81', textTransform: 'uppercase', letterSpacing: '0.08em'
               }}>
-                <Brain size={12} /> AI-Powered Assistant
+                <Brain size={13} /> AI-Powered Assistant
               </div>
 
               <h2 style={{
-                fontSize: 'clamp(1.6rem, 3.5vw, 2.2rem)', fontWeight: 900,
-                letterSpacing: '-0.03em', color: 'var(--text-main)',
-                margin: '0 0 12px 0', lineHeight: 1.2
+                fontSize: 'clamp(1.8rem, 3.5vw, 2.5rem)', fontWeight: 900,
+                letterSpacing: '-0.035em', color: 'var(--text-main)',
+                margin: '0 0 16px 0', lineHeight: 1.2
               }}>
                 Meet <span style={{
                   background: 'linear-gradient(135deg, #312E81, #0284C7)',
@@ -836,16 +843,16 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
                 }}>Finlyt AI</span>
               </h2>
 
-              <p style={{ fontSize: '0.96rem', color: 'var(--text-muted)', lineHeight: 1.6, margin: '0 0 20px 0', maxWidth: '440px' }}>
+              <p style={{ fontSize: '1.02rem', color: 'var(--text-muted)', lineHeight: 1.65, margin: '0 0 28px 0', maxWidth: '480px' }}>
                 A role-aware AI assistant that understands your school's financial context — whether you're an administrator reviewing collections, an accountant reconciling statements, a parent checking dues, or management analyzing trends.
               </p>
 
               {/* Suggestion chips */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '24px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '28px' }}>
                 {aiSuggestions.map((s, i) => (
                   <div key={i} style={{
-                    display: 'flex', alignItems: 'center', gap: '12px',
-                    padding: '12px 16px', borderRadius: '12px',
+                    display: 'flex', alignItems: 'center', gap: '14px',
+                    padding: '14px 20px', borderRadius: '14px',
                     background: 'var(--bg-card)', border: '1px solid var(--border-color)',
                     cursor: 'pointer', transition: 'all 0.18s ease'
                   }}
@@ -853,31 +860,31 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
                     onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border-color)'; e.currentTarget.style.background = 'var(--bg-card)'; }}
                   >
                     <div style={{
-                      width: '28px', height: '28px', borderRadius: '8px', flexShrink: 0,
+                      width: '32px', height: '32px', borderRadius: '10px', flexShrink: 0,
                       background: 'rgba(2,132,199,0.1)', color: '#0284C7',
                       display: 'flex', alignItems: 'center', justifyContent: 'center'
                     }}>
-                      <s.icon size={15} />
+                      <s.icon size={16} />
                     </div>
-                    <span style={{ fontSize: '0.86rem', fontWeight: 600, color: 'var(--text-main)' }}>{s.text}</span>
-                    <ArrowRight size={14} style={{ marginLeft: 'auto', color: 'var(--text-muted)' }} />
+                    <span style={{ fontSize: '0.88rem', fontWeight: 600, color: 'var(--text-main)' }}>{s.text}</span>
+                    <ArrowRight size={15} style={{ marginLeft: 'auto', color: 'var(--text-muted)' }} />
                   </div>
                 ))}
               </div>
 
               <button onClick={scrollToLogin} style={{
-                padding: '12px 24px', borderRadius: '10px',
+                padding: '14px 28px', borderRadius: '12px',
                 background: 'linear-gradient(135deg, #1E1B4B, #0284C7)',
                 color: 'white', border: 'none', cursor: 'pointer',
-                fontSize: '0.9rem', fontWeight: 700,
-                display: 'inline-flex', alignItems: 'center', gap: '8px',
+                fontSize: '0.92rem', fontWeight: 700,
+                display: 'inline-flex', alignItems: 'center', gap: '9px',
                 boxShadow: '0 6px 20px rgba(30,27,75,0.35)',
                 transition: 'all 0.2s ease'
               }}
                 onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 10px 28px rgba(30,27,75,0.4)'; }}
                 onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(30,27,75,0.35)'; }}
               >
-                <Bot size={16} /> Explore AI Assistant
+                <Bot size={17} /> Explore AI Assistant
               </button>
             </div>
           </div>
@@ -887,69 +894,68 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
       {/* ══════════════════════════════════════════════════════════════════════
           6. CTA BANNER
       ══════════════════════════════════════════════════════════════════════ */}
-      <section id="why-finlyt" style={{ padding: '56px 5%' }}>
-        <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
+      <section id="why-finlyt" style={{ padding: '96px 6%' }}>
+        <div style={{ maxWidth: '1240px', margin: '0 auto' }}>
           <div style={{
-            padding: 'clamp(36px, 5vw, 56px)',
-            borderRadius: '24px',
+            padding: '64px 48px',
+            borderRadius: '28px',
             background: 'linear-gradient(135deg, var(--primary) 0%, var(--secondary) 50%, var(--accent) 100%)',
             textAlign: 'center', position: 'relative', overflow: 'hidden'
           }}>
-            {/* Background decorations */}
             <div style={{
-              position: 'absolute', top: '-80px', right: '-80px', width: '300px', height: '300px',
-              borderRadius: '50%', background: 'rgba(255,255,255,0.05)'
+              position: 'absolute', top: '-80px', right: '-80px', width: '320px', height: '320px',
+              borderRadius: '50%', background: 'rgba(255,255,255,0.06)'
             }} />
             <div style={{
-              position: 'absolute', bottom: '-60px', left: '-60px', width: '250px', height: '250px',
+              position: 'absolute', bottom: '-60px', left: '-60px', width: '280px', height: '280px',
               borderRadius: '50%', background: 'rgba(255,255,255,0.04)'
             }} />
 
             <div style={{ position: 'relative', zIndex: 1 }}>
               <div style={{
                 display: 'inline-flex', alignItems: 'center', gap: '8px',
-                padding: '6px 16px', borderRadius: '99px', marginBottom: '16px',
+                padding: '7px 16px', borderRadius: '99px', marginBottom: '18px',
                 background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.2)',
-                fontSize: '0.78rem', fontWeight: 700, color: 'rgba(255,255,255,0.9)', textTransform: 'uppercase', letterSpacing: '0.08em'
+                fontSize: '0.78rem', fontWeight: 700, color: 'rgba(255,255,255,0.95)', textTransform: 'uppercase', letterSpacing: '0.08em'
               }}>
-                <Sparkles size={12} /> Get Started Today
+                <Sparkles size={13} /> Get Started Today
               </div>
 
               <h2 style={{
-                fontSize: 'clamp(1.8rem, 4vw, 2.6rem)', fontWeight: 900,
+                fontSize: 'clamp(2rem, 4vw, 2.8rem)', fontWeight: 900,
                 letterSpacing: '-0.04em', color: 'white',
-                margin: '0 0 14px 0', lineHeight: 1.15
+                margin: '0 0 16px 0', lineHeight: 1.15
               }}>
                 Ready to Transform Your<br />School Finance?
               </h2>
 
               <p style={{
-                fontSize: '1rem', color: 'rgba(255,255,255,0.75)',
-                maxWidth: '520px', margin: '0 auto 28px auto', lineHeight: 1.6
+                fontSize: '1.08rem', color: 'rgba(255,255,255,0.85)',
+                maxWidth: '560px', margin: '0 auto 36px auto', lineHeight: 1.65
               }}>
                 Join 150+ schools already using Finlyt. Set up takes less than a day and our team is with you every step of the way.
               </p>
 
-              <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
                 <button onClick={scrollToLogin} style={{
-                  padding: '13px 28px', borderRadius: '10px',
+                  padding: '15px 32px', borderRadius: '12px',
                   background: 'white', color: 'var(--primary)', border: 'none', cursor: 'pointer',
-                  fontSize: '0.92rem', fontWeight: 800,
-                  display: 'flex', alignItems: 'center', gap: '8px',
+                  fontSize: '0.94rem', fontWeight: 800,
+                  display: 'flex', alignItems: 'center', gap: '9px',
                   boxShadow: '0 6px 20px rgba(0,0,0,0.2)',
                   transition: 'all 0.2s ease'
                 }}
                   onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 10px 28px rgba(0,0,0,0.25)'; }}
                   onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(0,0,0,0.2)'; }}
                 >
-                  Request Demo <ArrowRight size={17} />
+                  Request Demo <ArrowRight size={18} />
                 </button>
 
                 <button onClick={() => showToast('Our sales team will contact you shortly!', 'info')} style={{
-                  padding: '13px 28px', borderRadius: '10px',
+                  padding: '15px 32px', borderRadius: '12px',
                   background: 'rgba(255,255,255,0.12)', border: '1.5px solid rgba(255,255,255,0.3)',
                   color: 'white', cursor: 'pointer',
-                  fontSize: '0.92rem', fontWeight: 700,
+                  fontSize: '0.94rem', fontWeight: 700,
                   display: 'flex', alignItems: 'center', gap: '8px',
                   backdropFilter: 'blur(8px)',
                   transition: 'all 0.2s ease'
@@ -957,7 +963,7 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
                   onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.2)'; }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.12)'; }}
                 >
-                  Contact Sales <ArrowUpRight size={16} />
+                  Contact Sales <ArrowUpRight size={17} />
                 </button>
               </div>
             </div>
@@ -971,41 +977,41 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
       <footer id="contact" style={{
         borderTop: '1px solid var(--border-color)',
         background: theme === 'dark' ? 'rgba(15,23,42,0.8)' : 'rgba(248,250,252,1)',
-        padding: '44px 5% 24px'
+        padding: '80px 6% 36px'
       }}>
-        <div style={{ maxWidth: '1320px', margin: '0 auto' }}>
+        <div style={{ maxWidth: '1360px', margin: '0 auto' }}>
           {/* Top footer columns */}
           <div style={{
             display: 'grid',
-            gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr',
-            gap: '48px', marginBottom: '56px'
+            gridTemplateColumns: '2.2fr 1fr 1fr 1fr 1fr',
+            gap: '48px', marginBottom: '64px'
           }} className="footer-grid">
             {/* Brand column */}
             <div>
-              <a href="#" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none', marginBottom: '16px' }}>
+              <a href="#" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none', marginBottom: '18px' }}>
                 <div style={{
-                  width: '36px', height: '36px', borderRadius: '10px',
+                  width: '38px', height: '38px', borderRadius: '10px',
                   background: 'linear-gradient(135deg, var(--primary), var(--accent))',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white'
                 }}>
-                  <Building2 size={20} />
+                  <Building2 size={22} />
                 </div>
-                <span style={{ fontWeight: 800, fontSize: '1.15rem', color: 'var(--text-main)', letterSpacing: '-0.03em' }}>
+                <span style={{ fontWeight: 800, fontSize: '1.2rem', color: 'var(--text-main)', letterSpacing: '-0.03em' }}>
                   Fin<span style={{ color: 'var(--primary)' }}>lyt</span>
                 </span>
               </a>
-              <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)', lineHeight: 1.7, maxWidth: '260px' }}>
+              <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', lineHeight: 1.7, maxWidth: '280px' }}>
                 Modern school finance management — from fee configuration to AI-powered financial intelligence. Trusted by 150+ schools across India.
               </p>
             </div>
 
             {/* Product column */}
             <div>
-              <div style={{ fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-main)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '16px' }}>Product</div>
+              <div style={{ fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-main)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '20px' }}>Product</div>
               {['Fee Engine', 'Payment Collection', 'Parent Portal', 'Reconciliation', 'Reports & Analytics'].map(item => (
                 <a key={item} href="#features" style={{
-                  display: 'block', fontSize: '0.86rem', color: 'var(--text-muted)',
-                  textDecoration: 'none', padding: '5px 0',
+                  display: 'block', fontSize: '0.88rem', color: 'var(--text-muted)',
+                  textDecoration: 'none', padding: '6px 0',
                   transition: 'color 0.15s ease'
                 }}
                   onMouseEnter={e => e.target.style.color = 'var(--primary)'}
@@ -1016,11 +1022,11 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
 
             {/* Solutions column */}
             <div>
-              <div style={{ fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-main)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '16px' }}>Solutions</div>
+              <div style={{ fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-main)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '20px' }}>Solutions</div>
               {['CBSE Schools', 'ICSE Schools', 'State Boards', 'International Schools', 'College Finance'].map(item => (
                 <a key={item} href="#solutions" style={{
-                  display: 'block', fontSize: '0.86rem', color: 'var(--text-muted)',
-                  textDecoration: 'none', padding: '5px 0',
+                  display: 'block', fontSize: '0.88rem', color: 'var(--text-muted)',
+                  textDecoration: 'none', padding: '6px 0',
                   transition: 'color 0.15s ease'
                 }}
                   onMouseEnter={e => e.target.style.color = 'var(--primary)'}
@@ -1031,11 +1037,11 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
 
             {/* Resources column */}
             <div>
-              <div style={{ fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-main)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '16px' }}>Resources</div>
+              <div style={{ fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-main)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '20px' }}>Resources</div>
               {['Documentation', 'API Reference', 'Changelog', 'Support Center', 'Blog'].map(item => (
                 <a key={item} href="#" style={{
-                  display: 'block', fontSize: '0.86rem', color: 'var(--text-muted)',
-                  textDecoration: 'none', padding: '5px 0',
+                  display: 'block', fontSize: '0.88rem', color: 'var(--text-muted)',
+                  textDecoration: 'none', padding: '6px 0',
                   transition: 'color 0.15s ease'
                 }}
                   onMouseEnter={e => e.target.style.color = 'var(--primary)'}
@@ -1046,11 +1052,11 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
 
             {/* Company column */}
             <div>
-              <div style={{ fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-main)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '16px' }}>Company</div>
+              <div style={{ fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-main)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '20px' }}>Company</div>
               {['About Us', 'Careers', 'Press', 'Partners', 'Contact Us'].map(item => (
                 <a key={item} href="#" style={{
-                  display: 'block', fontSize: '0.86rem', color: 'var(--text-muted)',
-                  textDecoration: 'none', padding: '5px 0',
+                  display: 'block', fontSize: '0.88rem', color: 'var(--text-muted)',
+                  textDecoration: 'none', padding: '6px 0',
                   transition: 'color 0.15s ease'
                 }}
                   onMouseEnter={e => e.target.style.color = 'var(--primary)'}
@@ -1062,17 +1068,17 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
 
           {/* Bottom footer bar */}
           <div style={{
-            paddingTop: '28px', borderTop: '1px solid var(--border-color)',
+            paddingTop: '32px', borderTop: '1px solid var(--border-color)',
             display: 'flex', justifyContent: 'space-between', alignItems: 'center',
             flexWrap: 'wrap', gap: '16px'
           }}>
-            <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
+            <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
               © 2026 Finlyt Technologies Pvt. Ltd. All rights reserved.
             </div>
-            <div style={{ display: 'flex', gap: '24px' }}>
+            <div style={{ display: 'flex', gap: '28px' }}>
               {['Privacy Policy', 'Terms of Service', 'Cookie Policy'].map(item => (
                 <a key={item} href="#" style={{
-                  fontSize: '0.82rem', color: 'var(--text-muted)',
+                  fontSize: '0.85rem', color: 'var(--text-muted)',
                   textDecoration: 'none', transition: 'color 0.15s ease'
                 }}
                   onMouseEnter={e => e.target.style.color = 'var(--primary)'}

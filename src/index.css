@@ -586,14 +586,14 @@ body {
 
 .odoo-card {
   width: 100%;
-  max-width: 460px;
+  max-width: 500px;
   background: var(--surface-card);
-  border: 1px solid rgba(226, 232, 240, 0.8);
-  border-radius: var(--radius-lg);
-  padding: 40px;
-  box-shadow: var(--shadow-lg);
+  border: 1px solid rgba(226, 232, 240, 0.85);
+  border-radius: 24px;
+  padding: 40px 42px;
+  box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.12), 0 0 0 1px var(--border-color);
   position: relative;
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(16px);
 }
 
 .odoo-card-header {
@@ -3448,6 +3448,33 @@ html {
   }
 }
 
+/* ── Responsive: ≤ 1080px ─────────────────────────────────────────────── */
+@media (max-width: 1080px) {
+  .hero-grid {
+    grid-template-columns: 1fr;
+    gap: 48px;
+    justify-items: center;
+  }
+  .hero-grid > div:first-child {
+    max-width: 720px;
+    text-align: center;
+  }
+  .hero-grid p {
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+  .hero-grid .hero-cta-group {
+    justify-content: center;
+  }
+  .hero-stats-grid {
+    justify-content: center;
+  }
+  .ai-section-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+}
+
 /* ── Responsive: ≤ 900px ──────────────────────────────────────────────── */
 @media (max-width: 900px) {
   .workflow-timeline {
@@ -3525,8 +3552,10 @@ html {
 
 /* ── Login card within landing hero ───────────────────────────────────── */
 .finlyt-landing .odoo-card {
-  border-radius: 20px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12), 0 0 0 1px var(--border-color);
+  max-width: 500px;
+  border-radius: 24px;
+  padding: 40px 42px;
+  box-shadow: 0 24px 64px -12px rgba(0, 0, 0, 0.14), 0 0 0 1px var(--border-color);
 }
 
 /* ── Nav link hover polish ─────────────────────────────────────────────── */
