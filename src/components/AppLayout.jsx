@@ -16,6 +16,7 @@ import {
   Moon,
   Check
 } from 'lucide-react';
+import BrandLogo from './BrandLogo';
 
 const ROUTE_META = {
   '/overview': {
@@ -70,10 +71,8 @@ export default function AppLayout({
     <div className="dashboard-layout">
       {/* Shared Sidebar Navigation */}
       <aside className="sidebar">
-        <div className="sidebar-header" onClick={() => navigate('/overview')} style={{ cursor: 'pointer' }}>
-          <div className="brand-icon">
-            <Building2 size={20} />
-          </div>
+        <div className="sidebar-header" onClick={() => navigate('/overview')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <BrandLogo size={32} showText={false} />
           <span className="brand-title">
             Finlyt <span>Admin</span>
           </span>

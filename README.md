@@ -1,3 +1,6 @@
+
+
+
 # 💳 PaperBuddy Fintech — Comprehensive School Fee Management & Bank Reconciliation Platform
 
 [![Node.js](https://img.shields.io/badge/Node.js-v18%2B-green.svg)](https://nodejs.org/)
@@ -15,23 +18,24 @@
 
 ## 📋 Table of Contents
 
-- [1. Executive Summary & Problem Context](#1-executive-summary--problem-context)
-- [2. Key Features & Capabilities](#2-key-features--capabilities)
-- [3. Technology Stack & Architectural Rationales](#3-technology-stack--architectural-rationales)
-- [4. Database Design & Relational Schema](#4-database-design--relational-schema)
-- [5. System Architecture & Workflows](#5-system-architecture--workflows)
+- [1. Executive Summary &amp; Problem Context](#1-executive-summary--problem-context)
+- [2. Key Features &amp; Capabilities](#2-key-features--capabilities)
+- [3. Technology Stack &amp; Architectural Rationales](#3-technology-stack--architectural-rationales)
+- [4. Database Design &amp; Relational Schema](#4-database-design--relational-schema)
+- [5. System Architecture &amp; Workflows](#5-system-architecture--workflows)
 - [6. API Endpoint Reference](#6-api-endpoint-reference)
 - [7. Repository Structure](#7-repository-structure)
-- [8. Getting Started & Local Development](#8-getting-started--local-development)
-- [9. Database Migrations & Seeding](#9-database-migrations--seeding)
+- [8. Getting Started &amp; Local Development](#8-getting-started--local-development)
+- [9. Database Migrations &amp; Seeding](#9-database-migrations--seeding)
 - [10. Deployment Guide](#10-deployment-guide)
-- [11. License & Contribution](#11-license--contribution)
+- [11. License &amp; Contribution](#11-license--contribution)
 
 ---
 
 ## 1. Executive Summary & Problem Context
 
 ### The Challenge in School Finance
+
 School fee management is traditionally fragmented, manual, and error-prone. Administrators rely on a patchwork of disconnected physical ledgers, Excel spreadsheets, and basic payment receipts. Key operational friction points include:
 
 1. **Unreconciled Offline Payments**: Schools process large volumes of cash counter payments and post-dated cheques. Reconciling staff records against bank statements often takes days or weeks.
@@ -40,7 +44,9 @@ School fee management is traditionally fragmented, manual, and error-prone. Admi
 4. **Poor Communication with Parents**: Parents face ambiguity around outstanding dues, payment history, and fee breakdown, leading to unnecessary counter inquiries.
 
 ### The PaperBuddy Solution
+
 PaperBuddy Fintech treats online payments (zero-fee UPI/NetBanking) and offline payments (Cash/Cheque) as **first-class equals** within a unified double-entry ledger framework:
+
 - **Dynamic Fee Engine**: Custom fee categories, recurring intervals, grade-specific assignments, and auditable waivers.
 - **Automated Late Fee Engine**: Daily cron jobs evaluate overdue accounts and enforce penalty rules without manual intervention.
 - **Reconciliation Workspace**: 3-stage offline payment verification (`Pending` $\rightarrow$ `Reconciled` or `Flagged`), with automatic reopening of balances upon cheque bounce.
@@ -50,18 +56,18 @@ PaperBuddy Fintech treats online payments (zero-fee UPI/NetBanking) and offline 
 
 ## 2. Key Features & Capabilities
 
-| Module | Features & Technical Highlights |
-| :--- | :--- |
-| 📊 **Admin Dashboard** | Real-time KPI stat cards (Total Revenue, Outstanding Dues, Active Defaulters, Collection Efficiency %), interactive revenue distribution charts, and date-range filtering. |
-| 💸 **Dynamic Fee Engine** | Define custom fee types (Tuition, Transport, Exam, Library, Custom), set target scopes (Whole School, Specific Grade, Individual Student), and configure recurring cycles. |
-| ⏱️ **Automated Penalty Engine** | Configurable late-fee rules (`PenaltyRule`) applied automatically by a daily `node-cron` scheduler. Enforces single-application constraints via `AppliedPenalty`. |
-| 🏦 **Bank Reconciliation Workspace** | Dedicated workspace to match Cash/Cheque payments recorded by counter staff with actual bank statements. Includes discrepancy flagging and resolution workflows. |
-| 🎯 **Defaulter Tracking** | Priority view listing overdue accounts categorized by severity (Mild 1–15d, Moderate 16–30d, Severe 30d+). One-click reminders, bulk penalty applications, and tap-to-call. |
-| 📜 **Student Ledger & History** | Complete chronological financial history for every student, showing total billed items, payments, applied waivers, and real-time net outstanding balance. |
-| 🔄 **Omnichannel Payment Engine** | Log UPI, Cash, Cheque, or Bank Transfers with instant receipt generation, refund processing (`REFUNDED` status), and balance adjustment. |
-| 🤖 **Parent Portal & AI Assistant** | Dedicated parent view for multi-student fee tracking, immediate digital receipt downloads, and an integrated AI Chatbot for conversational fee inquiries. |
-| ⚡ **Real-Time WebSockets** | Instant event broadcasts (`transaction_created`, `reconciliation_updated`, `penalty_applied`, `notification_received`) across connected clients. |
-| 🔒 **Audit & Compliance** | Immutable system audit log (`AuditLog`), anomaly detection, soft-delete archiving for student records, and strict foreign key delete protections (`onDelete: Restrict`). |
+| Module                                    | Features & Technical Highlights                                                                                                                                               |
+| :---------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 📊**Admin Dashboard**               | Real-time KPI stat cards (Total Revenue, Outstanding Dues, Active Defaulters, Collection Efficiency %), interactive revenue distribution charts, and date-range filtering.    |
+| 💸**Dynamic Fee Engine**            | Define custom fee types (Tuition, Transport, Exam, Library, Custom), set target scopes (Whole School, Specific Grade, Individual Student), and configure recurring cycles.    |
+| ⏱️**Automated Penalty Engine**    | Configurable late-fee rules (`PenaltyRule`) applied automatically by a daily `node-cron` scheduler. Enforces single-application constraints via `AppliedPenalty`.       |
+| 🏦**Bank Reconciliation Workspace** | Dedicated workspace to match Cash/Cheque payments recorded by counter staff with actual bank statements. Includes discrepancy flagging and resolution workflows.              |
+| 🎯**Defaulter Tracking**            | Priority view listing overdue accounts categorized by severity (Mild 1–15d, Moderate 16–30d, Severe 30d+). One-click reminders, bulk penalty applications, and tap-to-call. |
+| 📜**Student Ledger & History**      | Complete chronological financial history for every student, showing total billed items, payments, applied waivers, and real-time net outstanding balance.                     |
+| 🔄**Omnichannel Payment Engine**    | Log UPI, Cash, Cheque, or Bank Transfers with instant receipt generation, refund processing (`REFUNDED` status), and balance adjustment.                                    |
+| 🤖**Parent Portal & AI Assistant**  | Dedicated parent view for multi-student fee tracking, immediate digital receipt downloads, and an integrated AI Chatbot for conversational fee inquiries.                     |
+| ⚡**Real-Time WebSockets**          | Instant event broadcasts (`transaction_created`, `reconciliation_updated`, `penalty_applied`, `notification_received`) across connected clients.                      |
+| 🔒**Audit & Compliance**            | Immutable system audit log (`AuditLog`), anomaly detection, soft-delete archiving for student records, and strict foreign key delete protections (`onDelete: Restrict`).  |
 
 ---
 
@@ -69,37 +75,37 @@ PaperBuddy Fintech treats online payments (zero-fee UPI/NetBanking) and offline 
 
 ### 🖥️ Frontend Architecture
 
-| Technology | Purpose | Why It Was Chosen |
-| :--- | :--- | :--- |
-| **React 18** | UI Library | Component-driven model allows modular building of complex dashboard widgets, tables, and modal dialogs with high state reusability. |
-| **Vite 5** | Build Tool & Dev Server | Ultra-fast Lightning HMR (Hot Module Replacement) and optimized production bundling compared to traditional Webpack setups. |
-| **Tailwind CSS** | Styling Framework | Utility-first CSS provides a highly responsive, custom design system ("Indigo Harbor" theme) with sleek glassmorphism and modern UI components. |
-| **Framer Motion** | Micro-Animations | Delivers fluid layout transitions, modal animations, and dynamic state feedback to elevate user engagement. |
-| **Socket.IO Client** | Real-Time Sync | Maintains a persistent WebSocket connection to receive real-time dashboard and notification updates from the Express backend. |
-| **Lucide React** | Iconography | Lightweight, accessible, and customizable SVG icons tailored for financial and dashboard interfaces. |
+| Technology                 | Purpose                 | Why It Was Chosen                                                                                                                               |
+| :------------------------- | :---------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------- |
+| **React 18**         | UI Library              | Component-driven model allows modular building of complex dashboard widgets, tables, and modal dialogs with high state reusability.             |
+| **Vite 5**           | Build Tool & Dev Server | Ultra-fast Lightning HMR (Hot Module Replacement) and optimized production bundling compared to traditional Webpack setups.                     |
+| **Tailwind CSS**     | Styling Framework       | Utility-first CSS provides a highly responsive, custom design system ("Indigo Harbor" theme) with sleek glassmorphism and modern UI components. |
+| **Framer Motion**    | Micro-Animations        | Delivers fluid layout transitions, modal animations, and dynamic state feedback to elevate user engagement.                                     |
+| **Socket.IO Client** | Real-Time Sync          | Maintains a persistent WebSocket connection to receive real-time dashboard and notification updates from the Express backend.                   |
+| **Lucide React**     | Iconography             | Lightweight, accessible, and customizable SVG icons tailored for financial and dashboard interfaces.                                            |
 
 ---
 
 ### ⚙️ Backend Architecture
 
-| Technology | Purpose | Why It Was Chosen |
-| :--- | :--- | :--- |
-| **Node.js (v18+)** | Runtime Environment | Non-blocking, asynchronous event loop allows high-throughput processing of concurrent API requests and WebSocket events. |
-| **Express (v5.2)** | Web Framework | Lightweight, robust routing framework for building clean RESTful API endpoints with flexible middleware integration. |
-| **Prisma ORM (v5.22)** | Database Client | Provides end-to-end type safety, auto-generated queries, declarative schema management, and version-controlled database migrations. |
-| **Socket.IO Server** | WebSocket Engine | Handles bi-directional, event-based real-time communication between server, admin dashboards, and parent portals. |
-| **Node-Cron (v4.6)** | Job Scheduler | Reliable background task runner used for daily automated late fee evaluations and due-date status updates. |
-| **Clerk Auth** | Authentication | Enterprise-grade multi-role authentication framework (Admin, Staff, Parent) with role-based access control and session management. |
+| Technology                   | Purpose             | Why It Was Chosen                                                                                                                   |
+| :--------------------------- | :------------------ | :---------------------------------------------------------------------------------------------------------------------------------- |
+| **Node.js (v18+)**     | Runtime Environment | Non-blocking, asynchronous event loop allows high-throughput processing of concurrent API requests and WebSocket events.            |
+| **Express (v5.2)**     | Web Framework       | Lightweight, robust routing framework for building clean RESTful API endpoints with flexible middleware integration.                |
+| **Prisma ORM (v5.22)** | Database Client     | Provides end-to-end type safety, auto-generated queries, declarative schema management, and version-controlled database migrations. |
+| **Socket.IO Server**   | WebSocket Engine    | Handles bi-directional, event-based real-time communication between server, admin dashboards, and parent portals.                   |
+| **Node-Cron (v4.6)**   | Job Scheduler       | Reliable background task runner used for daily automated late fee evaluations and due-date status updates.                          |
+| **Clerk Auth**         | Authentication      | Enterprise-grade multi-role authentication framework (Admin, Staff, Parent) with role-based access control and session management.  |
 
 ---
 
 ### 🗄️ Database Architecture
 
-| Technology | Purpose | Why It Was Chosen |
-| :--- | :--- | :--- |
-| **Neon PostgreSQL** | Primary Database | Cloud-native, serverless PostgreSQL offering instant branching, auto-scaling compute, and high availability. |
+| Technology                             | Purpose              | Why It Was Chosen                                                                                                                                  |
+| :------------------------------------- | :------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Neon PostgreSQL**              | Primary Database     | Cloud-native, serverless PostgreSQL offering instant branching, auto-scaling compute, and high availability.                                       |
 | **PgBouncer Connection Pooling** | Traffic Optimization | Uses pooled database connection strings (`DATABASE_URL`) for runtime application queries to prevent connection exhaustion during traffic spikes. |
-| **Direct Migration URL** | DDL Schema Engine | Direct non-pooled TCP connection (`DIRECT_URL`) dedicated to executing schema migrations without PgBouncer transactional limits. |
+| **Direct Migration URL**         | DDL Schema Engine    | Direct non-pooled TCP connection (`DIRECT_URL`) dedicated to executing schema migrations without PgBouncer transactional limits.                 |
 
 ---
 
@@ -131,7 +137,9 @@ erDiagram
 ### 4.2 Core Data Models & Fields
 
 #### `Student` Model
+
 Acts as the anchor for all academic and financial ledger activities.
+
 - `id` (`String`, PK, `cuid()`): Internal unique identifier.
 - `studentId` (`String`, Unique, Indexed): Public student ID (e.g., `STU-2026-001`).
 - `name` (`String`), `grade` (`String`, Indexed), `section` (`String?`), `rollNo` (`String?`).
@@ -140,17 +148,23 @@ Acts as the anchor for all academic and financial ledger activities.
 - **Relations**: Restrictive deletes (`onDelete: Restrict`) on `feeAssignments`, `transactions`, and `waivers` protect historical audit integrity.
 
 #### `FeeType` & `FeeAssignment` Models
+
 Defines fee catalog items and tracks individual student obligations.
+
 - **`FeeType`**: `name`, `category` (`TUITION`, `TRANSPORT`, `LATE_FEE`, `EXAM`, `LIBRARY`, `CUSTOM`), `amount`, `recurrence` (`ONE_TIME`, `MONTHLY`, `QUARTERLY`, `ANNUALLY`), `targetScope` (`ALL`, `GRADE`, `STUDENT`).
 - **`FeeAssignment`**: Links `Student` and `FeeType`. Stores `originalAmount`, `adjustedAmount`, `dueDate` (Indexed), and `status` (`PENDING`, `PAID`, `PARTIAL`, `OVERDUE`, `WAIVED`).
 
 #### `PenaltyRule` & `AppliedPenalty` Models
+
 Automated engine for late fee calculation.
+
 - **`PenaltyRule`**: `feeTypeId`, `triggerDaysAfterDue` (`Int`), `penaltyAmount` (`Decimal?`), `penaltyPercent` (`Decimal?`), `autoApply` (`Boolean`).
 - **`AppliedPenalty`**: Junction record tracking executed penalties. Enforces `@@unique([feeAssignmentId, penaltyRuleId])` to strictly block duplicate applications.
 
 #### `Transaction` Model
+
 Omnichannel ledger record for all incoming/outgoing funds.
+
 - `txnNumber` (`String`, Unique, Indexed): Unique system reference code.
 - `receiptNo` (`String`, Unique): Official serial receipt number.
 - `studentId` (`String`, FK $\rightarrow$ `Student.id`, `onDelete: Restrict`, Indexed).
@@ -160,7 +174,9 @@ Omnichannel ledger record for all incoming/outgoing funds.
 - **Refund Tracking**: `refundedAmount`, `refundReason`, `refundedAt`, `refundedBy`.
 
 #### `ReconciliationEntry` Model
+
 Offline verification workflow workspace.
+
 - `transactionId` (`String`, FK $\rightarrow$ `Transaction.id`, `onDelete: Cascade`, Indexed).
 - `status` (`ReconciliationStatus`: `PENDING`, `RECONCILED`, `FLAGGED`, Indexed).
 - `chequeDetails`, `notes`, `reconciledBy`, `reconciledAt`.
@@ -243,27 +259,32 @@ flowchart LR
 ## 6. API Endpoint Reference
 
 ### 👤 Authentication & Dashboard Overview
+
 - `GET /api/stats` — Retrieve top-level summary metrics (Revenue, Defaulters, Efficiency, Dues).
 - `GET /api/charts/revenue` — Fetch revenue breakdown by fee type and payment method.
 
 ### 🎓 Student Management
+
 - `GET /api/students` — List active students with pagination, search, and grade filters.
 - `GET /api/students/:id/ledger` — Fetch complete financial history & balance for a student.
 - `POST /api/students/:id/archive` — Soft-delete archive a student (`isActive: false`).
 
 ### 💸 Fee Structure & Penalties
+
 - `GET /api/fee-types` — Fetch all configured fee types.
 - `POST /api/fee-types` — Create a new fee type & target assignment scope.
 - `GET /api/penalty-rules` — List automated late fee penalty rules.
 - `POST /api/penalty-rules` — Create a penalty rule for a specific fee type.
 
 ### 💳 Transactions & Refunds
+
 - `GET /api/transactions` — Search, filter, and paginate complete transaction log.
 - `POST /api/transactions` — Record an online or offline payment transaction.
 - `POST /api/transactions/:id/refund` — Issue a refund, log reason, and reopen fee balance.
 - `GET /api/transactions/export` — Download filtered transaction log as CSV/PDF.
 
 ### 🏦 Reconciliation Workspace
+
 - `GET /api/reconciliation/pending` — List pending offline entries awaiting bank match.
 - `GET /api/reconciliation/flagged` — List flagged discrepancies requiring resolution.
 - `POST /api/reconciliation/:id/reconcile` — Confirm bank reconciliation for an entry.
@@ -321,11 +342,13 @@ PaperBuddyFintech/
 ## 8. Getting Started & Local Development
 
 ### Prerequisites
+
 - **Node.js**: `v18.0.0` or higher
 - **npm**: `v9.0.0` or higher
 - **PostgreSQL**: Neon serverless database instance or local PostgreSQL server
 
 ### 1. Clone & Install Dependencies
+
 ```bash
 git clone https://github.com/Sarthakpatil23/PaperBuddyFintech.git
 cd PaperBuddyFintech
@@ -333,12 +356,15 @@ npm install
 ```
 
 ### 2. Configure Environment Variables
+
 Copy `.env.example` to `.env` and fill in your connection strings:
+
 ```bash
 cp .env.example .env
 ```
 
 Set the following variables in `.env`:
+
 ```env
 # Database Connection Strings (Neon PostgreSQL)
 DATABASE_URL="postgresql://user:password@ep-pooler.c-5.us-east-2.aws.neon.tech/neondb?sslmode=require"
@@ -357,7 +383,9 @@ CLERK_SECRET_KEY=your_clerk_secret_key
 ## 9. Database Migrations & Seeding
 
 ### 1. Apply Schema Migrations
+
 Deploy the database migrations to set up tables, indexes, and constraints:
+
 ```bash
 npx prisma migrate dev
 ```
@@ -365,7 +393,9 @@ npx prisma migrate dev
 *(For production environments, use `npx prisma migrate deploy`)*
 
 ### 2. Seed Initial Test Data
+
 Populate the database with test records (Students, Fee Assignments, Transactions, Reconciliation Entries, Penalty Rules):
+
 ```bash
 npm run seed
 ```
@@ -373,11 +403,13 @@ npm run seed
 ### 3. Launch Development Servers
 
 Run the backend server (Node.js/Express on Port `3001`):
+
 ```bash
 npm run server
 ```
 
 In a separate terminal, launch the frontend dev server (Vite on Port `5173`):
+
 ```bash
 npm run dev
 ```
@@ -390,13 +422,13 @@ Access the application in your browser at `http://localhost:5173`.
 
 PaperBuddy Fintech is optimized for cloud deployment using serverless and modern cloud platforms:
 
-| Component | Platform | Deployment Instructions |
-| :--- | :--- | :--- |
-| **Frontend (React SPA)** | **Vercel** | Connect repository, set build command `npm run build`, output directory `dist`, add rewrite rule in `vercel.json` for SPA routing. |
-| **Backend (Express + Socket.IO)** | **Render / Railway** | Deploy as Web Service, set start command `npm run start`, add environment variables (`DATABASE_URL`, `PORT=3001`, `CORS_ORIGIN`). |
-| **Database (PostgreSQL)** | **Neon Serverless** | Provision serverless PostgreSQL, obtain pooled connection (`DATABASE_URL`) and direct connection (`DIRECT_URL`). |
+| Component                               | Platform                   | Deployment Instructions                                                                                                                  |
+| :-------------------------------------- | :------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------- |
+| **Frontend (React SPA)**          | **Vercel**           | Connect repository, set build command`npm run build`, output directory `dist`, add rewrite rule in `vercel.json` for SPA routing.  |
+| **Backend (Express + Socket.IO)** | **Render / Railway** | Deploy as Web Service, set start command`npm run start`, add environment variables (`DATABASE_URL`, `PORT=3001`, `CORS_ORIGIN`). |
+| **Database (PostgreSQL)**         | **Neon Serverless**  | Provision serverless PostgreSQL, obtain pooled connection (`DATABASE_URL`) and direct connection (`DIRECT_URL`).                     |
 
-For step-by-step deployment configurations, refer to the **[Deployment Guide](deployment%20guide.md)**.
+For step-by-step deployment configurations, refer to the **[Deployment Guide](<deployment%20guide.md>)**.
 
 ---
 

@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" fill="none">
+  <defs>
+    <linearGradient id="finlyt-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2E3A9E" />
+      <stop offset="50%" stop-color="#4F67D0" />
+      <stop offset="100%" stop-color="#6C8CE0" />
+    </linearGradient>
+    <linearGradient id="finlyt-spark" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4ADE80" />
+      <stop offset="100%" stop-color="#38BDF8" />
+    </linearGradient>
+    <filter id="finlyt-glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#2E3A9E" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <!-- Background Squircle Container -->
+  <rect x="4" y="4" width="56" height="56" rx="16" fill="url(#finlyt-bg)" filter="url(#finlyt-glow)" />
+  
+  <!-- Inner Border Frame -->
+  <rect x="5" y="5" width="54" height="54" rx="15" stroke="#FFFFFF" stroke-opacity="0.2" stroke-width="1.5" fill="none" />
+
+  <!-- Modern Geometric 'F' + Financial Growth Symbol -->
+  <rect x="18" y="18" width="6.5" height="28" rx="3.25" fill="#FFFFFF" />
+  <path d="M21 21H41C43.2091 21 45 22.7909 45 25C45 27.2091 43.2091 29 41 29H21V21Z" fill="#FFFFFF" />
+  <path d="M21 31H35C36.6569 31 38 32.3431 38 34C38 35.6569 36.6569 37 35 37H21V31Z" fill="#FFFFFF" fill-opacity="0.88" />
+
+  <!-- Graduation Cap Diamond Accent (Top Right) -->
+  <path d="M41 12L48 15.5L41 19L34 15.5L41 12Z" fill="url(#finlyt-spark)" />
+</svg>

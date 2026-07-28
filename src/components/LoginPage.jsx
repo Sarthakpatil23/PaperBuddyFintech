@@ -8,6 +8,8 @@ import {
   Brain, MessageSquare, Database, Bell
 } from 'lucide-react';
 
+import BrandLogo from './BrandLogo';
+
 export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
   const [role, setRole] = useState('admin');
   const [email, setEmail] = useState('admin@school.edu');
@@ -221,17 +223,8 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
         display: 'flex', alignItems: 'center', justifyContent: 'space-between'
       }}>
         {/* Logo */}
-        <a href="#" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
-          <div style={{
-            width: '36px', height: '36px', borderRadius: '10px',
-            background: 'linear-gradient(135deg, var(--primary), var(--accent))',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white'
-          }}>
-            <Building2 size={20} />
-          </div>
-          <span style={{ fontWeight: 800, fontSize: '1.2rem', color: 'var(--text-main)', letterSpacing: '-0.03em' }}>
-            Fin<span style={{ color: 'var(--primary)' }}>lyt</span>
-          </span>
+        <a href="#" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+          <BrandLogo size={36} />
         </a>
 
         {/* Desktop Nav Links */}

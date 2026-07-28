@@ -922,8 +922,14 @@ export default function App() {
       {/* Global Modals */}
       {showReportModal && (
         <ReportGeneratorModal 
+          students={students}
+          transactions={transactions}
+          defaulters={defaulters}
+          reconciliationQueue={reconciliationQueue}
+          feeTypes={feeTypes}
+          waivers={waivers}
           onClose={() => setShowReportModal(false)} 
-          onGenerate={(type) => showToast(`Generated and downloaded ${type} report!`)}
+          onDownloadReport={({ fileName }) => showToast(`Report "${fileName}" generated & downloaded successfully!`)}
         />
       )}
 

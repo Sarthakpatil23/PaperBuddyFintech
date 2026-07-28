@@ -21,6 +21,7 @@ import {
   PanelLeftOpen, 
   ChevronRight 
 } from 'lucide-react';
+import BrandLogo from '../BrandLogo';
 
 const ROUTE_BREADCRUMBS = {
   '/parent/overview': { title: 'Dashboard', section: 'Overview' },
@@ -94,25 +95,12 @@ export default function ParentLayout({
               onClick={() => navigate('/parent/overview')}
               style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }}
             >
-              <div style={{
-                width: '40px',
-                height: '40px',
-                borderRadius: '12px',
-                background: 'linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: 'white',
-                flexShrink: 0,
-                boxShadow: 'var(--shadow-primary)'
-              }}>
-                <Building2 size={22} />
-              </div>
+              <BrandLogo size={34} showText={false} />
 
               {!isSidebarCollapsed && (
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
                   <span style={{ fontWeight: 800, fontSize: '1.05rem', color: 'var(--text-main)', lineHeight: 1.1 }}>
-                    Finlyt <span style={{ color: 'var(--odoo-purple)' }}>Parent</span>
+                    Finlyt <span style={{ color: 'var(--primary)' }}>Parent</span>
                   </span>
                   <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>School Fee Portal</span>
                 </div>
