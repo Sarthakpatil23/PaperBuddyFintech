@@ -37,7 +37,6 @@ const io = new Server(server, {
 const prisma = new PrismaClient();
 
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions));
 app.use(express.json());
 
 // Health Check Endpoints for Render Deployment Monitoring
