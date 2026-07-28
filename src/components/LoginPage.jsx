@@ -136,15 +136,15 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
   const features = [
     {
       icon: Coins,
-      color: '#714B67',
-      bg: 'rgba(113,75,103,0.1)',
+      color: 'var(--primary)',
+      bg: 'var(--primary-light)',
       title: 'Dynamic Fee Engine',
       desc: 'Configure custom fee categories — Tuition, Transport, Hostel, Lab — with per-student waivers, instalment schedules, and automated late-penalty rules.'
     },
     {
       icon: CreditCard,
-      color: '#0284C7',
-      bg: 'rgba(2,132,199,0.1)',
+      color: 'var(--accent)',
+      bg: 'var(--accent-light)',
       title: 'Unified Transaction Engine',
       desc: 'Accept zero-fee UPI, Razorpay, cash counter, cheque deposit, NEFT/RTGS, and demand drafts — all logged into a single real-time ledger.'
     },
@@ -194,7 +194,7 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
       {toastMessage && (
         <div style={{
           position: 'fixed', top: '20px', right: '20px', zIndex: 99999,
-          background: toastType === 'error' ? '#9F1239' : 'var(--odoo-purple)',
+          background: toastType === 'error' ? 'var(--destructive)' : 'var(--primary)',
           color: 'white', padding: '14px 22px', borderRadius: '10px',
           fontWeight: 600, boxShadow: '0 8px 24px rgba(0,0,0,0.2)',
           display: 'flex', alignItems: 'center', gap: '10px', maxWidth: '420px',
@@ -224,13 +224,13 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
         <a href="#" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
           <div style={{
             width: '36px', height: '36px', borderRadius: '10px',
-            background: 'linear-gradient(135deg, #714B67, #0284C7)',
+            background: 'linear-gradient(135deg, var(--primary), var(--accent))',
             display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white'
           }}>
             <Building2 size={20} />
           </div>
           <span style={{ fontWeight: 800, fontSize: '1.2rem', color: 'var(--text-main)', letterSpacing: '-0.03em' }}>
-            Fin<span style={{ color: '#714B67' }}>lyt</span>
+            Fin<span style={{ color: 'var(--primary)' }}>lyt</span>
           </span>
         </a>
 
@@ -274,14 +274,14 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
 
           <button onClick={scrollToLogin} style={{
             padding: '9px 20px', borderRadius: '9px',
-            background: 'linear-gradient(135deg, #714B67, #0284C7)',
+            background: 'linear-gradient(135deg, var(--primary), var(--accent))',
             color: 'white', border: 'none', cursor: 'pointer',
             fontSize: '0.88rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '7px',
-            boxShadow: '0 4px 14px rgba(113,75,103,0.35)',
+            boxShadow: 'var(--shadow-primary)',
             transition: 'all 0.2s ease'
           }}
-            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(113,75,103,0.45)'; }}
-            onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 4px 14px rgba(113,75,103,0.35)'; }}
+            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = 'var(--shadow-lg)'; }}
+            onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'var(--shadow-primary)'; }}
           >
             Sign In <ArrowRight size={15} />
           </button>
@@ -351,8 +351,8 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: '8px',
               padding: '6px 14px', borderRadius: '99px',
-              background: 'rgba(113,75,103,0.08)', border: '1px solid rgba(113,75,103,0.2)',
-              fontSize: '0.8rem', fontWeight: 600, color: '#714B67',
+              background: 'var(--primary-light)', border: '1px solid var(--border)',
+              fontSize: '0.8rem', fontWeight: 600, color: 'var(--primary)',
               marginBottom: '16px'
             }}>
               <Sparkles size={13} />
@@ -368,7 +368,7 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
               Smart School<br />
               Finance.<br />
               <span style={{
-                background: 'linear-gradient(135deg, #714B67 0%, #0284C7 100%)',
+                background: 'linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%)',
                 WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text'
               }}>Simplified.</span>
@@ -386,15 +386,15 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
             <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', marginBottom: '28px' }}>
               <button onClick={scrollToLogin} style={{
                 padding: '14px 28px', borderRadius: '10px',
-                background: 'linear-gradient(135deg, #714B67, #0284C7)',
+                background: 'linear-gradient(135deg, var(--primary), var(--accent))',
                 color: 'white', border: 'none', cursor: 'pointer',
                 fontSize: '0.95rem', fontWeight: 700,
                 display: 'flex', alignItems: 'center', gap: '8px',
-                boxShadow: '0 6px 20px rgba(113,75,103,0.35)',
+                boxShadow: 'var(--shadow-primary)',
                 transition: 'all 0.2s ease'
               }}
-                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 10px 28px rgba(113,75,103,0.45)'; }}
-                onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(113,75,103,0.35)'; }}
+                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = 'var(--shadow-lg)'; }}
+                onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'var(--shadow-primary)'; }}
               >
                 Request Demo <ArrowRight size={17} />
               </button>
@@ -407,7 +407,7 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
                 display: 'flex', alignItems: 'center', gap: '8px',
                 transition: 'all 0.2s ease'
               }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-card)'; e.currentTarget.style.borderColor = '#714B67'; }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-card)'; e.currentTarget.style.borderColor = 'var(--primary)'; }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'var(--border-color)'; }}
               >
                 <PlayCircle size={17} /> Watch Product Demo
@@ -424,8 +424,8 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
                     fontSize: 'clamp(1.4rem, 3vw, 2rem)', fontWeight: 900,
                     letterSpacing: '-0.03em', color: 'var(--text-main)',
                     background: i % 2 === 0
-                      ? 'linear-gradient(135deg, #714B67, #9F1239)'
-                      : 'linear-gradient(135deg, #0284C7, #7C3AED)',
+                      ? 'linear-gradient(135deg, var(--primary), var(--destructive))'
+                      : 'linear-gradient(135deg, var(--accent), var(--primary))',
                     WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text'
                   }}>{s.value}</div>
                   <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 500, marginTop: '2px' }}>{s.label}</div>
@@ -605,8 +605,8 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: '8px',
               padding: '6px 16px', borderRadius: '99px', marginBottom: '14px',
-              background: 'rgba(113,75,103,0.08)', border: '1px solid rgba(113,75,103,0.2)',
-              fontSize: '0.78rem', fontWeight: 700, color: '#714B67', textTransform: 'uppercase', letterSpacing: '0.08em'
+              background: 'var(--primary-light)', border: '1px solid var(--border)',
+              fontSize: '0.78rem', fontWeight: 700, color: 'var(--primary)', textTransform: 'uppercase', letterSpacing: '0.08em'
             }}>
               <Zap size={12} /> Platform Capabilities
             </div>
@@ -617,7 +617,7 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
             }}>
               Everything You Need.<br />
               <span style={{
-                background: 'linear-gradient(135deg, #714B67, #0284C7)',
+                background: 'linear-gradient(135deg, var(--primary), var(--accent))',
                 WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text'
               }}>All in One Platform.</span>
             </h2>
@@ -702,7 +702,7 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
             {/* Connector line - positioned behind circles */}
             <div style={{
               position: 'absolute', top: '36px', left: '8.33%', right: '8.33%',
-              height: '3px', background: 'linear-gradient(90deg, #714B67, #0284C7)',
+              height: '3px', background: 'linear-gradient(90deg, var(--primary), var(--accent))',
               zIndex: 1
             }} className="workflow-connector" />
 
@@ -714,35 +714,35 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
                 {/* Circle icon - solid background to cover line */}
                 <div style={{
                   width: '72px', height: '72px', borderRadius: '50%',
-                  background: theme === 'dark' ? '#1E293B' : '#FFFFFF',
+                  background: 'var(--card)',
                   border: '2px solid var(--border-color)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   marginBottom: '16px',
-                  boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
+                  boxShadow: 'var(--shadow-sm)',
                   transition: 'all 0.2s ease',
                   position: 'relative',
                   zIndex: 3
                 }}
                   onMouseEnter={e => {
-                    e.currentTarget.style.background = 'linear-gradient(135deg, #714B67, #0284C7)';
-                    e.currentTarget.style.borderColor = '#714B67';
+                    e.currentTarget.style.background = 'linear-gradient(135deg, var(--primary), var(--accent))';
+                    e.currentTarget.style.borderColor = 'var(--primary)';
                     e.currentTarget.querySelectorAll('svg').forEach(s => s.style.color = 'white');
                   }}
                   onMouseLeave={e => {
-                    e.currentTarget.style.background = theme === 'dark' ? '#1E293B' : '#FFFFFF';
+                    e.currentTarget.style.background = 'var(--card)';
                     e.currentTarget.style.borderColor = 'var(--border-color)';
-                    e.currentTarget.querySelectorAll('svg').forEach(s => s.style.color = '#714B67');
+                    e.currentTarget.querySelectorAll('svg').forEach(s => s.style.color = 'var(--primary)');
                   }}
                 >
-                  <step.icon size={26} style={{ color: '#714B67', transition: 'color 0.2s ease' }} />
+                  <step.icon size={26} style={{ color: 'var(--primary)', transition: 'color 0.2s ease' }} />
                   {/* Step number badge */}
                   <div style={{
                     position: 'absolute', top: '-6px', right: '-6px',
                     width: '22px', height: '22px', borderRadius: '50%',
-                    background: 'linear-gradient(135deg, #714B67, #0284C7)',
+                    background: 'linear-gradient(135deg, var(--primary), var(--accent))',
                     color: 'white', fontSize: '0.65rem', fontWeight: 800,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    boxShadow: '0 2px 8px rgba(113,75,103,0.4)'
+                    boxShadow: 'var(--shadow-xs)'
                   }}>
                     {i + 1}
                   </div>
@@ -899,7 +899,7 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
           <div style={{
             padding: 'clamp(36px, 5vw, 56px)',
             borderRadius: '24px',
-            background: 'linear-gradient(135deg, #714B67 0%, #1E1B4B 50%, #0284C7 100%)',
+            background: 'linear-gradient(135deg, var(--primary) 0%, var(--secondary) 50%, var(--accent) 100%)',
             textAlign: 'center', position: 'relative', overflow: 'hidden'
           }}>
             {/* Background decorations */}
@@ -940,7 +940,7 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
               <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap' }}>
                 <button onClick={scrollToLogin} style={{
                   padding: '13px 28px', borderRadius: '10px',
-                  background: 'white', color: '#714B67', border: 'none', cursor: 'pointer',
+                  background: 'white', color: 'var(--primary)', border: 'none', cursor: 'pointer',
                   fontSize: '0.92rem', fontWeight: 800,
                   display: 'flex', alignItems: 'center', gap: '8px',
                   boxShadow: '0 6px 20px rgba(0,0,0,0.2)',
@@ -992,13 +992,13 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
               <a href="#" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none', marginBottom: '16px' }}>
                 <div style={{
                   width: '36px', height: '36px', borderRadius: '10px',
-                  background: 'linear-gradient(135deg, #714B67, #0284C7)',
+                  background: 'linear-gradient(135deg, var(--primary), var(--accent))',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white'
                 }}>
                   <Building2 size={20} />
                 </div>
                 <span style={{ fontWeight: 800, fontSize: '1.15rem', color: 'var(--text-main)', letterSpacing: '-0.03em' }}>
-                  Fin<span style={{ color: '#714B67' }}>lyt</span>
+                  Fin<span style={{ color: 'var(--primary)' }}>lyt</span>
                 </span>
               </a>
               <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)', lineHeight: 1.7, maxWidth: '260px' }}>
@@ -1015,7 +1015,7 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
                   textDecoration: 'none', padding: '5px 0',
                   transition: 'color 0.15s ease'
                 }}
-                  onMouseEnter={e => e.target.style.color = '#714B67'}
+                  onMouseEnter={e => e.target.style.color = 'var(--primary)'}
                   onMouseLeave={e => e.target.style.color = 'var(--text-muted)'}
                 >{item}</a>
               ))}
@@ -1030,7 +1030,7 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
                   textDecoration: 'none', padding: '5px 0',
                   transition: 'color 0.15s ease'
                 }}
-                  onMouseEnter={e => e.target.style.color = '#714B67'}
+                  onMouseEnter={e => e.target.style.color = 'var(--primary)'}
                   onMouseLeave={e => e.target.style.color = 'var(--text-muted)'}
                 >{item}</a>
               ))}
@@ -1045,7 +1045,7 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
                   textDecoration: 'none', padding: '5px 0',
                   transition: 'color 0.15s ease'
                 }}
-                  onMouseEnter={e => e.target.style.color = '#714B67'}
+                  onMouseEnter={e => e.target.style.color = 'var(--primary)'}
                   onMouseLeave={e => e.target.style.color = 'var(--text-muted)'}
                 >{item}</a>
               ))}
@@ -1060,7 +1060,7 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
                   textDecoration: 'none', padding: '5px 0',
                   transition: 'color 0.15s ease'
                 }}
-                  onMouseEnter={e => e.target.style.color = '#714B67'}
+                  onMouseEnter={e => e.target.style.color = 'var(--primary)'}
                   onMouseLeave={e => e.target.style.color = 'var(--text-muted)'}
                 >{item}</a>
               ))}
@@ -1082,7 +1082,7 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
                   fontSize: '0.82rem', color: 'var(--text-muted)',
                   textDecoration: 'none', transition: 'color 0.15s ease'
                 }}
-                  onMouseEnter={e => e.target.style.color = '#714B67'}
+                  onMouseEnter={e => e.target.style.color = 'var(--primary)'}
                   onMouseLeave={e => e.target.style.color = 'var(--text-muted)'}
                 >{item}</a>
               ))}

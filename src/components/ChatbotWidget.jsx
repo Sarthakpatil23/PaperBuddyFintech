@@ -201,7 +201,7 @@ function parseFormattedInline(text, isUser) {
               key={`${index}-${cIdx}`}
               style={{
                 fontWeight: 800,
-                color: isUser ? '#FFFFFF' : '#714B67'
+                color: isUser ? '#FFFFFF' : 'var(--primary)'
               }}
             >
               {cPart}
@@ -383,10 +383,10 @@ export default function ChatbotWidget({ role = 'parent', studentId = null, onAct
             width: '60px',
             height: '60px',
             borderRadius: '50%',
-            background: 'linear-gradient(135deg, #714B67 0%, #0284C7 100%)',
+            background: 'linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%)',
             color: 'white',
             border: 'none',
-            boxShadow: '0 10px 25px rgba(113, 75, 103, 0.4)',
+            boxShadow: 'var(--shadow-primary)',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
@@ -423,9 +423,11 @@ export default function ChatbotWidget({ role = 'parent', studentId = null, onAct
             maxWidth: '92vw',
             height: '600px',
             maxHeight: '85vh',
-            background: '#ffffff',
+            background: 'var(--card)',
+            color: 'var(--card-foreground)',
             borderRadius: '18px',
-            boxShadow: '0 20px 40px rgba(15, 23, 42, 0.25), 0 0 0 1px rgba(0, 0, 0, 0.08)',
+            border: '1px solid var(--border)',
+            boxShadow: 'var(--shadow-lg)',
             display: 'flex',
             flexDirection: 'column',
             overflow: 'hidden',
@@ -435,7 +437,7 @@ export default function ChatbotWidget({ role = 'parent', studentId = null, onAct
           {/* Panel Header */}
           <div style={{
             padding: '16px 20px',
-            background: 'linear-gradient(135deg, #1E1B4B 0%, #312E81 100%)',
+            background: 'linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%)',
             color: 'white',
             display: 'flex',
             justify: 'space-between',
@@ -512,10 +514,10 @@ export default function ChatbotWidget({ role = 'parent', studentId = null, onAct
                   maxWidth: '86%',
                   padding: '12px 16px',
                   borderRadius: msg.sender === 'user' ? '16px 16px 2px 16px' : '16px 16px 16px 2px',
-                  background: msg.sender === 'user' ? 'linear-gradient(135deg, #714B67 0%, #0284C7 100%)' : '#ffffff',
-                  color: msg.sender === 'user' ? '#ffffff' : '#0F172A',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
-                  border: msg.sender === 'user' ? 'none' : '1px solid #E2E8F0',
+                  background: msg.sender === 'user' ? 'linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%)' : 'var(--card)',
+                  color: msg.sender === 'user' ? 'var(--primary-foreground)' : 'var(--foreground)',
+                  boxShadow: 'var(--shadow-xs)',
+                  border: msg.sender === 'user' ? 'none' : '1px solid var(--border)',
                   fontSize: '0.86rem',
                   lineHeight: '1.45'
                 }}>
@@ -529,7 +531,7 @@ export default function ChatbotWidget({ role = 'parent', studentId = null, onAct
                       <div style={{ fontSize: '0.78rem', fontWeight: 800, color: '#475569', textTransform: 'uppercase' }}>{msg.payload.title}</div>
                       
                       {msg.payload.amount !== undefined && (
-                        <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#714B67', margin: '4px 0' }}>
+                        <div style={{ fontSize: '1.4rem', fontWeight: 900, color: 'var(--primary)', margin: '4px 0' }}>
                           ₹{Number(msg.payload.amount).toLocaleString('en-IN')}
                         </div>
                       )}
@@ -552,7 +554,7 @@ export default function ChatbotWidget({ role = 'parent', studentId = null, onAct
                             <strong style={{ color: '#0F172A' }}>{item.studentName || item.receiptNo}</strong>
                             <span style={{ fontSize: '0.74rem', color: '#64748B', display: 'block' }}>{item.classGrade || item.method}</span>
                           </div>
-                          <span style={{ fontWeight: 800, color: '#714B67' }}>
+                          <span style={{ fontWeight: 800, color: 'var(--primary)' }}>
                             ₹{Number(item.amountOwed || item.amount).toLocaleString('en-IN')}
                           </span>
                         </div>
@@ -592,8 +594,8 @@ export default function ChatbotWidget({ role = 'parent', studentId = null, onAct
                               padding: '6px 10px',
                               borderRadius: '6px',
                               border: 'none',
-                              background: '#714B67',
-                              color: 'white',
+                              background: 'var(--primary)',
+                              color: 'var(--primary-foreground)',
                               fontSize: '0.78rem',
                               fontWeight: 700,
                               cursor: 'pointer'
@@ -632,7 +634,7 @@ export default function ChatbotWidget({ role = 'parent', studentId = null, onAct
                           padding: '10px 14px',
                           borderRadius: '8px',
                           border: 'none',
-                          background: 'linear-gradient(135deg, #714B67 0%, #0284C7 100%)',
+                          background: 'linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%)',
                           color: 'white',
                           fontWeight: 700,
                           fontSize: '0.82rem',
@@ -680,9 +682,9 @@ export default function ChatbotWidget({ role = 'parent', studentId = null, onAct
 
             {/* Loading Pulse Indicator */}
             {isLoading && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 14px', background: '#ffffff', borderRadius: '14px', width: 'fit-content', border: '1px solid #E2E8F0' }}>
-                <Sparkles size={16} className="animate-spin" style={{ color: '#714B67' }} />
-                <span style={{ fontSize: '0.8rem', color: '#64748B', fontWeight: 600 }}>Finlyt AI is retrieving data...</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 14px', background: 'var(--card)', borderRadius: '14px', width: 'fit-content', border: '1px solid var(--border)' }}>
+                <Sparkles size={16} className="animate-spin" style={{ color: 'var(--primary)' }} />
+                <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Finlyt AI is retrieving data...</span>
               </div>
             )}
 
@@ -691,7 +693,7 @@ export default function ChatbotWidget({ role = 'parent', studentId = null, onAct
 
           {/* Starter Chips (First-Time Guidance) */}
           {messages.length <= 2 && (
-            <div className="chatbot-starter-chips" style={{ padding: '8px 12px', background: '#FFFFFF', borderTop: '1px solid #F1F5F9', display: 'flex', gap: '6px', overflowX: 'auto' }}>
+            <div className="chatbot-starter-chips" style={{ padding: '8px 12px', background: 'var(--card)', borderTop: '1px solid var(--border)', display: 'flex', gap: '6px', overflowX: 'auto' }}>
               {(STARTER_PROMPTS[role] || STARTER_PROMPTS.parent).map((chip, idx) => (
                 <button
                   key={idx}
@@ -701,10 +703,10 @@ export default function ChatbotWidget({ role = 'parent', studentId = null, onAct
                     whiteSpace: 'nowrap',
                     padding: '6px 10px',
                     borderRadius: '99px',
-                    border: '1px solid #E2E8F0',
-                    background: '#F8FAFC',
+                    border: '1px solid var(--border)',
+                    background: 'var(--muted)',
                     fontSize: '0.75rem',
-                    color: '#475569',
+                    color: 'var(--text-secondary)',
                     fontWeight: 600,
                     cursor: 'pointer'
                   }}
@@ -720,8 +722,8 @@ export default function ChatbotWidget({ role = 'parent', studentId = null, onAct
             onSubmit={(e) => { e.preventDefault(); handleSendMessage(); }}
             style={{
               padding: '12px 14px',
-              background: '#ffffff',
-              borderTop: '1px solid #E2E8F0',
+              background: 'var(--card)',
+              borderTop: '1px solid var(--border)',
               display: 'flex',
               alignItems: 'flex-end',
               gap: '8px'
@@ -763,7 +765,7 @@ export default function ChatbotWidget({ role = 'parent', studentId = null, onAct
                 height: '40px',
                 borderRadius: '10px',
                 border: 'none',
-                background: inputText.trim() && !isLoading ? 'linear-gradient(135deg, #714B67 0%, #0284C7 100%)' : '#E2E8F0',
+                background: inputText.trim() && !isLoading ? 'linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%)' : 'var(--border)',
                 color: 'white',
                 display: 'flex',
                 alignItems: 'center',

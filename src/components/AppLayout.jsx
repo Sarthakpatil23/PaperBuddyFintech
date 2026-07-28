@@ -190,7 +190,7 @@ export default function AppLayout({
 
             <button 
               className="action-btn-secondary"
-              style={{ color: '#9F1239', borderColor: '#FFE4E6', background: '#FFF1F2' }}
+              style={{ color: 'var(--destructive)', borderColor: 'var(--border)', background: 'var(--destructive-light)' }}
               onClick={onSignOut}
               title="Sign Out to Login Page"
             >

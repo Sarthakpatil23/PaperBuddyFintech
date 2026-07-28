@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "npx vite",
     "server": "node server/index.js",
+    "start": "node server/index.js",
+    "postinstall": "prisma generate",
     "seed": "node prisma/seed.js",
     "build": "npx vite build",
     "preview": "npx vite preview"

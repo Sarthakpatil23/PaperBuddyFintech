@@ -307,41 +307,94 @@ export default function DefaulterTracking({
                   </td>
 
                   <td>
-                    <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
-                      {def.feeTypes.map((ft) => (
-                        <span 
-                          key={ft}
-                          style={{
-                            fontSize: '0.75rem',
-                            padding: '2px 8px',
-                            borderRadius: '4px',
-                            background: 'var(--bg-canvas)',
-                            border: '1px solid var(--border-color)',
-                            fontWeight: 500
-                          }}
-                        >
-                          {ft}
-                        </span>
-                      ))}
+                    <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap', alignItems: 'center' }}>
+                      {def.feeTypes.map((ft) => {
+                        const t = (ft || '').toLowerCase();
+                        let bg = 'var(--card-nested)';
+                        let color = 'var(--text-main)';
+                        let border = 'var(--border)';
+
+                        if (t.includes('tuition')) {
+                          bg = 'rgba(108, 140, 224, 0.12)';
+                          color = 'var(--primary)';
+                          border = 'rgba(108, 140, 224, 0.25)';
+                        } else if (t.includes('transport') || t.includes('bus')) {
+                          bg = 'var(--status-paid-bg)';
+                          color = 'var(--status-paid-text)';
+                          border = 'rgba(56, 189, 248, 0.25)';
+                        } else if (t.includes('penalty') || t.includes('fine') || t.includes('late')) {
+                          bg = 'var(--status-danger-bg)';
+                          color = 'var(--status-danger-text)';
+                          border = 'rgba(227, 129, 135, 0.25)';
+                        } else if (t.includes('exam') || t.includes('lab') || t.includes('hostel')) {
+                          bg = 'var(--status-pending-bg)';
+                          color = 'var(--status-pending-text)';
+                          border = 'rgba(251, 191, 36, 0.25)';
+                        }
+
+                        return (
+                          <span 
+                            key={ft}
+                            style={{
+                              fontSize: '0.74rem',
+                              padding: '3px 9px',
+                              borderRadius: '6px',
+                              background: bg,
+                              color: color,
+                              border: `1px solid ${border}`,
+                              fontWeight: 600,
+                              lineHeight: 1.2
+                            }}
+                          >
+                            {ft}
+                          </span>
+                        );
+                      })}
                     </div>
                   </td>
 
-                  <td style={{ fontWeight: 700, color: '#9F1239' }}>
+                  <td style={{ fontWeight: 800, color: 'var(--status-danger-text)', fontSize: '0.95rem' }}>
                     ₹{(def.amountOwed).toLocaleString('en-IN')}
                   </td>
 
                   <td>
-                    <span style={{ fontWeight: 600 }}>{def.daysOverdue} days</span>
+                    <span style={{ fontWeight: 600, color: 'var(--text-main)' }}>{def.daysOverdue} days</span>
                   </td>
 
                   <td>
                     {def.hasPenaltyApplied ? (
-                      <span className="badge-status paid" style={{ fontSize: '0.74rem' }}>
-                        <CheckCircle2 size={12} /> Penalty Applied
+                      <span 
+                        style={{ 
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '5px',
+                          fontSize: '0.74rem', 
+                          padding: '4px 10px', 
+                          borderRadius: 'var(--radius-pill)', 
+                          background: 'var(--status-danger-bg)', 
+                          color: 'var(--status-danger-text)', 
+                          border: '1px solid rgba(227, 129, 135, 0.25)',
+                          fontWeight: 700 
+                        }}
+                      >
+                        <Gavel size={13} /> Penalty Applied
                       </span>
                     ) : (
-                      <span style={{ background: '#F3F4F6', color: '#4B5563', padding: '2px 8px', borderRadius: '4px', fontSize: '0.74rem', fontWeight: 600 }}>
-                        No Penalty Yet
+                      <span 
+                        style={{ 
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '5px',
+                          fontSize: '0.74rem', 
+                          padding: '4px 10px', 
+                          borderRadius: 'var(--radius-pill)', 
+                          background: 'var(--status-neutral-bg)', 
+                          color: 'var(--status-neutral-text)', 
+                          border: '1px solid var(--border)',
+                          fontWeight: 600 
+                        }}
+                      >
+                        <Clock size={13} style={{ color: 'var(--text-muted)' }} /> No Penalty Yet
                       </span>
                     )}
                   </td>
@@ -414,7 +467,7 @@ export default function DefaulterTracking({
             {/* Modal Header */}
             <div style={{
               padding: '22px 28px',
-              background: 'linear-gradient(135deg, var(--odoo-purple) 0%, #4A2E44 100%)',
+              background: 'linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%)',
               color: 'white',
               display: 'flex',
               justifyContent: 'space-between',
@@ -457,9 +510,9 @@ export default function DefaulterTracking({
               {/* Defaulter Student Summary Card */}
               <div style={{
                 padding: '18px 20px',
-                background: 'var(--bg-canvas)',
+                background: 'var(--card-nested)',
                 borderRadius: '14px',
-                border: '1px solid var(--border-color)',
+                border: '1px solid var(--border)',
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
@@ -626,7 +679,7 @@ export default function DefaulterTracking({
             {/* Modal Header */}
             <div style={{
               padding: '22px 28px',
-              background: 'linear-gradient(135deg, #881337 0%, #4C0519 100%)',
+              background: 'linear-gradient(135deg, var(--destructive) 0%, var(--primary) 100%)',
               color: 'white',
               display: 'flex',
               justifyContent: 'space-between',
@@ -669,9 +722,9 @@ export default function DefaulterTracking({
               {/* Defaulter Student Summary Card */}
               <div style={{
                 padding: '18px 20px',
-                background: 'var(--bg-canvas)',
+                background: 'var(--card-nested)',
                 borderRadius: '14px',
-                border: '1px solid var(--border-color)',
+                border: '1px solid var(--border)',
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
@@ -690,7 +743,7 @@ export default function DefaulterTracking({
                     <span>Parent: <strong>{penaltyModalDef.parentName}</strong></span>
                     <span>•</span>
                     <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      <Phone size={13} style={{ color: '#9F1239' }} />
+                      <Phone size={13} style={{ color: 'var(--status-danger-text)' }} />
                       {penaltyModalDef.phone || '+91 Parent Contact'}
                     </span>
                   </div>

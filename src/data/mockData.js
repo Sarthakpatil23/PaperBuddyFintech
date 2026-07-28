@@ -540,8 +540,8 @@ export const INITIAL_ACTIVITY_LOG = [
 ];
 
 export const CHART_REVENUE_BY_FEE_TYPE = [
-  { name: 'Tuition Fee', value: 920000, percentage: '62%', color: '#714B67' },
-  { name: 'Transport Fee', value: 310000, percentage: '21%', color: '#0284C7' },
+  { name: 'Tuition Fee', value: 920000, percentage: '62%', color: '#2E3A9E' },
+  { name: 'Transport Fee', value: 310000, percentage: '21%', color: '#2B3990' },
   { name: 'Lab & Custom', value: 165000, percentage: '11%', color: '#64748B' },
   { name: 'Late Fee Penalties', value: 90000, percentage: '6%', color: '#D97706' },
 ];

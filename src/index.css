@@ -1,24 +1,77 @@
-/* Finlyt — School Finance Management Platform — Complete Design System — Odoo Palette */
+/* Finlyt — School Finance Management Platform — Indigo Harbor Theme System */
 :root {
   --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-heading: 'Plus Jakarta Sans', 'Inter', sans-serif;
+  --font-heading: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 
-  /* Odoo Color Palette */
-  --odoo-purple: #714B67;
-  --odoo-purple-hover: #5B3C53;
-  --odoo-purple-light: #F3EBF1;
-  --odoo-purple-glow: rgba(113, 75, 103, 0.15);
+  /* Global Radius (0.5rem base) */
+  --radius: 0.5rem;
+  --radius-sm: var(--radius);
+  --radius-md: var(--radius);
+  --radius-lg: var(--radius);
+  --radius-xl: var(--radius);
+  --radius-pill: 9999px;
 
-  /* Secondary Accents (Cool Slate Blue instead of Green) */
-  --accent-blue: #0284C7;
-  --accent-blue-hover: #0369A1;
-  --accent-blue-light: #E0F2FE;
-  --accent-blue-text: #0369A1;
+  /* Indigo Harbor — Light Mode Swatches (shadcn/ui Custom Properties) */
+  --primary: #2E3A9E;
+  --primary-foreground: #FFFFFF;
+  --primary-hover: #232D7D;
+  --primary-light: rgba(46, 58, 158, 0.08);
+  --primary-glow: rgba(46, 58, 158, 0.2);
 
-  --accent-indigo: #4338CA;
-  --accent-indigo-light: #EEF2FF;
+  --secondary: #18181B;
+  --secondary-foreground: #FFFFFF;
+  --secondary-hover: #27272A;
 
-  /* Status Tokens (No Green Used) */
+  --accent: #2B3990;
+  --accent-foreground: #FFFFFF;
+  --accent-hover: #212C73;
+  --accent-light: rgba(43, 57, 144, 0.08);
+
+  --muted: #F1F1F4;
+  --muted-foreground: #52525B;
+
+  --destructive: #7C1D3B;
+  --destructive-foreground: #FFFFFF;
+  --destructive-hover: #63172F;
+  --destructive-light: rgba(124, 29, 59, 0.1);
+
+  --border: #E4E4E7;
+  --input: #E4E4E7;
+  --ring: #2E3A9E;
+
+  --card: #FFFFFF;
+  --card-nested: #F8F8FB;
+  --card-foreground: #18181B;
+
+  --background: #F8F8FB;
+  --foreground: #18181B;
+
+  /* Legacy & Helper Aliases for App-Wide Compatibility */
+  --odoo-purple: var(--primary);
+  --odoo-purple-hover: var(--primary-hover);
+  --odoo-purple-light: var(--primary-light);
+  --odoo-purple-glow: var(--primary-glow);
+
+  --accent-blue: var(--accent);
+  --accent-blue-hover: var(--accent-hover);
+  --accent-blue-light: var(--accent-light);
+  --accent-blue-text: var(--primary);
+
+  --accent-indigo: var(--primary);
+  --accent-indigo-light: var(--primary-light);
+
+  --bg-canvas: var(--background);
+  --surface-card: var(--card);
+  --bg-card: var(--card);
+  --surface-hover: var(--muted);
+  --border-color: var(--border);
+  --border-focus: var(--primary);
+
+  --text-main: var(--foreground);
+  --text-secondary: var(--muted-foreground);
+  --text-muted: #71717A;
+
+  /* Status Tokens (Light Mode) */
   --status-paid-bg: #E0F2FE;
   --status-paid-text: #0369A1;
 
@@ -28,76 +81,110 @@
   --status-danger-bg: #FFE4E6;
   --status-danger-text: #9F1239;
 
-  --status-neutral-bg: #F1F5F9;
+  --status-neutral-bg: #F1F1F4;
   --status-neutral-text: #334155;
-
-  /* Canvas & Surfaces */
-  --bg-canvas: #F8F9FA;
-  --surface-card: #FFFFFF;
-  --bg-card: #FFFFFF;
-  --surface-hover: #F1F5F9;
-  --border-color: #E2E8F0;
-  --border-focus: #714B67;
-
-  --text-main: #0F172A;
-  --text-secondary: #475569;
-  --text-muted: #94A3B8;
 
   --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
   --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.04);
-  --shadow-md: 0 6px 16px -2px rgba(113, 75, 103, 0.08);
-  --shadow-lg: 0 16px 32px -8px rgba(113, 75, 103, 0.12);
-  --shadow-primary: 0 8px 20px -4px rgba(113, 75, 103, 0.35);
+  --shadow-md: 0 6px 16px -2px rgba(46, 58, 158, 0.08);
+  --shadow-lg: 0 16px 32px -8px rgba(46, 58, 158, 0.12);
+  --shadow-primary: 0 8px 20px -4px rgba(46, 58, 158, 0.35);
 
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 16px;
-  --radius-pill: 9999px;
+  /* Dedicated Button Tokens */
+  --btn-primary-bg: linear-gradient(135deg, #2E3A9E 0%, #212C73 100%);
+  --btn-primary-text: #FFFFFF;
+  --btn-primary-shadow: 0 6px 20px -4px rgba(46, 58, 158, 0.35);
 
   --transition-fast: 0.18s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-normal: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Odoo Dark Mode Theme Override */
-[data-theme="dark"] {
-  --bg-canvas: #0F172A;
-  --surface-card: #1E293B;
-  --bg-card: #1E293B;
-  --surface-hover: #334155;
-  --border-color: #334155;
-  --border-focus: #C07FA8;
+/* Indigo Harbor — Dark Mode Theme Swatches & Surface Hierarchy */
+[data-theme="dark"], .dark {
+  --primary: #6C8CE0;
+  --primary-foreground: #FFFFFF;
+  --primary-hover: #809DF0;
+  --primary-light: rgba(108, 140, 224, 0.14);
+  --primary-glow: rgba(108, 140, 224, 0.25);
 
-  --text-main: #F8FAFC;
-  --text-secondary: #CBD5E1;
-  --text-muted: #94A3B8;
+  --secondary: #1F1F23;
+  --secondary-foreground: #F8F8FB;
+  --secondary-hover: #27272A;
 
-  --odoo-purple: #C07FA8;
-  --odoo-purple-hover: #D896BF;
-  --odoo-purple-light: rgba(192, 127, 168, 0.18);
-  --odoo-purple-glow: rgba(192, 127, 168, 0.25);
+  --accent: #3F3F46;
+  --accent-foreground: #FFFFFF;
+  --accent-hover: #52525B;
+  --accent-light: rgba(63, 63, 70, 0.3);
 
-  --accent-blue: #38BDF8;
-  --accent-blue-hover: #0284C7;
-  --accent-blue-light: rgba(56, 189, 248, 0.18);
-  --accent-blue-text: #38BDF8;
+  --muted: #1E1E22;
+  --muted-foreground: #A1A1AA;
 
-  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 6px 16px -2px rgba(0, 0, 0, 0.5);
-  --shadow-lg: 0 16px 32px -8px rgba(0, 0, 0, 0.6);
-  --shadow-primary: 0 8px 20px -4px rgba(192, 127, 168, 0.4);
+  --destructive: #E38187;
+  --destructive-foreground: #FFFFFF;
+  --destructive-hover: #EA989D;
+  --destructive-light: rgba(227, 129, 135, 0.18);
 
-  --status-paid-bg: rgba(56, 189, 248, 0.15);
-  --status-paid-text: #38BDF8;
+  /* Surface Elevation Steps */
+  --background: #0A0A0B;
+  --foreground: #F8F8FB;
 
-  --status-pending-bg: rgba(251, 191, 36, 0.15);
+  --card: #151518;
+  --card-nested: #1C1C20;
+  --card-foreground: #F8F8FB;
+
+  /* Distinct, Visible Border Token */
+  --border: #2E2E33;
+  --input: #2E2E33;
+  --ring: #6C8CE0;
+
+  /* Dedicated Button Tokens (Vibrant Dark Mode Periwinkle Gradient & Glow) */
+  --btn-primary-bg: linear-gradient(135deg, #6C8CE0 0%, #4A69C8 100%);
+  --btn-primary-text: #FFFFFF;
+  --btn-primary-shadow: 0 6px 20px -4px rgba(108, 140, 224, 0.45);
+
+  /* Legacy & Helper Aliases */
+  --odoo-purple: var(--primary);
+  --odoo-purple-hover: var(--primary-hover);
+  --odoo-purple-light: var(--primary-light);
+  --odoo-purple-glow: var(--primary-glow);
+
+  --accent-blue: var(--primary);
+  --accent-blue-hover: var(--primary-hover);
+  --accent-blue-light: var(--primary-light);
+  --accent-blue-text: var(--primary);
+
+  --accent-indigo: var(--primary);
+  --accent-indigo-light: var(--primary-light);
+
+  --bg-canvas: var(--background);
+  --surface-card: var(--card);
+  --bg-card: var(--card);
+  --surface-hover: var(--muted);
+  --border-color: var(--border);
+  --border-focus: var(--primary);
+
+  --text-main: var(--foreground);
+  --text-secondary: var(--muted-foreground);
+  --text-muted: #A1A1AA;
+
+  /* Status Tokens (Muted Dark Background + Bright Text Pattern) */
+  --status-paid-bg: #142E1F;
+  --status-paid-text: #4ADE80;
+
+  --status-pending-bg: #35260E;
   --status-pending-text: #FBBF24;
 
-  --status-danger-bg: rgba(244, 63, 94, 0.18);
-  --status-danger-text: #FB7185;
+  --status-danger-bg: #38181F;
+  --status-danger-text: #E38187;
 
-  --status-neutral-bg: #334155;
-  --status-neutral-text: #E2E8F0;
+  --status-neutral-bg: #1E1E24;
+  --status-neutral-text: #CBD5E1;
+
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 6px 16px -2px rgba(0, 0, 0, 0.6);
+  --shadow-lg: 0 16px 32px -8px rgba(0, 0, 0, 0.7);
+  --shadow-primary: 0 8px 20px -4px rgba(108, 140, 224, 0.35);
 }
 
 /* Global Reset: Remove underline from all links and navigation items */
@@ -213,8 +300,8 @@ a, a:hover, a:focus, a:active, a:visited {
   min-width: 100%;
   width: max-content;
   max-width: 280px;
-  background: white;
-  border: 1px solid var(--border-color);
+  background: var(--card);
+  border: 1px solid var(--border);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-lg);
   padding: 6px;
@@ -772,8 +859,8 @@ body {
   height: 50px;
   border: none;
   border-radius: var(--radius-md);
-  background: linear-gradient(135deg, var(--odoo-purple) 0%, #5B3C53 100%);
-  color: white;
+  background: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
   font-family: var(--font-heading);
   font-size: 1rem;
   font-weight: 700;
@@ -783,12 +870,13 @@ body {
   gap: 10px;
   cursor: pointer;
   transition: var(--transition-fast);
-  box-shadow: var(--shadow-primary);
+  box-shadow: var(--btn-primary-shadow);
 }
 
 .btn-submit-primary:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 12px 24px -4px rgba(113, 75, 103, 0.45);
+  transform: translateY(-1.5px);
+  filter: brightness(1.08);
+  box-shadow: var(--btn-primary-shadow);
 }
 
 .btn-submit-primary:active:not(:disabled) {
@@ -1044,8 +1132,8 @@ body {
 }
 
 .nav-item-btn.active .nav-item-badge {
-  background: white;
-  color: var(--odoo-purple);
+  background: var(--primary);
+  color: var(--primary-foreground);
 }
 
 .sidebar-footer {
@@ -1116,10 +1204,10 @@ body {
 }
 
 .search-input:focus {
-  border-color: var(--odoo-purple);
+  border-color: var(--primary);
   width: 320px;
-  background: white;
-  box-shadow: 0 0 0 3px var(--odoo-purple-glow);
+  background: var(--card);
+  box-shadow: 0 0 0 3px var(--primary-glow);
 }
 
 .search-icon {
@@ -1135,9 +1223,9 @@ body {
   gap: 8px;
   padding: 8px 16px;
   border-radius: var(--radius-md);
-  border: 1px solid var(--border-color);
-  background: var(--surface-card);
-  color: var(--text-main);
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--foreground);
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
@@ -1145,9 +1233,9 @@ body {
 }
 
 .action-btn-secondary:hover {
-  border-color: var(--odoo-purple);
-  color: var(--odoo-purple);
-  background: var(--odoo-purple-light);
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--primary-light);
 }
 
 .action-btn-primary {
@@ -1157,18 +1245,19 @@ body {
   padding: 8px 18px;
   border-radius: var(--radius-md);
   border: none;
-  background: var(--odoo-purple);
-  color: white;
+  background: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
   transition: var(--transition-fast);
-  box-shadow: 0 4px 12px rgba(113, 75, 103, 0.2);
+  box-shadow: var(--btn-primary-shadow);
 }
 
 .action-btn-primary:hover {
-  background: var(--odoo-purple-hover);
-  transform: translateY(-1px);
+  filter: brightness(1.08);
+  transform: translateY(-1.5px);
+  box-shadow: var(--btn-primary-shadow);
 }
 
 /* Page Body Container */
@@ -1379,6 +1468,78 @@ body {
 .quick-action-card:hover .quick-action-icon {
   background: var(--odoo-purple);
   color: white;
+}
+
+/* Category-Tinted Icon Badge System (Muted BG + Bright Text Pattern) */
+.category-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: var(--transition-fast);
+}
+
+.category-icon-tuition {
+  background: rgba(46, 58, 158, 0.08);
+  color: #2E3A9E;
+  border: 1px solid rgba(46, 58, 158, 0.18);
+}
+[data-theme="dark"] .category-icon-tuition,
+.dark .category-icon-tuition {
+  background: rgba(108, 140, 224, 0.14);
+  color: #6C8CE0;
+  border: 1px solid rgba(108, 140, 224, 0.28);
+}
+
+.category-icon-transport {
+  background: #E0F2FE;
+  color: #0284C7;
+  border: 1px solid #BAE6FD;
+}
+[data-theme="dark"] .category-icon-transport,
+.dark .category-icon-transport {
+  background: rgba(45, 212, 191, 0.14);
+  color: #2DD4BF;
+  border: 1px solid rgba(45, 212, 191, 0.28);
+}
+
+.category-icon-penalty {
+  background: #FFE4E6;
+  color: #9F1239;
+  border: 1px solid #FECDD3;
+}
+[data-theme="dark"] .category-icon-penalty,
+.dark .category-icon-penalty {
+  background: rgba(227, 129, 135, 0.16);
+  color: #E38187;
+  border: 1px solid rgba(227, 129, 135, 0.3);
+}
+
+.category-icon-reconciliation {
+  background: #F3E8FF;
+  color: #7E22CE;
+  border: 1px solid #E9D5FF;
+}
+[data-theme="dark"] .category-icon-reconciliation,
+.dark .category-icon-reconciliation {
+  background: rgba(192, 132, 252, 0.14);
+  color: #C084FC;
+  border: 1px solid rgba(192, 132, 252, 0.28);
+}
+
+.category-icon-general {
+  background: #F1F5F9;
+  color: #475569;
+  border: 1px solid #E2E8F0;
+}
+[data-theme="dark"] .category-icon-general,
+.dark .category-icon-general {
+  background: rgba(148, 163, 184, 0.14);
+  color: #94A3B8;
+  border: 1px solid rgba(148, 163, 184, 0.25);
 }
 
 .quick-action-text {
@@ -1894,7 +2055,7 @@ body {
   padding: 0 12px;
   border-radius: var(--radius-md);
   border: 1px solid var(--border-color);
-  background: white;
+  background: var(--card);
   font-size: 0.85rem;
   color: var(--text-main);
   outline: none;
@@ -1974,13 +2135,13 @@ body {
 }
 
 .badge-status.mild {
-  background: #EFF6FF;
-  color: #1D4ED8;
+  background: var(--status-paid-bg);
+  color: var(--status-paid-text);
 }
 
 .badge-status.moderate {
-  background: #FEF3C7;
-  color: #B45309;
+  background: var(--status-pending-bg);
+  color: var(--status-pending-text);
 }
 
 /* Table Row Actions */
@@ -1995,7 +2156,7 @@ body {
   height: 32px;
   border-radius: 6px;
   border: 1px solid var(--border-color);
-  background: white;
+  background: var(--card);
   color: var(--text-secondary);
   display: flex;
   align-items: center;
@@ -2028,7 +2189,7 @@ body {
 
 .activity-item.anomaly {
   border-color: var(--status-danger-bg);
-  background: #FFF5F5;
+  background: var(--status-danger-bg);
 }
 
 .activity-icon {
@@ -2038,7 +2199,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: white;
+  background: var(--card);
   box-shadow: var(--shadow-xs);
   flex-shrink: 0;
 }
@@ -2098,12 +2259,14 @@ body {
 
 .modal-card,
 .receipt-modal-box {
-  background: white;
+  background: var(--card);
+  color: var(--card-foreground);
+  border: 1px solid var(--border);
   width: 100%;
   max-width: 560px;
   border-radius: var(--radius-lg);
   padding: 28px;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
   max-height: 90vh;
   overflow-y: auto;
   animation: modalCardPop 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -3127,9 +3290,9 @@ body {
 .system-impact-notice {
   padding: 16px 20px;
   border-radius: 12px;
-  background: #F0FDF4;
-  border: 1px solid #BBF7D0;
-  color: #166534;
+  background: var(--status-paid-bg);
+  border: 1px solid var(--border-color);
+  color: var(--status-paid-text);
   font-size: 0.82rem;
   line-height: 1.5;
   display: flex;
@@ -3357,7 +3520,7 @@ html {
 }
 
 [data-theme="dark"] .finlyt-landing footer {
-  background: rgba(15, 23, 42, 0.95) !important;
+  background: var(--card) !important;
 }
 
 /* ── Login card within landing hero ───────────────────────────────────── */
@@ -3380,8 +3543,8 @@ html {
 
 /* ── Workflow step circle hover ────────────────────────────────────────── */
 .workflow-step-circle:hover {
-  background: linear-gradient(135deg, #714B67, #0284C7) !important;
-  border-color: #714B67 !important;
+  background: linear-gradient(135deg, var(--primary), var(--accent)) !important;
+  border-color: var(--primary) !important;
 }
 
 .workflow-step-circle:hover svg {

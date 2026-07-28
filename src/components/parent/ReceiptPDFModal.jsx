@@ -75,7 +75,9 @@ export default function ReceiptPDFModal({ receipt, student, onClose, onDownload 
           maxWidth: '680px', 
           width: '94vw', 
           maxHeight: '92vh',
-          background: '#ffffff',
+          background: 'var(--card)',
+          color: 'var(--card-foreground)',
+          border: '1px solid var(--border)',
           borderRadius: '16px',
           boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.35)',
           padding: '0', 
@@ -128,50 +130,50 @@ export default function ReceiptPDFModal({ receipt, student, onClose, onDownload 
           <div className="printable-receipt-card" style={{ padding: '32px 36px', background: 'white', color: '#0F172A', fontFamily: 'Inter, sans-serif' }}>
             
             {/* Receipt Top Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '2px dashed #E2E8F0', paddingBottom: '24px', marginBottom: '24px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '2px dashed var(--border)', paddingBottom: '24px', marginBottom: '24px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'linear-gradient(135deg, #714B67 0%, #0284C7 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>
+                <div style={{ width: '48px', height: '48px', borderRadius: 'var(--radius)', background: 'linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>
                   <Building2 size={26} />
                 </div>
                 <div>
-                  <h3 style={{ fontSize: '1.25rem', fontWeight: '800', color: '#0F172A', margin: 0, letterSpacing: '-0.02em' }}>Finlyt International School</h3>
-                  <p style={{ fontSize: '0.8rem', color: '#64748B', margin: '2px 0 0 0' }}>Affiliated to CBSE Board • School Code: PB-89210</p>
-                  <p style={{ fontSize: '0.78rem', color: '#94A3B8', margin: '1px 0 0 0' }}>Campus Road, Knowledge Park II, Tech City • Support: fees@finlyt.edu</p>
+                  <h3 style={{ fontSize: '1.25rem', fontWeight: '800', color: 'var(--foreground)', margin: 0, letterSpacing: '-0.02em' }}>Finlyt International School</h3>
+                  <p style={{ fontSize: '0.8rem', color: 'var(--muted-foreground)', margin: '2px 0 0 0' }}>Affiliated to CBSE Board • School Code: PB-89210</p>
+                  <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: '1px 0 0 0' }}>Campus Road, Knowledge Park II, Tech City • Support: fees@finlyt.edu</p>
                 </div>
               </div>
 
               <div style={{ textAlign: 'right' }}>
-                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '4px 12px', background: '#E0F2FE', color: '#0369A1', borderRadius: '9999px', fontSize: '0.78rem', fontWeight: 700, marginBottom: '8px' }}>
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '4px 12px', background: 'var(--status-paid-bg)', color: 'var(--status-paid-text)', borderRadius: '9999px', fontSize: '0.78rem', fontWeight: 700, marginBottom: '8px' }}>
                   <CheckCircle2 size={13} />
                   <span>PAID RECEIPT</span>
                 </div>
-                <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#0F172A' }}>#{receiptNo}</div>
-                <div style={{ fontSize: '0.78rem', color: '#64748B' }}>Date: {dateTime}</div>
+                <div style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--foreground)' }}>#{receiptNo}</div>
+                <div style={{ fontSize: '0.78rem', color: 'var(--muted-foreground)' }}>Date: {dateTime}</div>
               </div>
             </div>
 
             {/* Student & Parent Info Grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px', padding: '16px', background: '#F8F9FA', borderRadius: '10px', border: '1px solid #E2E8F0', marginBottom: '24px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px', padding: '16px', background: 'var(--background)', borderRadius: 'var(--radius)', border: '1px solid var(--border)', marginBottom: '24px' }}>
               <div>
-                <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B', fontWeight: 700, marginBottom: '4px' }}>Student Details</div>
-                <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#0F172A' }}>{studentName}</div>
-                <div style={{ fontSize: '0.82rem', color: '#475569' }}>Class: <strong>{classGrade}</strong></div>
-                <div style={{ fontSize: '0.78rem', color: '#64748B' }}>Student ID: {student?.id || receipt.studentId || 'STU-101'}</div>
+                <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--muted-foreground)', fontWeight: 700, marginBottom: '4px' }}>Student Details</div>
+                <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--foreground)' }}>{studentName}</div>
+                <div style={{ fontSize: '0.82rem', color: 'var(--text-secondary)' }}>Class: <strong>{classGrade}</strong></div>
+                <div style={{ fontSize: '0.78rem', color: 'var(--muted-foreground)' }}>Student ID: {student?.id || receipt.studentId || 'STU-101'}</div>
               </div>
 
               <div>
-                <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B', fontWeight: 700, marginBottom: '4px' }}>Parent / Guardian</div>
-                <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#0F172A' }}>{parentName}</div>
-                <div style={{ fontSize: '0.82rem', color: '#475569' }}>Payment Mode: <strong>{paymentMethod}</strong></div>
-                <div style={{ fontSize: '0.78rem', color: '#64748B' }}>Ref / UTR: {utrNo}</div>
+                <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--muted-foreground)', fontWeight: 700, marginBottom: '4px' }}>Parent / Guardian</div>
+                <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--foreground)' }}>{parentName}</div>
+                <div style={{ fontSize: '0.82rem', color: 'var(--text-secondary)' }}>Payment Mode: <strong>{paymentMethod}</strong></div>
+                <div style={{ fontSize: '0.78rem', color: 'var(--muted-foreground)' }}>Ref / UTR: {utrNo}</div>
               </div>
             </div>
 
             {/* Fee Items Table */}
-            <div style={{ border: '1px solid #E2E8F0', borderRadius: '10px', overflow: 'hidden', marginBottom: '24px' }}>
+            <div style={{ border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden', marginBottom: '24px' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
                 <thead>
-                  <tr style={{ background: '#F1F5F9', textTransform: 'uppercase', fontSize: '0.72rem', letterSpacing: '0.05em', color: '#475569' }}>
+                  <tr style={{ background: 'var(--muted)', textTransform: 'uppercase', fontSize: '0.72rem', letterSpacing: '0.05em', color: 'var(--muted-foreground)' }}>
                     <th style={{ padding: '10px 16px', textAlign: 'left' }}>#</th>
                     <th style={{ padding: '10px 16px', textAlign: 'left' }}>Fee Description</th>
                     <th style={{ padding: '10px 16px', textAlign: 'right' }}>Amount (₹)</th>
@@ -179,21 +181,21 @@ export default function ReceiptPDFModal({ receipt, student, onClose, onDownload 
                 </thead>
                 <tbody>
                   {items.map((item, idx) => (
-                    <tr key={idx} style={{ borderTop: '1px solid #E2E8F0' }}>
-                      <td style={{ padding: '12px 16px', color: '#64748B' }}>{idx + 1}</td>
-                      <td style={{ padding: '12px 16px', fontWeight: 600, color: '#0F172A' }}>{item.name || item.title || feeType}</td>
-                      <td style={{ padding: '12px 16px', textAlign: 'right', fontWeight: 700, color: '#0F172A' }}>
+                    <tr key={idx} style={{ borderTop: '1px solid var(--border)' }}>
+                      <td style={{ padding: '12px 16px', color: 'var(--muted-foreground)' }}>{idx + 1}</td>
+                      <td style={{ padding: '12px 16px', fontWeight: 600, color: 'var(--foreground)' }}>{item.name || item.title || feeType}</td>
+                      <td style={{ padding: '12px 16px', textAlign: 'right', fontWeight: 700, color: 'var(--foreground)' }}>
                         ₹{(item.amount || amount).toLocaleString('en-IN')}
                       </td>
                     </tr>
                   ))}
                 </tbody>
                 <tfoot>
-                  <tr style={{ borderTop: '2px solid #CBD5E1', background: '#F8F9FA' }}>
-                    <td colSpan="2" style={{ padding: '14px 16px', fontWeight: 800, fontSize: '0.95rem', color: '#0F172A' }}>
+                  <tr style={{ borderTop: '2px solid var(--border)', background: 'var(--muted)' }}>
+                    <td colSpan="2" style={{ padding: '14px 16px', fontWeight: 800, fontSize: '0.95rem', color: 'var(--foreground)' }}>
                       Total Amount Paid
                     </td>
-                    <td style={{ padding: '14px 16px', textAlign: 'right', fontWeight: 800, fontSize: '1.1rem', color: '#714B67' }}>
+                    <td style={{ padding: '14px 16px', textAlign: 'right', fontWeight: 800, fontSize: '1.1rem', color: 'var(--primary)' }}>
                       ₹{amount.toLocaleString('en-IN')}
                     </td>
                   </tr>
@@ -202,20 +204,20 @@ export default function ReceiptPDFModal({ receipt, student, onClose, onDownload 
             </div>
 
             {/* Verification & Stamp Footer */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #E2E8F0', paddingTop: '20px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--border)', paddingTop: '20px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <div style={{ padding: '8px', background: '#F8F9FA', borderRadius: '8px', border: '1px solid #E2E8F0' }}>
-                  <QrCode size={40} style={{ color: '#475569' }} />
+                <div style={{ padding: '8px', background: 'var(--background)', borderRadius: 'var(--radius)', border: '1px solid var(--border)' }}>
+                  <QrCode size={40} style={{ color: 'var(--muted-foreground)' }} />
                 </div>
                 <div>
-                  <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#0F172A' }}>Digitally Verified Receipt</div>
-                  <div style={{ fontSize: '0.72rem', color: '#64748B' }}>Scan QR to verify authentic bank settlement</div>
+                  <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--foreground)' }}>Digitally Verified Receipt</div>
+                  <div style={{ fontSize: '0.72rem', color: 'var(--muted-foreground)' }}>Scan QR to verify authentic bank settlement</div>
                 </div>
               </div>
 
               <div style={{ textAlign: 'right' }}>
-                <div style={{ fontSize: '0.78rem', fontStyle: 'italic', color: '#64748B' }}>Computer Generated Receipt</div>
-                <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#714B67', marginTop: '2px' }}>Finlyt Fee System</div>
+                <div style={{ fontSize: '0.78rem', fontStyle: 'italic', color: 'var(--muted-foreground)' }}>Computer Generated Receipt</div>
+                <div style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--primary)', marginTop: '2px' }}>Finlyt Fee System</div>
               </div>
             </div>
 

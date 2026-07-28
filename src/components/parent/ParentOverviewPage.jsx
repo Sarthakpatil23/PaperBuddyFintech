@@ -370,7 +370,7 @@ export default function ParentOverviewPage({
         </div>
 
         {/* RIGHT COLUMN: Student Profile & Installment Timeline (4 Cols Desktop / 12 Cols Mobile) */}
-        <div style={{ gridColumn: 'span 4', display: 'flex', flexDirection: 'column', gap: '24px' }} className="grid-right-col">
+        <div style={{ gridColumn: 'span 4', display: 'flex', flexDirection: 'column', gap: '16px' }} className="grid-right-col">
           
           {/* Well-Aligned Student Profile Card */}
           <div className="dashboard-section-card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -379,7 +379,7 @@ export default function ParentOverviewPage({
                 width: '48px',
                 height: '48px',
                 borderRadius: '14px',
-                background: 'linear-gradient(135deg, var(--odoo-purple) 0%, var(--accent-blue) 100%)',
+                background: 'linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%)',
                 color: 'white',
                 display: 'flex',
                 alignItems: 'center',
@@ -402,7 +402,7 @@ export default function ParentOverviewPage({
               </div>
             </div>
 
-            <div style={{ padding: '12px 14px', background: 'var(--bg-canvas)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', fontSize: '0.8rem', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <div style={{ padding: '12px 14px', background: 'var(--card-nested)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', fontSize: '0.8rem', display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ color: 'var(--text-muted)' }}>Campus:</span>
                 <strong style={{ color: 'var(--text-main)' }}>Finlyt Main Branch</strong>
@@ -430,13 +430,13 @@ export default function ParentOverviewPage({
               </span>
             </div>
 
-            <div style={{ background: 'var(--bg-canvas)', padding: '14px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)' }}>
+            <div style={{ background: 'var(--card-nested)', padding: '14px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }}>
               {/* Visual Progress Bar */}
               <div style={{ width: '100%', height: '8px', background: 'var(--border-color)', borderRadius: 'var(--radius-pill)', overflow: 'hidden' }}>
                 <div style={{
                   width: `${installmentPercent}%`,
                   height: '100%',
-                  background: 'linear-gradient(90deg, var(--odoo-purple) 0%, var(--accent-blue) 100%)',
+                  background: 'linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%)',
                   borderRadius: 'var(--radius-pill)',
                   transition: 'width 0.4s ease'
                 }} />

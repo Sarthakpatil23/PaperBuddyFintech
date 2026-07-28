@@ -481,7 +481,7 @@ export default function RevenueCharts({ onFilterByFeeType }) {
                         background: isHovered 
                           ? 'linear-gradient(180deg, var(--accent-blue) 0%, var(--accent-blue-hover) 100%)' 
                           : point.isPeak
-                          ? 'linear-gradient(180deg, #0284C7 0%, var(--odoo-purple) 100%)'
+                          ? 'linear-gradient(180deg, var(--accent) 0%, var(--primary) 100%)'
                           : 'linear-gradient(180deg, var(--odoo-purple) 0%, var(--odoo-purple-hover) 100%)',
                         borderRadius: '8px 8px 0 0',
                         transition: 'all 0.22s ease',
@@ -636,10 +636,10 @@ export default function RevenueCharts({ onFilterByFeeType }) {
                         style={{ 
                           width: `${pm.percentage}%`,
                           background: isUPI 
-                            ? 'linear-gradient(90deg, var(--odoo-purple) 0%, #A855F7 100%)' 
+                            ? 'linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%)' 
                             : isCash 
-                            ? 'linear-gradient(90deg, var(--accent-blue) 0%, #38BDF8 100%)'
-                            : 'linear-gradient(90deg, #64748B 0%, #94A3B8 100%)',
+                            ? 'linear-gradient(90deg, var(--accent) 0%, var(--primary-hover) 100%)'
+                            : 'linear-gradient(90deg, var(--muted-foreground) 0%, var(--border) 100%)',
                           height: '100%',
                           borderRadius: 'var(--radius-pill)'
                         }} 

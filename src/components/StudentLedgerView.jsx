@@ -450,9 +450,9 @@ export default function StudentLedgerView({
                       <span>Payment Verified via UPI</span>
                       <span style={{ color: 'var(--accent-blue-text)' }}>+ ₹{(currentStudent.totalPaid).toLocaleString('en-IN')}</span>
                     </div>
-                    <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Receipt Verified Online | Real-Time Sync Confirmed</div>
                   </div>
                 </div>
+              )}
             </div>
           </div>
         </div>
@@ -478,7 +478,7 @@ export default function StudentLedgerView({
             {/* Modal Header */}
             <div style={{
               padding: '22px 28px',
-              background: 'linear-gradient(135deg, var(--odoo-purple) 0%, #4A2E44 100%)',
+              background: 'linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%)',
               color: 'white',
               display: 'flex',
               justifyContent: 'space-between',
@@ -521,9 +521,9 @@ export default function StudentLedgerView({
               {/* Student Financial Summary Card */}
               <div style={{
                 padding: '18px 20px',
-                background: 'var(--bg-canvas)',
+                background: 'var(--card-nested)',
                 borderRadius: '14px',
-                border: '1px solid var(--border-color)',
+                border: '1px solid var(--border)',
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
@@ -792,7 +792,7 @@ export default function StudentLedgerView({
             {/* Modal Header */}
             <div style={{
               padding: '22px 28px',
-              background: 'linear-gradient(135deg, #881337 0%, #4C0519 100%)',
+              background: 'linear-gradient(135deg, var(--destructive) 0%, var(--primary) 100%)',
               color: 'white',
               display: 'flex',
               justifyContent: 'space-between',
@@ -835,9 +835,9 @@ export default function StudentLedgerView({
               {/* Student Financial Summary Card */}
               <div style={{
                 padding: '18px 20px',
-                background: 'var(--bg-canvas)',
+                background: 'var(--card-nested)',
                 borderRadius: '14px',
-                border: '1px solid var(--border-color)',
+                border: '1px solid var(--border)',
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',

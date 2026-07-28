@@ -698,7 +698,7 @@ export default function ParentPaymentPage({
               type="button"
               className="btn-submit-primary"
               onClick={() => setCheckoutStep(2)}
-              style={{ height: '54px', fontSize: '1rem', fontWeight: 800, background: 'linear-gradient(135deg, #714B67 0%, #0284C7 100%)', boxShadow: '0 8px 20px rgba(113,75,103,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
+              style={{ height: '54px', fontSize: '1rem', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
             >
               <span>Continue to Payment Method</span>
               <ArrowRight size={18} />
@@ -974,7 +974,7 @@ export default function ParentPaymentPage({
             <button
               type="submit"
               className="btn-submit-primary"
-              style={{ height: '56px', fontSize: '1.05rem', fontWeight: 800, background: 'linear-gradient(135deg, #714B67 0%, #0284C7 100%)', boxShadow: '0 8px 20px rgba(113,75,103,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
+              style={{ height: '56px', fontSize: '1.05rem', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
             >
               <Lock size={18} />
               <span>Pay ₹{finalAmountToPay.toLocaleString('en-IN')} via {activeTab === 'upi' ? 'UPI' : activeTab === 'card' ? 'Card' : activeTab === 'netbanking' ? 'Net Banking' : 'Wallet'}</span>
@@ -1114,7 +1114,7 @@ export default function ParentPaymentPage({
                 type="button"
                 className="btn-submit-primary"
                 onClick={() => { downloadReceiptPDF(createdTxn, selectedChild); onOpenReceipt && onOpenReceipt(createdTxn); }}
-                style={{ height: '52px', fontSize: '0.98rem', fontWeight: 800, background: 'linear-gradient(135deg, #714B67 0%, #0284C7 100%)', justifyContent: 'center', gap: '10px' }}
+                style={{ height: '52px', fontSize: '0.98rem', fontWeight: 800, justifyContent: 'center', gap: '10px' }}
               >
                 <Download size={18} />
                 <span>Download Official PDF Receipt</span>

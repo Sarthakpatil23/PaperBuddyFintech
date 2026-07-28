@@ -363,7 +363,7 @@ export default function QuickActionsModal({
                 {selectedStudent && (
                   <div className="student-summary-card">
                     <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                      <div style={{ width: '52px', height: '52px', borderRadius: '50%', background: 'linear-gradient(135deg, var(--odoo-purple) 0%, var(--accent-blue) 100%)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '1.2rem', boxShadow: '0 4px 12px rgba(113,75,103,0.25)' }}>
+                      <div style={{ width: '52px', height: '52px', borderRadius: '50%', background: 'linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '1.2rem', boxShadow: 'var(--shadow-primary)' }}>
                         {selectedStudent.name?.charAt(0) || 'S'}
                       </div>
                       <div>
@@ -794,7 +794,6 @@ export default function QuickActionsModal({
                   type="button" 
                   className="btn-submit-primary"
                   onClick={handleNextStep}
-                  style={{ background: 'linear-gradient(135deg, var(--odoo-purple) 0%, var(--accent-blue) 100%)' }}
                 >
                   <span>{step === 1 ? 'Continue to Payment Method' : step === 2 ? 'Enter Details' : 'Review & Record'}</span>
                   <ArrowRight size={16} />
